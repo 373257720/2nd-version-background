@@ -1,0 +1,395 @@
+<template>
+  <div class="tosignuproot">
+    <el-main>
+      <header class="tosignup_header">
+        <div class="block">
+          <el-date-picker
+            v-model="value1"
+            type="daterange"
+            value-format="timestamp"
+            :start-placeholder="$t('project.Start')"
+            :default-time="['00:00:00', '23:59:59']"
+            :end-placeholder="$t('project.End')"
+          ></el-date-picker>
+        </div>
+        <el-select v-model="value" :placeholder="$t('project.PleaseSelect')" class="block">
+          <el-option
+            v-for="item in options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          ></el-option>
+        </el-select>
+        <el-input
+          :placeholder="$t('project.ProjectName')"
+          v-model="searchkey"
+          class="block"
+          clearable
+        ></el-input>
+        <el-button
+          type="primary"
+          icon="el-icon-search"
+          class="block"
+          @click="search(value,value1, 1, pagesize)"
+        >{{$t('project.Search')}}</el-button>
+        <el-button
+          @click="$routerto('addproject_ch',{type:0})"
+          type="primary"
+          icon="el-icon-circle-plus-outline"
+          class="addbtn block"
+        >{{$t('project.Addproject')}}</el-button>
+      </header>
+      <el-table :data="tableData" border style="width:100%;">
+        <el-table-column
+          fixed
+          prop="createTime"
+          :label="$t('project.CreationDate')"
+          show-overflow-tooltip
+          align="center"
+        ></el-table-column>
+        <el-table-column
+          prop="signTime4Submit"
+          :label="$t('project.DateOfApplication')"
+          show-overflow-tooltip
+          align="center"
+        ></el-table-column>
+        <el-table-column
+          prop="projectName"
+          :label="$t('project.ProjectName')"
+          show-overflow-tooltip
+          align="center"
+        ></el-table-column>
+        <el-table-column
+          prop="projectCompany"
+          :label="$t('project.IndividualOrCompany')"
+          show-overflow-tooltip
+          align="center"
+        ></el-table-column>
+        <el-table-column
+          prop="signstatus_ch"
+          :label="$t('project.ProcessStatus')"
+          show-overflow-tooltip
+          align="center"
+        ></el-table-column>
+        <el-table-column
+          prop="projectLifeCycle"
+          :label="$t('project.ProjectStatus')"
+          show-overflow-tooltip
+          align="center"
+        >
+          <template slot-scope="scope">
+            <span>{{scope.row.projectLifeCycle===0?$t('project.Normal'):scope.row.projectLifeCycle==-1?$t('project.Deleted'):'-'}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column fixed="right" :label="$t('project.Operation')" width="200" align="center">
+          <template slot-scope="scope">
+            <el-button
+              @click="handleClick(scope.row)"
+              type="text"
+              size="small"
+            >{{$t('project.View')}}</el-button>
+            <el-button
+              @click="deleterow(scope.row)"
+              type="text"
+              prop="projectLifeCycle"
+              v-if="scope.row.projectLifeCycle===0"
+              size="small"
+            >{{$t('project.Delete')}}</el-button>
+            <el-button
+              @click="handleEdit(scope.row)"
+              v-if="scope.row.projectLifeCycle===0"
+              type="text"
+              size="small"
+            >{{$t('project.Edit')}}</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <pagevue
+        :pagenum="pagetotal"
+        :currentpages="currentpage"
+        :pagesizes="pagesize"
+        v-on:fromchildren="fromchildren1"
+      ></pagevue>
+    </el-main>
+
+    <el-dialog :title="$t('project.Reminder')" v-model="fafa" width="30%" height="50%">
+      <span>{{this.$store.state.commondialog}}</span>
+      <!-- <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+      </span>-->
+    </el-dialog>
+  </div>
+</template>
+
+<script>
+// 待处理项目->1 待签约项目->2 投行拒绝和投资人签约(拒绝签约项目) ->3 已签约待上链->4
+// 已上链待推荐->5  待审核项目->6  投行审核中间人提交的投资人资料拒绝（已审核拒绝）->7
+// 已审核待发送8   待确认项目->9  签约成功项目->10  投资人拒绝中间人邮箱发送的项目投资邀请（拒绝签约项目）->11
+export default {
+  name: "tosignuproot",
+  data() {
+    return {
+      fafa: this.$store.state.commondialog,
+      value1: null, //日期选择
+      value: "", //项目状态
+      searchkey: "",
+      currentpage: 1,
+      pagesize: 8,
+      pagetotal: null,
+      options: [
+        {
+          value: -1,
+          label: this.$t("project.All")
+        },
+        {
+          value: 0,
+          label: this.$t("project.UnPendingItems")
+        },
+        {
+          value: 1,
+          label: this.$t("project.PendingItems")
+        },
+        {
+          value: 2,
+          label: this.$t("project.ToBeSignedProject")
+        },
+        {
+          value: 3,
+          label: this.$t("project.InvestmentBankHasRejected")
+        },
+        {
+          value: 4,
+          label: this.$t("project.SignedForChain")
+        },
+        // {
+        //   value: 5,
+        //   label: this.$t('project.ChainedForRecommendation')
+        // },
+        {
+          value: 6,
+          label: this.$t("project.PendingReview")
+        },
+        {
+          value: 7,
+          label: this.$t("project.InvestmentBankHasRejectedinvestors")
+        },
+        {
+          value: 8,
+          label: this.$t("project.ReviewedPending")
+        },
+        {
+          value: 9,
+          label: this.$t("project.ProjectsToBeConfirmedByInvestors")
+        },
+        {
+          value: 10,
+          label: this.$t("project.SignedContract")
+        },
+        {
+          value: 11,
+          label: this.$t("project.InvestorHasRejected")
+        }
+      ],
+      tableData: [],
+      project_status: {
+        "0": this.$t("project.UnPendingItems"),
+        "1": this.$t("project.PendingItems"),
+        "2": this.$t("project.ToBeSignedProject"),
+        "3": this.$t("project.InvestmentBankHasRejected"),
+        "4": this.$t("project.SignedForChain"),
+        "5": this.$t("project.ChainedForRecommendation"),
+        "6": this.$t("project.PendingReview"),
+        "7": this.$t("project.InvestmentBankHasRejectedinvestors"),
+        "8": this.$t("project.ReviewedPending"),
+        "9": this.$t("project.ProjectsToBeConfirmedByInvestors"),
+        "10": this.$t("project.SignedContract"),
+        "11": this.$t("project.InvestorHasRejected")
+      }
+    };
+  },
+  created() {},
+  activated() {
+    this.search(this.value, this.value1, this.currentpage, this.pagesize);
+  },
+  methods: {
+    deleterow(row) {
+      // console.log(row);
+      let self = this;
+      this.$confirm(
+        self.$t("project.Confirmdelect"),
+        self.$t("project.Reminder"),
+        {
+          confirmButtonText: self.$t("project.Yes"),
+          type: "warning",
+          center: true,
+          showCancelButton: false
+        }
+      )
+        .then(() => {
+          // this.$axios({
+          //   method: "get",
+          //   url: `${this.$axios.defaults.baseURL}/bsl_admin_web/project/updateLifeCycle?projectId=${row.projectId}`,
+          //   headers: {
+          //     "Content-Type": "application/x-www-form-urlencoded"
+          //   }
+          // })
+          this.$global
+            .get_encapsulation(
+              `${this.$axios.defaults.baseURL}/bsl_admin_web/project/updateLifeCycle`,
+              {
+                projectId: row.projectId
+              }
+            )
+            .then(res => {
+              console.log(res);
+              this.search(
+                this.value,
+                this.value1,
+                this.currentpage,
+                this.pagesize
+              );
+            });
+        })
+        .catch(err => {});
+    },
+    handleEdit(row) {
+      // console.log(row)
+      this.$routerto("addproject_ch", {
+        type: 1,
+        projectId: row.projectId,
+        signStatus: row.signStatus,
+        signId: row.signId
+      });
+    },
+    handleClick(row) {
+      // console.log(row);
+      this.$router.push({
+        name: "tosignup_check",
+        query: {
+          projectid: row.projectId,
+          status: row.signStatus,
+          signId: row.signId
+          // pagenum:this.currentpage,
+          // userRespList:testStr
+        }
+      });
+    },
+    fromchildren1(data) {
+      this.currentpage = data.currentpage;
+      this.pagesize = data.pagesize;
+      this.search(this.value, this.value1, this.currentpage, this.pagesize);
+    },
+    search(status, time, pageindex, size) {
+      let start;
+      let end;
+      if (Array.isArray(time)) {
+        if (time.length > 1) {
+          start = time[0] / 1000;
+          end = time[1] / 1000;
+        } else {
+          start = "";
+          end = "";
+        }
+      } else {
+        start = "";
+        end = "";
+      }
+      if (pageindex == 1) {
+        this.currentpage = 1;
+      }
+      // this.$axios({
+      //   method: "post",
+      //   url: `${this.$axios.defaults.baseURL}/bsl_admin_web/project/getProject`,
+      //   data: this.$qs.stringify({
+      //     signStatus: status,
+      //     searchKey: this.searchkey,
+      //     startCreateTime: start,
+      //     endCreateTime: end,
+      //     pageIndex: pageindex,
+      //     pageSize: size
+      //   }),
+      //   headers: {
+      //     "Content-Type": "application/x-www-form-urlencoded"
+      //   }
+      // })
+      this.$global
+        .post_encapsulation(
+          `${this.$axios.defaults.baseURL}/bsl_admin_web/project/getProject`,
+          {
+            signStatus: status,
+            searchKey: this.searchkey,
+            startCreateTime: start,
+            endCreateTime: end,
+            pageIndex: pageindex,
+            pageSize: size
+          }
+        )
+        .then(res => {
+          // console.log(res);
+          if (res.data.resultCode == 10090) {
+            this.$store.dispatch("commondialogfunctionaysn", true);
+            // console.log( this.$store.state.commondialog);
+          } else if (res.data.resultCode == 10000) {
+            this.tableData = [...res.data.data.lists];
+            this.tableData.forEach(item => {
+              item.projectName =
+                item.projectName || "English name of project not added";
+              item.createTime = item.createTime
+                ? this.$global.timestampToTime(item.createTime)
+                : "-";
+              item.signTime4Submit = item.signTime4Submit
+                ? this.$global.timestampToTime(item.signTime4Submit)
+                : "-";
+              item.signstatus_ch = this.project_status[item.signStatus];
+              if (item.projectLifeCycle === 0) {
+                item.projectstatus = this.$t("project.Normal");
+              } else if (item.projectLifeCycle === -1) {
+                item.projectstatus = this.$t("project.Deleted");
+              }
+            });
+            this.pagetotal = res.data.data.pageTotal;
+          }
+        });
+    }
+  }
+};
+</script>
+
+<style lang='scss'>
+.tosignuproot {
+  // padding: 20px 0 60px 0;
+  .el-main {
+    /*min-height: 590px;*/
+    width: 80%;
+  }
+}
+.tosignup_header {
+  // height: 40px;
+  // width: 100%;
+  // width: 968px;
+  display: flex;
+  flex-wrap: wrap;
+  // padding: 0 20px 0 20px;
+
+  box-sizing: border-box;
+  .block {
+    margin-right: 20px;
+    margin-bottom: 20px;
+  }
+  .el-select {
+    width: 200px;
+    .el-input--suffix {
+      width: 100%;
+      /*margin-right: 20px;*/
+    }
+  }
+  .el-input--suffix {
+    width: 150px;
+    /*margin-right: 20px;*/
+  }
+  // el-button block
+  // button.block2 {
+  //   margin-right: 450px;
+  // }
+}
+</style>
