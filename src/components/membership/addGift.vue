@@ -1,6 +1,6 @@
 <template>
   <div class="industry_alter">
-    <header class="industry_alter_header">{{title}}</header>
+    <!-- <header class="industry_alter_header">{{title}}</header> -->
     <el-main>
       <el-form
         ref="ruleForm"

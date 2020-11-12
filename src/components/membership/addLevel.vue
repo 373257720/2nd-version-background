@@ -1,6 +1,6 @@
 <template>
   <div class="industry_alter">
-    <header class="industry_alter_header">{{title}}</header>
+    <!-- <header class="industry_alter_header">{{title}}</header> -->
     <el-main>
       <el-form
         ref="ruleForm"
@@ -9,18 +9,18 @@
         label-width="120px"
         label-position="top"
       >
-        <el-form-item label="中文名称:" prop="industryNameCh">
+        <el-form-item label="会员等级:" prop="industryNameCh">
           <el-input
-            placeholder="中文名称"
+            placeholder="请输入大于0的整数"
             show-word-limit
             maxlength="50"
             clearable
             v-model="industry_summit.industryNameCh"
           ></el-input>
         </el-form-item>
-        <el-form-item label="English Name:" prop="industryNameEn">
+        <el-form-item label="会员积分" prop="industryNameEn">
           <el-input
-            placeholder="会员积分"
+            placeholder="请输入大于0的整数"
             show-word-limit
             maxlength="50"
             clearable
@@ -40,7 +40,7 @@
             v-model="industry_summit.industrySort"
           ></el-input>
         </el-form-item>
-        <el-form-item label="优先推荐中间人时间" prop="industrySort">
+        <el-form-item label="优先推荐中间人时间（月）" prop="industrySort">
           <el-input
             :placeholder="$t('industry.Pleaseenterthanzero')"
             show-word-limit
@@ -50,7 +50,7 @@
             v-model="industry_summit.industrySort"
           ></el-input>
         </el-form-item>
-        <el-form-item label="优先推荐投资人时间" prop="industrySort">
+        <el-form-item label="优先推荐投资人时间（月）" prop="industrySort">
           <el-input
             :placeholder="$t('industry.Pleaseenterthanzero')"
             show-word-limit
@@ -62,7 +62,7 @@
         </el-form-item>
       </el-form>
       <p class="dialog-footer">
-        <button @click="$routerto('industry_lists')">{{$t('project.Cancel')}}</button>
+        <button @click="$routerto('MembershipSystemArrangment')">{{$t('project.Cancel')}}</button>
         <button @click="submitForm('ruleForm')">{{$t('project.Confirm')}}</button>
       </p>
     </el-main>

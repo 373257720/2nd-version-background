@@ -7,12 +7,12 @@
             @click="$routerto('customPoints')"
             type="primary"
             class="addbtn"
-          >{{$t('industry.customPoints')}}</el-button>
+          >积分自定义</el-button>
           <el-button
             @click="$routerto('industry_alter')"
             type="primary"
             class="addbtn"
-          >{{$t('industry.Addindustry')}}</el-button>
+          >积分清零</el-button>
         </nav>
 
         <section>

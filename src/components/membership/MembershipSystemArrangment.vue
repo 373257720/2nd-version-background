@@ -7,7 +7,7 @@
             @click="$routerto('addLevel')"
             type="primary"
             class="addbtn"
-          >{{$t('industry.Addindustry')}}</el-button>
+          >新增会员等级</el-button>
         </nav>
       </header>
       <el-table

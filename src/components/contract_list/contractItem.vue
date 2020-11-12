@@ -3,11 +3,11 @@
     <el-main>
       <header class="tosignup_header">
         <el-button
-          @click="$routerto('industry_alter')"
+          @click="$routerto('add_contract')"
           type="primary"
           icon="el-icon-circle-plus-outline"
           class="addbtn"
-        >{{$t('industry.Addindustry')}}</el-button>
+        >添加合同</el-button>
         <section>
           <el-input
             :placeholder="$t('project.ProjectName')"
@@ -27,36 +27,22 @@
         border
 
       >
-        <el-table-column width="200" prop="idx" :label="$t('industry.SerialNumber')" align="center"></el-table-column>
-        <el-table-column prop="industryNameCh" show-overflow-tooltip label="行业" align="center"></el-table-column>
+        <el-table-column width="200" prop="idx" label="创建日期" align="center"></el-table-column>
+        <el-table-column prop="industryNameCh" show-overflow-tooltip label="合同名称" align="center"></el-table-column>
         <el-table-column
           prop="industryNameEn"
           show-overflow-tooltip
-          label="Industry"
+          label="合同类型"
           align="center"
         ></el-table-column>
         <el-table-column fixed="right" :label="$t('project.Operation')" width="200" align="center">
           <template slot-scope="scope">
             <el-button
-              v-if="scope.row.industryStatus!==0"
-              disabled
-              type="text"
-              size="small"
-            >{{$t('project.Edit')}}</el-button>
-            <el-button
-              v-else
               @click="handleClick(scope.row)"
               type="text"
               size="small"
-            >{{$t('project.Edit')}}</el-button>
+            >查看</el-button>
             <el-button
-              v-if="scope.row.industryStatus!==0"
-              disabled
-              type="text"
-              size="small"
-            >{{$t('project.Delete')}}</el-button>
-            <el-button
-              v-else
               @click="deleterow(scope.row)"
               type="text"
               size="small"
@@ -149,7 +135,7 @@ export default {
 
     handleClick(row) {
       this.$router.push({
-        name: "industry_alter",
+        name: "contract_alter",
         query: {
           industryId: row.industryId
         }
@@ -191,7 +177,7 @@ export default {
 };
 </script>
 
-<style lang='scss'>
+<style lang='scss' >
 .contractItem {
   //   padding: 20px 0 0 0;
   .el-main {
@@ -226,9 +212,10 @@ export default {
       padding: 30px 20px 10px 20px;
     }
     .el-dialog__footer {
+   
       button {
         /*color: #FFF;*/
-        width: 40%;
+        width:40%;
         height: 40px;
         font-size: 14px;
         cursor: pointer;

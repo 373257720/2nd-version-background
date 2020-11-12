@@ -1,6 +1,7 @@
 <template>
-  <div class="industry_alter">
-    <header class="industry_alter_header">{{title}}</header>
+  <div class="pointsSetting">
+    <!-- <header class="industry_alter_header">{{title}}</header> -->
+
     <el-main>
       <el-form
         ref="ruleForm"
@@ -9,29 +10,22 @@
         label-width="120px"
         label-position="top"
       >
-        <el-form-item label="推荐中间人成功积分:" prop="industryNameCh">
-          <el-input
-            placeholder="中文名称"
-            show-word-limit
-            maxlength="50"
-            clearable
+        <el-form-item label="积分排行刷新时间：:" prop="industryNameCh">
+          <el-date-picker
             v-model="industry_summit.industryNameCh"
-          ></el-input>
+            type="date"
+            placeholder="选择日期"
+          >
+          </el-date-picker>
         </el-form-item>
-        <el-form-item label="推荐投资人积分:" prop="industryNameEn">
-          <el-input
-            placeholder="会员积分"
-            show-word-limit
-            maxlength="50"
-            clearable
-            v-model="industry_summit.industryNameEn"
-          ></el-input>
-        </el-form-item>
-
       </el-form>
       <p class="dialog-footer">
-        <button @click="$routerto('membershipList')">{{$t('project.Cancel')}}</button>
-        <button @click="submitForm('ruleForm')">{{$t('project.Confirm')}}</button>
+        <button @click="$routerto('membershipList')">
+          {{ $t("project.Cancel") }}
+        </button>
+        <button @click="submitForm('ruleForm')">
+          {{ $t("project.Confirm") }}
+        </button>
       </p>
     </el-main>
   </div>
@@ -82,23 +76,23 @@ export default {
         industryNameEn: "",
         industryNameCh: "",
         industryStatus: 0,
-        industrySort: null
+        industrySort: null,
       },
       rules: {
         industrySort: [
           {
             required: true,
             message: this.$t("industry.Pleaseenterthanzero"),
-            trigger: "blur"
-          }
+            trigger: "blur",
+          },
         ],
         industryNameCh: [
-          { required: true, validator: valid_industryNameCh, trigger: "blur" }
+          { required: true, validator: valid_industryNameCh, trigger: "blur" },
         ],
         industryNameEn: [
-          { required: true, validator: valid_industryNameEn, trigger: "blur" }
-        ]
-      }
+          { required: true, validator: valid_industryNameEn, trigger: "blur" },
+        ],
+      },
     };
   },
   created() {
@@ -130,7 +124,7 @@ export default {
   // },
   methods: {
     submitForm(formName) {
-      this.$refs[formName].validate(valid => {
+      this.$refs[formName].validate((valid) => {
         if (valid) {
           this.add_industry();
         } else {
@@ -144,10 +138,10 @@ export default {
           `${this.$axios.defaults.baseURL}/bsl_admin_web/industry/getAllIndustry`,
           { searchKey: "" }
         )
-        .then(res => {
+        .then((res) => {
           if (res.data.resultCode == 10000) {
             this.tableData = [...res.data.data];
-            this.tableData.forEach(item => {
+            this.tableData.forEach((item) => {
               if (item.industryId == this.$route.query.industryId) {
                 this.industry_summit.industryStatus = item.industryStatus;
                 this.industry_summit.industryNameEn = item.industryNameEn;
@@ -166,25 +160,25 @@ export default {
           `${this.$axios.defaults.baseURL}/bsl_admin_web/industry/saveIndustry`,
           self.industry_summit
         )
-        .then(result => {
+        .then((result) => {
           this.$confirm(result.data.resultDesc, self.$t("project.Reminder"), {
             confirmButtonText: self.$t("project.Yes"),
             center: true,
-            showCancelButton: false
+            showCancelButton: false,
           }).then(() => {
             if (result.data.resultCode == 10000) {
               this.$routerto("industry_lists");
             }
           });
         });
-    }
-  }
+    },
+  },
 };
 </script>
 
 <style lang='scss'>
-.industry_alter {
-  padding: 80px 0;
+.pointsSetting {
+  padding: 20px 0;
   .industry_alter_header {
     height: 40px;
     width: 80%;

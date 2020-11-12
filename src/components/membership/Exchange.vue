@@ -7,17 +7,17 @@
             @click="$routerto('giftSetting')"
             type="primary"
             class="addbtn"
-          >{{$t('industry.customPoints')}}</el-button>
+          >礼品设置</el-button>
           <el-button
             @click="$routerto('pointsSetting')"
             type="primary"
             class="addbtn"
-          >{{$t('industry.customPoints')}}</el-button>
+          >积分兑换设置</el-button>
           <el-button
-            @click="$routerto('industry_alter')"
+            @click="$routerto('exchangeHistory')"
             type="primary"
             class="addbtn"
-          >{{$t('industry.Addindustry')}}</el-button>
+          >兑换历史</el-button>
         </nav>
 
         <section>

@@ -3,23 +3,8 @@
     <el-main>
       <header class="tosignup_header">
         <nav>
-          <el-button
-            @click="$routerto('industry_alter')"
-            type="primary"
-            class="addbtn"
-          >{{$t('industry.Addindustry')}}</el-button>
-          <el-button
-            @click="$routerto('industry_alter')"
-            type="primary"
-            class="addbtn"
-          >{{$t('industry.Addindustry')}}</el-button>
-          <el-button
-            @click="$routerto('industry_alter')"
-            type="primary"
-            class="addbtn"
-          >{{$t('industry.Addindustry')}}</el-button>
+          <el-button type="primary" class="addbtn">导出</el-button>
         </nav>
-
         <section>
           <el-input
             :placeholder="$t('project.ProjectName')"
@@ -30,55 +15,76 @@
           <el-button
             type="primary"
             icon="el-icon-search"
-            @click="search(value,value1, 1, pagesize)"
-          >{{$t('project.Search')}}</el-button>
+            @click="search(value, value1, 1, pagesize)"
+            >{{ $t("project.Search") }}</el-button
+          >
         </section>
       </header>
       <el-table
-        :data="tableData.slice((currentpage - 1) * pagesize, currentpage * pagesize)"
+        :data="
+          tableData.slice((currentpage - 1) * pagesize, currentpage * pagesize)
+        "
         border
-        style="width:80%"
+        style="width: 80%"
       >
-        <el-table-column width="200" prop="idx" :label="$t('industry.SerialNumber')" align="center"></el-table-column>
-        <el-table-column prop="industryNameCh" show-overflow-tooltip label="行业" align="center"></el-table-column>
         <el-table-column
-          prop="industryNameEn"
-          show-overflow-tooltip
-          label="Industry"
+          width="140"
+          prop="idx"
+          label="推荐时间"
           align="center"
         ></el-table-column>
-        <el-table-column fixed="right" :label="$t('project.Operation')" width="200" align="center">
-          <template slot-scope="scope">
-            <el-button
-              v-if="scope.row.industryStatus!==0"
-              disabled
-              type="text"
-              size="small"
-            >{{$t('project.Edit')}}</el-button>
-            <el-button
-              v-else
-              @click="handleClick(scope.row)"
-              type="text"
-              size="small"
-            >{{$t('project.Edit')}}</el-button>
-            <el-button
-              v-if="scope.row.industryStatus!==0"
-              disabled
-              type="text"
-              size="small"
-            >{{$t('project.Delete')}}</el-button>
-            <el-button
-              v-else
-              @click="deleterow(scope.row)"
-              type="text"
-              size="small"
-            >{{$t('project.Delete')}}</el-button>
-          </template>
+        <el-table-column
+          prop="industryNameCh"
+         
+          width="100"
+          label="推荐人"
+          align="center"
+        ></el-table-column>
+        <el-table-column
+          prop="industryNameEn"
+          label="推荐人类型"
+           width="140"
+          align="center"
+        ></el-table-column>
+        <el-table-column
+         
+          label="被推荐人"
+          width="140"
+          align="center"
+        >
+        </el-table-column>
+         <el-table-column
+        
+          label="被推荐人类型"
+          width="150"
+          align="center"
+        >
+        </el-table-column>
+         <el-table-column
+         
+          label="分成机制利益分成%"
+          width="200"
+          align="center"
+        >
+        </el-table-column>
+         <el-table-column
+         
+          label="推荐结果"
+          width="100"
+          align="center"
+        >
+        </el-table-column>
+         <el-table-column
+         
+          label="上链信息"
+          width="200"
+          align="center"
+        >
         </el-table-column>
       </el-table>
     </el-main>
     <el-pagination
-      style="width:80%"
+      style="width: 80%"
       :page-size="pagesize"
       :pager-count="5"
       layout="prev, pager, next"
@@ -106,7 +112,7 @@ export default {
       pagetotal: null,
       tableData: [],
       deleteType: 0,
-      industryId: ""
+      industryId: "",
     };
   },
   created() {},
@@ -133,7 +139,7 @@ export default {
           cancelButtonText: self.$t("project.No"),
           type: "warning",
           center: true,
-          showCancelButton: true
+          showCancelButton: true,
         }
       )
         .then(() => {
@@ -142,17 +148,17 @@ export default {
               `${this.$axios.defaults.baseURL}/bsl_admin_web/industry/deleteIndustry`,
               { industryId: row.industryId }
             )
-            .then(res => {
+            .then((res) => {
               if (res.data.resultCode == 10000) {
                 this.$message({
                   message: res.data.resultDesc,
-                  type: "success"
+                  type: "success",
                 });
                 this.search();
               } else {
                 this.$message({
                   message: res.data.resultDesc,
-                  type: "warn"
+                  type: "warn",
                 });
               }
             });
@@ -164,8 +170,8 @@ export default {
       this.$router.push({
         name: "industry_alter",
         query: {
-          industryId: row.industryId
-        }
+          industryId: row.industryId,
+        },
       });
     },
     fromchildren1(data) {
@@ -185,7 +191,7 @@ export default {
           `${this.$axios.defaults.baseURL}/bsl_admin_web/industry/getAllIndustry`,
           { searchKey: "" }
         )
-        .then(res => {
+        .then((res) => {
           if (res.data.resultCode == 10000) {
             this.tableData = [...res.data.data];
             // console.log(this.tableData)
@@ -199,8 +205,8 @@ export default {
             });
           }
         });
-    }
-  }
+    },
+  },
 };
 </script>
 

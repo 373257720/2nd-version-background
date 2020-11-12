@@ -3,25 +3,47 @@
     <el-main>
       <header class="tosignup_header">
         <nav>
-          <el-button @click="$routerto('addGift')" type="primary" class="addbtn">新增</el-button>
+          <!-- <el-button
+            @click="$routerto('giftSetting')"
+            type="primary"
+            class="addbtn"
+          >礼品设置</el-button>
+          <el-button
+            @click="$routerto('pointsSetting')"
+            type="primary"
+            class="addbtn"
+          >积分兑换设置</el-button>
+          <el-button
+            @click="$routerto('exchangeHistory')"
+            type="primary"
+            class="addbtn"
+          >兑换历史</el-button> -->
         </nav>
+
+        <section>
+          <el-input
+            :placeholder="$t('project.ProjectName')"
+            v-model="searchkey"
+            class="block"
+            clearable
+          ></el-input>
+          <el-button
+            type="primary"
+            icon="el-icon-search"
+            @click="search(value,value1, 1, pagesize)"
+          >{{$t('project.Search')}}</el-button>
+        </section>
       </header>
       <el-table
         :data="tableData.slice((currentpage - 1) * pagesize, currentpage * pagesize)"
         border
       >
-        <el-table-column width="200" prop="idx" label="礼品名称" align="center"></el-table-column>
-        <el-table-column
-          prop="industryNameCh"
-          show-overflow-tooltip
-          label="数量"
-          align="center"
-        ></el-table-column>
-        <el-table-column fixed="right" label="操作" width="200" align="center">
-          <template slot-scope="scope">
-            <el-button disabled type="text" size="small">兑换</el-button>
-          </template>
-        </el-table-column>
+       
+        <el-table-column prop="industryNameEn" show-overflow-tooltip label="申请时间" align="center"></el-table-column>
+        <el-table-column prop="industryNameEn" show-overflow-tooltip label="积分使用类型" align="center"></el-table-column>
+        <el-table-column prop="industryNameEn" show-overflow-tooltip label="积分明细" align="center"></el-table-column>
+        <el-table-column prop="industryNameEn" show-overflow-tooltip label="兑换礼品" align="center"></el-table-column>
+        
       </el-table>
       <el-pagination
         :page-size="pagesize"

@@ -91,6 +91,16 @@ const contractListsRoot = () =>
     /* webpackChunkName: "project_owner" */
     "@/components/contract_list/contractListsRoot"
   );
+  const add_contract = () =>
+  import(
+    /* webpackChunkName: "project_owner" */
+    "@/components/contract_list/add_contract"
+  );
+  const contract_alter = () =>
+  import(
+    /* webpackChunkName: "project_owner" */
+    "@/components/contract_list/contract_alter"
+  );
 // userslist
 const check_pending = () =>
   import(
@@ -163,6 +173,10 @@ const pointsSetting = () =>
     /* webpackChunkName: "project_owner" */
     "@/components/membership/pointsSetting"
   );
+  const pointsSettingHistory=()=>import(
+     /* webpackChunkName: "project_owner" */
+     "@/components/membership/pointsSettingHistory"
+  )
 const addGift = () =>
   import(
     /* webpackChunkName: "project_owner" */
@@ -183,6 +197,21 @@ const MembershipSystemArrangment = () =>
     /* webpackChunkName: "project_owner" */
     "@/components/membership/MembershipSystemArrangment"
   );
+  const rankingList = () =>
+  import(
+    /* webpackChunkName: "project_owner" */
+    "@/components/membership/rankingList"
+  );
+  const exchangeHistory=()=>
+    import(
+      /* webpackChunkName: "project_owner" */
+      "@/components/membership/exchangeHistory"
+    );
+    const exchangeDetails=()=>
+    import(
+      /* webpackChunkName: "project_owner" */
+      "@/components/membership/exchangeDetails"
+    );
 const membershipList = () =>
   import(
     /* webpackChunkName: "project_owner" */
@@ -370,6 +399,16 @@ const routes = [
             path: "contractItem",
             name: "contractItem",
             component: contractItem
+          },
+          {
+            path: "add_contract",
+            name: "add_contract",
+            component: add_contract
+          },
+          {
+            path: "contract_alter",
+            name: "contract_alter",
+            component: contract_alter
           }
         ]
       },
@@ -480,6 +519,26 @@ const routes = [
             // meta: {
             //   title: '添加币种'i18n.t('project.Currencylist')
             // },
+          },
+          {
+            path: "exchangeHistory",
+            name: "exchangeHistory",
+            component: exchangeHistory
+          },
+          {
+            path: "exchangeDetails",
+            name: "exchangeDetails",
+            component: exchangeDetails
+          },
+          {
+            path: "pointsSettingHistory",
+            name: "pointsSettingHistory",
+            component: pointsSettingHistory
+          },
+          {
+            path: "rankingList",
+            name: "rankingList",
+            component: rankingList
           },
           {
             path: "Exchange",
