@@ -1,5 +1,5 @@
 <template>
-  <div id="add_contract">
+  <div id="contractClause">
     <!-- <header>{{$t('UserManagement.Addnewbackgrounduser')}}</header> -->
     <header>添加新合同</header>
     <el-form
@@ -12,46 +12,20 @@
       <el-form-item label="合同名称" prop="bslEmail">
         <el-input placeholder="Email" v-model.trim="ruleForm.bslEmail"></el-input>
       </el-form-item>
-      <el-form-item label="合同类型" prop="bslName">
-        <el-select v-model="value" placeholder="请选择">
-          <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          ></el-option>
-        </el-select>
+      <el-form-item>
+        <div class="Currencyrange">
+          <div class="additem" v-for="(item,index) in ruleForm.arr" :key="index">
+            <el-form-item class="item-first" :prop="'arr.' + index + '.money_range_minimum'">
+              <el-input v-model="item.money_range_minimum"></el-input>
+              <i @click="additem" class="el-icon-circle-plus-outline addsymbol"></i>
+            </el-form-item>
+            <el-form-item :prop="'arr.' + index + '.money_range_maximum'" :rules="rules.maximun">
+              <el-input v-model="item.money_range_maximum"></el-input>
+            </el-form-item>
+          </div>
+        </div>
       </el-form-item>
-      <el-form-item label="上传合同模板word" prop="bslPwd">
-        <el-upload
-          class="upload-demo"
-          accept=".doc, .docx"
-          action="https://jsonplaceholder.typicode.com/posts/"
-          :on-change="(file,filelist)=>{return upload(file,filelist,'word')}"
-          :show-file-list="true"
-          :auto-upload="false"
-          multiple
-          :limit="1"
-        >
-          <i class="el-icon-upload"></i>
-        </el-upload>
-      </el-form-item>
-      <el-form-item label="上传合同模板excl" prop="bslPwd2">
-        <el-upload
-          class="upload-demo"
-          ref="execl"
-          accept=".xls, .xlsx"
-          name="execl"
-          action="https://jsonplaceholder.typicode.com/posts/"
-          :on-change="(file,filelist)=>{return upload(file,filelist,'excel')}"
-          :show-file-list="true"
-          :auto-upload="false"
-          multiple
-          :limit="1"
-        >
-          <i class="el-icon-upload"></i>
-        </el-upload>
-      </el-form-item>
+
       <!--      <el-form-item class="add_contract_bottom">-->
       <!--        <el-button type="primary" @click="$router.go(-1)">返回</el-button>-->
       <!--        <el-button type="primary" class="next" @click="submitForm('ruleForm')">提交</el-button>-->
@@ -102,7 +76,14 @@ export default {
         bslEmail: "",
         bslName: "",
         bslPwd: "",
-        bslPwd2: ""
+        bslPwd2: "",
+        arr: [
+          {
+            // key:1,
+            money_range_minimum: "",
+            money_range_maximum: ""
+          }
+        ]
       },
       rules: {
         bslPwd: [{ required: true, validator: validatePass, trigger: "blur" }],
@@ -159,8 +140,15 @@ export default {
     //  console.log(ActiveXObject);
   },
   methods: {
+    additem() {
+      this.ruleForm.arr.push({
+        // key:1,
+        money_range_minimum: "",
+        money_range_maximum: ""
+      });
+    },
     submitForm(formName) {
-      this.$routerto('contractClause');
+      this.$routerto("");
       // this.$refs[formName].validate(valid => {
       //   if (valid) {
 
@@ -248,12 +236,46 @@ export default {
 </script>
 
 <style lang='scss'>
-#add_contract {
+#contractClause {
   .el-select {
     width: 100%;
   }
   .el-button--primary {
     width: 200px;
+  }
+  .Currencyrange {
+    margin-bottom: 22px;
+
+    .item-first {
+      margin-bottom: 22px;
+      .el-form-item__content {
+        width: 220px;
+        display: flex;
+        align-items: center;
+
+        .el-input {
+          //   width: 200px;
+          margin-right: 22px;
+        }
+        i {
+          // margin-left: 22px;
+        }
+      }
+    }
+
+    div.additem {
+      //   display: flex;
+      //   justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .el-input {
+      //   width: 120px;
+    }
+    .el-input__inner {
+      /*width: 100px;*/
+      //   padding: 0 10px;
+      //   font-size: 12px;
+    }
   }
   .money_range {
     margin-bottom: 22px;
@@ -358,7 +380,7 @@ export default {
 </style>
 
 <style lang='scss' scoped>
-#add_contract {
+#contractClause {
   width: 600px;
   margin: 50px auto;
   .dialog-footer {

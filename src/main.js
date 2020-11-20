@@ -43,6 +43,7 @@ import {
   Option,
   popover,
   Button,
+  Upload,
   Table,
   TableColumn,
   DatePicker,
@@ -62,7 +63,7 @@ import {
 Vue.use(Pagination);
 Vue.use(Dialog);
 Vue.use(popover);
-
+Vue.use(Upload);
 // Vue.use(Autocomplete);
 Vue.use(Dropdown);
 Vue.use(DropdownMenu);

@@ -362,34 +362,34 @@ export default {
     /*min-height: 590px;*/
     width: 80%;
   }
-}
-.tosignup_header {
-  // height: 40px;
-  // width: 100%;
-  // width: 968px;
-  display: flex;
-  flex-wrap: wrap;
-  // padding: 0 20px 0 20px;
+  .tosignup_header {
+    // height: 40px;
+    // width: 100%;
+    // width: 968px;
+    display: flex;
+    flex-wrap: wrap;
+    // padding: 0 20px 0 20px;
 
-  box-sizing: border-box;
-  .block {
-    margin-right: 20px;
-    margin-bottom: 20px;
-  }
-  .el-select {
-    width: 200px;
+    box-sizing: border-box;
+    .block {
+      margin-right: 20px;
+      margin-bottom: 20px;
+    }
+    .el-select {
+      width: 200px;
+      .el-input--suffix {
+        width: 100%;
+        /*margin-right: 20px;*/
+      }
+    }
     .el-input--suffix {
-      width: 100%;
+      width: 150px;
       /*margin-right: 20px;*/
     }
+    // el-button block
+    // button.block2 {
+    //   margin-right: 450px;
+    // }
   }
-  .el-input--suffix {
-    width: 150px;
-    /*margin-right: 20px;*/
-  }
-  // el-button block
-  // button.block2 {
-  //   margin-right: 450px;
-  // }
 }
 </style>

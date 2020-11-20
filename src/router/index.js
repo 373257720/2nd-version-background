@@ -86,6 +86,12 @@ const contractItem = () =>
     /* webpackChunkName: "project_owner" */
     "@/components/contract_list/contractItem"
   );
+  const contractClause = () =>
+  import(
+    /* webpackChunkName: "project_owner" */
+    "@/components/contract_list/contractClause"
+  );
+   
 const contractListsRoot = () =>
   import(
     /* webpackChunkName: "project_owner" */
@@ -400,6 +406,12 @@ const routes = [
             name: "contractItem",
             component: contractItem
           },
+          {
+            path: "contractClause",
+            name: "contractClause",
+            component: contractClause
+          },
+          
           {
             path: "add_contract",
             name: "add_contract",

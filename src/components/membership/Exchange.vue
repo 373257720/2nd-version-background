@@ -1,22 +1,22 @@
 <template>
-  <div class="contractItem">
+  <div class="Exchange">
     <el-main>
       <header class="tosignup_header">
         <nav>
           <el-button
             @click="$routerto('giftSetting')"
             type="primary"
-            class="addbtn"
+            class="addbtn block"
           >礼品设置</el-button>
           <el-button
             @click="$routerto('pointsSetting')"
             type="primary"
-            class="addbtn"
+            class="addbtn block"
           >积分兑换设置</el-button>
           <el-button
             @click="$routerto('exchangeHistory')"
             type="primary"
-            class="addbtn"
+            class="addbtn block"
           >兑换历史</el-button>
         </nav>
 
@@ -30,6 +30,7 @@
           <el-button
             type="primary"
             icon="el-icon-search"
+                class="addbtn block"
             @click="search(value,value1, 1, pagesize)"
           >{{$t('project.Search')}}</el-button>
         </section>
@@ -199,22 +200,24 @@ export default {
 </script>
 
 <style lang='scss'>
-.contractItem {
+.Exchange {
   //   padding: 20px 0 0 0;
   .el-main {
     /*min-height: 580px;*/
     width: 80%;
   }
   .tosignup_header {
-    height: 40px;
+    // height: 40px;
     // width: 80%;
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
-    margin-bottom: 20px;
+    // margin-bottom: 20px;
     padding: 0 0 0 20px;
     box-sizing: border-box;
+    
     .block {
-      margin-right: 20px;
+      margin-bottom: 20px;
     }
     .el-input--suffix {
       width: 200px;

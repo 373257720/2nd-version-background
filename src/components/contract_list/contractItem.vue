@@ -6,7 +6,7 @@
           @click="$routerto('add_contract')"
           type="primary"
           icon="el-icon-circle-plus-outline"
-          class="addbtn"
+          class="addbtn block"
         >添加合同</el-button>
         <section>
           <el-input
@@ -18,6 +18,7 @@
           <el-button
             type="primary"
             icon="el-icon-search"
+            class="block"
             @click="search(value,value1, 1, pagesize)"
           >{{$t('project.Search')}}</el-button>
         </section>
@@ -25,23 +26,13 @@
       <el-table
         :data="tableData.slice((currentpage - 1) * pagesize, currentpage * pagesize)"
         border
-
       >
         <el-table-column width="200" prop="idx" label="创建日期" align="center"></el-table-column>
         <el-table-column prop="industryNameCh" show-overflow-tooltip label="合同名称" align="center"></el-table-column>
-        <el-table-column
-          prop="industryNameEn"
-          show-overflow-tooltip
-          label="合同类型"
-          align="center"
-        ></el-table-column>
+        <el-table-column prop="industryNameEn" show-overflow-tooltip label="合同类型" align="center"></el-table-column>
         <el-table-column fixed="right" :label="$t('project.Operation')" width="200" align="center">
           <template slot-scope="scope">
-            <el-button
-              @click="handleClick(scope.row)"
-              type="text"
-              size="small"
-            >查看</el-button>
+            <el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button>
             <el-button
               @click="deleterow(scope.row)"
               type="text"
@@ -188,12 +179,13 @@ export default {
     // height: 40px;
     // width: 80%;
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
-    margin-bottom: 20px;
+    // margin-bottom: 20px;
     padding: 0 0 0 20px;
     box-sizing: border-box;
     .block {
-      margin-right: 20px;
+      margin-bottom: 20px;
     }
     .el-input--suffix {
       width: 200px;
@@ -212,10 +204,9 @@ export default {
       padding: 30px 20px 10px 20px;
     }
     .el-dialog__footer {
-   
       button {
         /*color: #FFF;*/
-        width:40%;
+        width: 40%;
         height: 40px;
         font-size: 14px;
         cursor: pointer;

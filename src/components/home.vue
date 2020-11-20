@@ -26,6 +26,42 @@
             <el-menu-item index="check_pending">{{$t('Home.Pendingusers')}}</el-menu-item>
           </router-link>
         </el-submenu>
+
+        <router-link to="/home/contractListsRoot">
+          <el-menu-item index="contractListsRoot">
+            <i class="el-icon-news"></i>
+            <!-- <span slot="title">{{ $t("Home.Backgroundusermanagement") }}</span> -->
+            <span slot="title">合同列表</span>
+          </el-menu-item>
+        </router-link>
+
+        <el-submenu index="memberlist">
+          <template slot="title">
+            <i class="el-icon-menu"></i>
+            会员列表
+          </template>
+          <router-link to="/home/membership/membershipList">
+            <el-menu-item index="verified_user">会员管理</el-menu-item>
+          </router-link>
+          <router-link to="/home/membership/MembershipSystemArrangment">
+            <el-menu-item index="MembershipSystemArrangment">会员制度管理</el-menu-item>
+          </router-link>
+          <router-link to="/home/membership/Exchange">
+            <el-menu-item index="Exchange">积分兑换</el-menu-item>
+          </router-link>
+          <router-link to="/home/membership/rankingList">
+            <el-menu-item index="check_pending">积分排行榜</el-menu-item>
+          </router-link>
+        </el-submenu>
+
+        <router-link to="/home/Recommand/RecommandList">
+          <el-menu-item index="user_management">
+            <i class="el-icon-news"></i>
+            <!-- <span slot="title">{{ $t("Home.Backgroundusermanagement") }}</span> -->
+            <span slot="title">推荐列表</span>
+          </el-menu-item>
+        </router-link>
+
         <router-link to="/home/industry">
           <el-menu-item index="industry">
             <i class="el-icon-document"></i>

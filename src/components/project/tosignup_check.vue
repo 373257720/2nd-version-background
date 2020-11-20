@@ -405,11 +405,11 @@ export default {
           }
           // console.log(this.agent_lists)
         }
-      });
+      })
   },
   methods: {
-    check_contract() {
-      let newWindow = window.open();
+    check_contract () {
+      let newWindow = window.open()
       // this.$axios({
       //   method: "get",
       //   url: `${this.$axios.defaults.baseURL}/bsl_admin_web/projectSign/getPdf?signId=${this.signId}`
@@ -422,10 +422,10 @@ export default {
           }
         )
         .then(res => {
-          if (res.data.resultCode == 10000) {
-            newWindow.location.href = res.data.data.pdfPath;
+          if (res.data.resultCode === 10000) {
+            newWindow.location.href = res.data.data.pdfPath
           }
-        });
+        })
     }
     // handleClick() {
     //   let data = JSON.stringify(this.datalist.userRespList);
@@ -437,7 +437,7 @@ export default {
     //   });
     // }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

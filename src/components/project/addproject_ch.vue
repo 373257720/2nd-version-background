@@ -1094,7 +1094,7 @@ export default {
     commit() {
       let cloneObj = this.deepClone(this.form);
       cloneObj.collectMoneyMax = cloneObj.collectMoneyMax.replace(/,/g, "") * 1;
-      cloneObj.collectMoneyMin = cloneObj.collectMoneyMin.replace(/,/g, "") * 1;
+      cloneObj.collectMoneyMin = cloneObj.collectMoneyMin.replace(/,/g, '') * 1
       this.$global
         .post_encapsulation(
           `${this.$axios.defaults.baseURL}/bsl_admin_web/project/saveProject`,
@@ -1116,7 +1116,7 @@ export default {
         showCancelButton: false
       }).then(() => {
         if (resultCode === 10000) {
-          this.$routerto("tosignuproot");
+          this.$routerto('tosignuproot');
         }
       });
     }

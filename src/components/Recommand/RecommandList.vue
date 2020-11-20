@@ -1,9 +1,9 @@
 <template>
-  <div class="contractItem">
+  <div class="RecommandList">
     <el-main>
       <header class="tosignup_header">
         <nav>
-          <el-button type="primary" class="addbtn">导出</el-button>
+          <el-button type="primary" class="addbtn block">导出</el-button>
         </nav>
         <section>
           <el-input
@@ -14,10 +14,10 @@
           ></el-input>
           <el-button
             type="primary"
+            class="block"
             icon="el-icon-search"
             @click="search(value, value1, 1, pagesize)"
-            >{{ $t("project.Search") }}</el-button
-          >
+          >{{ $t("project.Search") }}</el-button>
         </section>
       </header>
       <el-table
@@ -25,62 +25,15 @@
           tableData.slice((currentpage - 1) * pagesize, currentpage * pagesize)
         "
         border
-        style="width: 80%"
       >
-        <el-table-column
-          width="140"
-          prop="idx"
-          label="推荐时间"
-          align="center"
-        ></el-table-column>
-        <el-table-column
-          prop="industryNameCh"
-         
-          width="100"
-          label="推荐人"
-          align="center"
-        ></el-table-column>
-        <el-table-column
-          prop="industryNameEn"
-          label="推荐人类型"
-           width="140"
-          align="center"
-        ></el-table-column>
-        <el-table-column
-         
-          label="被推荐人"
-          width="140"
-          align="center"
-        >
-        </el-table-column>
-         <el-table-column
-        
-          label="被推荐人类型"
-          width="150"
-          align="center"
-        >
-        </el-table-column>
-         <el-table-column
-         
-          label="分成机制利益分成%"
-          width="200"
-          align="center"
-        >
-        </el-table-column>
-         <el-table-column
-         
-          label="推荐结果"
-          width="100"
-          align="center"
-        >
-        </el-table-column>
-         <el-table-column
-         
-          label="上链信息"
-          width="200"
-          align="center"
-        >
-        </el-table-column>
+        <el-table-column width="140" prop="idx" label="推荐时间" align="center"></el-table-column>
+        <el-table-column prop="industryNameCh" width="100" label="推荐人" align="center"></el-table-column>
+        <el-table-column prop="industryNameEn" label="推荐人类型" width="140" align="center"></el-table-column>
+        <el-table-column label="被推荐人" width="140" align="center"></el-table-column>
+        <el-table-column label="被推荐人类型" width="150" align="center"></el-table-column>
+        <el-table-column label="分成机制利益分成%" width="200" align="center"></el-table-column>
+        <el-table-column label="推荐结果" width="100" align="center"></el-table-column>
+        <el-table-column label="上链信息" width="200" align="center"></el-table-column>
       </el-table>
     </el-main>
     <el-pagination
@@ -112,7 +65,7 @@ export default {
       pagetotal: null,
       tableData: [],
       deleteType: 0,
-      industryId: "",
+      industryId: ""
     };
   },
   created() {},
@@ -139,7 +92,7 @@ export default {
           cancelButtonText: self.$t("project.No"),
           type: "warning",
           center: true,
-          showCancelButton: true,
+          showCancelButton: true
         }
       )
         .then(() => {
@@ -148,17 +101,17 @@ export default {
               `${this.$axios.defaults.baseURL}/bsl_admin_web/industry/deleteIndustry`,
               { industryId: row.industryId }
             )
-            .then((res) => {
+            .then(res => {
               if (res.data.resultCode == 10000) {
                 this.$message({
                   message: res.data.resultDesc,
-                  type: "success",
+                  type: "success"
                 });
                 this.search();
               } else {
                 this.$message({
                   message: res.data.resultDesc,
-                  type: "warn",
+                  type: "warn"
                 });
               }
             });
@@ -170,8 +123,8 @@ export default {
       this.$router.push({
         name: "industry_alter",
         query: {
-          industryId: row.industryId,
-        },
+          industryId: row.industryId
+        }
       });
     },
     fromchildren1(data) {
@@ -191,7 +144,7 @@ export default {
           `${this.$axios.defaults.baseURL}/bsl_admin_web/industry/getAllIndustry`,
           { searchKey: "" }
         )
-        .then((res) => {
+        .then(res => {
           if (res.data.resultCode == 10000) {
             this.tableData = [...res.data.data];
             // console.log(this.tableData)
@@ -205,27 +158,29 @@ export default {
             });
           }
         });
-    },
-  },
+    }
+  }
 };
 </script>
 
 <style lang='scss'>
-.contractItem {
+.RecommandList {
   //   padding: 20px 0 0 0;
   .el-main {
     /*min-height: 580px;*/
+    width: 80%;
   }
   .tosignup_header {
-    height: 40px;
-    width: 80%;
+    // height: 40px;
+
     display: flex;
     justify-content: space-between;
-    margin-bottom: 20px;
+    flex-wrap: wrap;
+    // margin-bottom: 20px;
     padding: 0 0 0 20px;
     box-sizing: border-box;
     .block {
-      margin-right: 20px;
+      margin-bottom: 20px;
     }
     .el-input--suffix {
       width: 200px;

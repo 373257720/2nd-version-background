@@ -1,20 +1,19 @@
 <template>
-  <div class="contractItem">
+  <div class="membershipList">
     <el-main>
       <header class="tosignup_header">
         <nav>
           <el-button
             @click="$routerto('customPoints')"
             type="primary"
-            class="addbtn"
+            class="addbtn block"
           >积分自定义</el-button>
           <el-button
             @click="$routerto('industry_alter')"
             type="primary"
-            class="addbtn"
+            class="addbtn block"
           >积分清零</el-button>
         </nav>
-
         <section>
           <el-input
             :placeholder="$t('project.ProjectName')"
@@ -25,6 +24,7 @@
           <el-button
             type="primary"
             icon="el-icon-search"
+                    class="block"
             @click="search(value,value1, 1, pagesize)"
           >{{$t('project.Search')}}</el-button>
         </section>
@@ -242,22 +242,23 @@ export default {
 </script>
 
 <style lang='scss'>
-.contractItem {
+.membershipList {
   //   padding: 20px 0 0 0;
   .el-main {
     /*min-height: 580px;*/
     width: 80%;
   }
   .tosignup_header {
-    height: 40px;
+    // height: 40px;
     // width: 80%;
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
-    margin-bottom: 20px;
+    // margin-bottom: 20px;
     padding: 0 0 0 20px;
     box-sizing: border-box;
     .block {
-      margin-right: 20px;
+      margin-bottom: 20px;
     }
     .el-input--suffix {
       width: 200px;
