@@ -57,7 +57,7 @@ export default {
     };
     var validatePass2 = (rule, value, callback) => {
       if (value === "") {
-        callback(
+        callback( 
           new Error(self.$t("UserManagement.PleaseEnterNewPasswordagain"))
         );
       } else if (value !== this.ruleForm.bslPwd) {

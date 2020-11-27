@@ -178,6 +178,9 @@ export default {
   .el-date-editor--timerange.el-input__inner {
     width: 260px;
   }
+  .el-table__fixed-right::before, .el-table__fixed::before{
+  height:0;
+}
 }
 .el-dialog {
   border-radius: 5px;

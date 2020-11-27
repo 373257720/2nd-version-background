@@ -118,7 +118,7 @@ export default {
       idx: "",
       // formLabelWidth: "120px",
       pending_individual: {
-        createTime: {
+        registrationTime: {
           title: this.$t("project.registerTime"),
           value: ""
         },
@@ -154,7 +154,7 @@ export default {
       },
       nationality: "", //国籍
       pending_company: {
-        createTime: {
+        registrationTime: {
           title: this.$t("project.registerTime"),
           value: ""
         },
@@ -236,21 +236,15 @@ export default {
       }
       this.dialogVisible = false;
       this.dialogFormVisible = false;
-
-      // this.$axios({
-      //   method: "post",
-      //   url: `${this.$axios.defaults.baseURL}/bsl_admin_web/user/saveAuth?userId=${this.idx}&optStatus=${num}&optRemark=${str}`,
-      //   headers: {
-      //     "Content-Type": "application/x-www-form-urlencoded"
-      //   }
-      // })
-
       this.$global
-        .post_encapsulation(`${this.$axios.defaults.baseURL}/bsl_admin_web/user/saveAuth`, {
-          userId: this.idx,
-          optStatus: num,
-          optRemark: str
-        })
+        .post_encapsulation(
+          `${this.$axios.defaults.baseURL}/bsl_admin_web/user/saveAuth`,
+          {
+            userId: this.idx,
+            optStatus: num,
+            optRemark: str
+          }
+        )
         .then(res => {
           console.log(res);
           if (res.data.resultCode == 10000) {
@@ -271,7 +265,6 @@ export default {
         }
       )
       .then(res => {
-        console.log(res.data.data);
         var arr = res.data.data;
         for (var key in arr) {
           if (key == "userType") {
@@ -290,7 +283,7 @@ export default {
               self.nationality = 2;
             }
           }
-          if (key == "createTime") {
+          if (key == "registrationTime") {
             arr[key] = self.$global.timestampToTime(arr[key]);
           }
         }
@@ -309,6 +302,8 @@ export default {
                 self.pending_individual[key].value = arr[key];
               }
             }
+            console.log(self.pending_individual);
+            
           } else if (this.identityType == 2) {
             arr.identityType = self.$t("project.company");
             self.userCompanyPic = arr.userCompanyPic;
@@ -329,6 +324,7 @@ export default {
 };
 </script>
 <style lang='scss'>
+
 .pic {
   width: 500px;
   height: 420px;
@@ -386,7 +382,7 @@ export default {
     width: 900px;
     justify-content: space-between;
     .pending_left {
-      width: 900px;
+      // width: 900px;
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
@@ -401,7 +397,7 @@ export default {
   }
   main {
     display: flex;
-    width: 900px;
+    // width: 900px;
     margin-bottom: 50px;
     justify-content: space-between;
     p {

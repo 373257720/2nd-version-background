@@ -136,6 +136,7 @@ export default {
       currentpage: 1,
       pagesize: 8,
       pagetotal: null,
+      
       options: [
         {
           value: -1,

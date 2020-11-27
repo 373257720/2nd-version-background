@@ -3,18 +3,32 @@
     <div class="pagevue">
       <el-pagination
         v-if="pagenum!=0"
-        @current-change="handleCurrentChange"
-        :current-page="currentpages"
+        :current-page="2"
         :page-size="pagesizes"
-        layout="total,prev, pager, next, jumper"
-        :total="pagenum"
+        layout="prev,pager, next"
+        :total="5"
       ></el-pagination>
+      <!-- <el-pagination background layout="prev, pager, next" :total="1000"></el-pagination> -->
     </div>
   </div>
+  <!-- @current-change="handleCurrentChange" -->
 </template>
 <script>
 export default {
-  props: ["pagenum", "currentpages", "pagesizes"],
+  props: {
+    pagenum: {
+      type: Number,
+      default: 1
+    },
+    currentpages: {
+      type: Number,
+      default: 1
+    },
+    pagesizes: {
+      type: null,
+      default: 8
+    }
+  },
   name: "pagevue",
   data() {
     return {
@@ -23,7 +37,7 @@ export default {
     };
   },
   created() {
-    // console.log(this.pagenum)
+    console.log(this.pagenum);
   },
   watch: {
     //  pagenum:function(addd,oldd){
@@ -35,11 +49,13 @@ export default {
       // console.log(`每页 ${val} 条`);
     },
     handleCurrentChange(val) {
-      this.currentPag = val;
-      var obj = {};
-      obj.pagesize = this.pagesizes;
-      obj.currentpage = val;
-      this.$emit("fromchildren", obj);
+      // console.log(val);
+      
+      // this.currentPag = val;
+      // var obj = {};
+      // obj.pagesize = this.pagesizes;
+      // obj.currentpage = val;
+      // this.$emit("fromchildren", obj);
     }
   }
 };

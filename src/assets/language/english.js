@@ -1,5 +1,8 @@
 export default {
   project: {
+    Frozen:"Frozen",
+    Recover:"Recover",
+    PleaseComfirm:"Please comfirm",
     Potential:"Potential",
     contractTerms:'Contract terms',
     Nameofinvestmentbank:'Name of investment bank',

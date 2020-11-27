@@ -1,6 +1,9 @@
 export default {
 
   project: {
+    Frozen:"冻结",
+    Recover:"恢复",
+    PleaseComfirm:"请确认操作",
     Potential:"潜在客户要求",
     contractTerms:'合同条款',
     MyProjectInformation:'我的项目资料',
