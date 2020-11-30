@@ -27,9 +27,9 @@
         :data="tableData.slice((currentpage - 1) * pagesize, currentpage * pagesize)"
         border
       >
-        <el-table-column width="200" prop="idx" label="创建日期" align="center"></el-table-column>
-        <el-table-column prop="industryNameCh" show-overflow-tooltip label="合同名称" align="center"></el-table-column>
-        <el-table-column prop="industryNameEn" show-overflow-tooltip label="合同类型" align="center"></el-table-column>
+        <el-table-column width="200" prop="createTime" label="创建日期" align="center"></el-table-column>
+        <el-table-column prop="fileName" show-overflow-tooltip label="合同名称" align="center"></el-table-column>
+        <el-table-column prop="fileType" show-overflow-tooltip label="合同类型" align="center"></el-table-column>
         <el-table-column fixed="right" :label="$t('project.Operation')" width="200" align="center">
           <template slot-scope="scope">
             <el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button>
@@ -103,8 +103,12 @@ export default {
         .then(() => {
           this.$global
             .get_encapsulation(
-              `${this.$axios.defaults.baseURL}/bsl_admin_web/industry/deleteIndustry`,
-              { industryId: row.industryId }
+              `${this.$axios.defaults.baseURL}/bsl_admin_web/contract/getContractTemplateList`,
+              {
+                pageIndex: row.industryId,
+                pageSize: null
+                // fileName:
+              }
             )
             .then(res => {
               if (res.data.resultCode == 10000) {
@@ -128,7 +132,7 @@ export default {
       this.$router.push({
         name: "contract_alter",
         query: {
-          industryId: row.industryId
+          Id: row.id
         }
       });
     },
@@ -146,21 +150,18 @@ export default {
     search() {
       this.$global
         .get_encapsulation(
-          `${this.$axios.defaults.baseURL}/bsl_admin_web/industry/getAllIndustry`,
-          { searchKey: "" }
+          `${this.$axios.defaults.baseURL}/bsl_admin_web/contract/getContractTemplateList`,
+          {
+            pageIndex: this.currentpage,
+            pageSize: this.pagesize,
+            fileName: this.searchkey
+          }
         )
         .then(res => {
+          console.log(res);
+
           if (res.data.resultCode == 10000) {
-            this.tableData = [...res.data.data];
-            // console.log(this.tableData)
-            this.tableData.forEach((item, idx) => {
-              item.idx = idx + 1;
-              // if(item.industryStatus==-1){
-              //   item.industry_Status='已删除'
-              // }else if(item.industryStatus==0){
-              //   item.industry_Status='正常'
-              // }
-            });
+            this.tableData=res.data.data.lists;
           }
         });
     }

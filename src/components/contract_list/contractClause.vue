@@ -9,19 +9,25 @@
       label-width="80px"
       :label-position="labelposition"
     >
-      <el-form-item label="合同名称" prop="bslEmail">
-        <el-input placeholder="Email" v-model.trim="ruleForm.bslEmail"></el-input>
-      </el-form-item>
       <el-form-item>
         <div class="Currencyrange">
-          <div class="additem" v-for="(item,index) in ruleForm.arr" :key="index">
-            <el-form-item class="item-first" :prop="'arr.' + index + '.money_range_minimum'">
-              <el-input v-model="item.money_range_minimum"></el-input>
-              <i @click="additem" class="el-icon-circle-plus-outline addsymbol"></i>
+          <div class="additem" v-for="(item,index) in arr" :key="index">
+            <el-form-item v-if="item.type===2" class="item-first">
+              <el-form-item label="合同名称" prop="bslEmail">
+                <i @click="additem" class="el-icon-circle-plus-outline addsymbol"></i>
+                <el-input placeholder="Email" v-model.trim="ruleForm.bslEmail"></el-input>
+                <ul>
+                  <li v-for="item in item2.listCell" :key="item">
+                    <el-input placeholder="Email" v-model.trim="item2"></el-input>
+                  </li>
+                </ul>
+              </el-form-item>
+              <!-- <el-input v-model="item.money_range_minimum"></el-input>
+              <i @click="additem" class="el-icon-circle-plus-outline addsymbol"></i>-->
             </el-form-item>
-            <el-form-item :prop="'arr.' + index + '.money_range_maximum'" :rules="rules.maximun">
+            <!-- <el-form-item :prop="'arr.' + index + '.money_range_maximum'" :rules="rules.maximun">
               <el-input v-model="item.money_range_maximum"></el-input>
-            </el-form-item>
+            </el-form-item>-->
           </div>
         </div>
       </el-form-item>
@@ -45,51 +51,12 @@ import XLSX from "xlsx";
 export default {
   data() {
     let self = this;
-    var validatePass = (rule, value, callback) => {
-      if (value === "") {
-        callback(new Error(self.$t("UserManagement.PleaseEnterNewPassword")));
-      } else {
-        // if (this.ruleForm.bslPwd !== '') {
-        //   // this.$refs.ruleForm.validateField('bslPwd');
-        // }
-        callback();
-      }
-    };
-    var validatePass2 = (rule, value, callback) => {
-      if (value === "") {
-        callback( 
-          new Error(self.$t("UserManagement.PleaseEnterNewPasswordagain"))
-        );
-      } else if (value !== this.ruleForm.bslPwd) {
-        callback(
-          new Error(
-            self.$t("UserManagement.PasswordsEnteredTwiceAreInconsistent")
-          )
-        );
-      } else {
-        callback();
-      }
-    };
     return {
       labelposition: "top",
-      ruleForm: {
-        bslEmail: "",
-        bslName: "",
-        bslPwd: "",
-        bslPwd2: "",
-        arr: [
-          {
-            // key:1,
-            money_range_minimum: "",
-            money_range_maximum: ""
-          }
-        ]
-      },
+      ruleForm: {},
+      fileId: null,
+      arr: [],
       rules: {
-        bslPwd: [{ required: true, validator: validatePass, trigger: "blur" }],
-        bslPwd2: [
-          { required: true, validator: validatePass2, trigger: "blur" }
-        ],
         bslName: [
           {
             required: true,
@@ -136,17 +103,23 @@ export default {
     };
   },
   created() {
+    this.fileId = this.$route.query.filed || null;
+    this.$global
+      .get_encapsulation(
+        `${this.$axios.defaults.baseURL}/bsl_admin_web/contract/getExcelContractTemplate`,
+        { fileId: this.fileId }
+      )
+      .then(res => {
+        console.log(res);
+        if (res.data.resultCode == 10000) {
+          this.arr = res.data.data.list;
+        }
+      });
     // console.log(XLSX);
     //  console.log(ActiveXObject);
   },
   methods: {
-    additem() {
-      this.ruleForm.arr.push({
-        // key:1,
-        money_range_minimum: "",
-        money_range_maximum: ""
-      });
-    },
+    additem() {},
     submitForm(formName) {
       this.$routerto("");
       // this.$refs[formName].validate(valid => {

@@ -5,6 +5,7 @@
     <header class="coin_category_alter_header">合同模板对象：项目方与中间人</header>
     <el-main>
       <div class="contract_content">合同内容</div>
+      <el-input type="textarea" autosize placeholder="请输入内容" v-model="textarea1"></el-input>
       <!-- <el-form
         ref="ruleForm"
         :model="coin_category_summit"
@@ -40,7 +41,7 @@
             v-model="coin_category_summit.currencySort"
           ></el-input>
         </el-form-item>
-      </el-form> -->
+      </el-form>-->
       <p class="dialog-footer">
         <button @click="$router.go(-1)">{{$t('project.Confirm')}}</button>
         <!-- <button @click="submitForm('ruleForm')">{{$t('project.Confirm')}}</button> -->
@@ -52,68 +53,31 @@
 <script>
 export default {
   data() {
-    var valid_currencytype = (rule, value, callback) => {
-      //  var str = value.replace(/(^\s*)|(\s*$)/g,"");
-      //  let a=/^[A-Za-z][A-Za-z\s]*[A-Za-z]$/.test(str);
-      if (value) {
-        this.coin_category_summit.currencyType = value;
-        //  console.log(this.coin_category_summit.currencyType)
-        callback();
-      } else {
-        callback(new Error("Please enter english"));
-      }
-    };
-    var valid_currencyName = (rule, value, callback) => {
-      // var str = value.replace(/(^\s*)|(\s*$)/g,"");
-      // let a=/^[\u4E00-\u9FA5][\u4E00-\u9FA5\s]*[\u4E00-\u9FA5]$/.test(str);
-      if (value) {
-        this.coin_category_summit.currencyName = value;
-        callback();
-      } else {
-        callback(new Error("请输入中文"));
-      }
-    };
     return {
-      dialogFormVisible_industry: false,
-      tableData: [],
-      title: "",
-      coin_category_summit: {
-        currencyId: -1,
-        currencySort: null,
-        currencyType: "",
-        currencyName: ""
-      },
-      rules: {
-        currencySort: [
-          {
-            required: true,
-            message: this.$t("industry.Pleaseenterthanzero"),
-            trigger: "blur"
-          }
-        ],
-        currencyType: [
-          { required: true, validator: valid_currencytype, trigger: "blur" }
-        ],
-        currencyName: [
-          { required: true, validator: valid_currencyName, trigger: "blur" }
-        ]
-      }
+      previewName: "",
+      dialogVisible: false,
+      textarea1: "",
+      previewUrl: ""
     };
   },
   created() {
-    if (this.$route.query.currencyId) {
-      this.title = this.$t(
-        "CategoryOfCoin.Pleaseenterthecurrencyyouwanttoedit"
-      );
-      this.coin_category_summit.currencyId = this.$route.query.currencyId;
-      this.search();
-    } else {
-      this.title = this.$t(
-        "CategoryOfCoin.Pleaseenterthecurrencyyouwanttoincrease"
-      );
-    }
+    this.id = this.$route.query.Id || null;
+
+    this.search();
+    // if (this.$route.query.currencyId) {
+    //   this.title = this.$t(
+    //     "CategoryOfCoin.Pleaseenterthecurrencyyouwanttoedit"
+    //   );
+    //   this.coin_category_summit.currencyId = this.$route.query.currencyId;
+    //   this.search();
+    // } else {
+    //   this.title = this.$t(
+    //     "CategoryOfCoin.Pleaseenterthecurrencyyouwanttoincrease"
+    //   );
+    // }
   },
   methods: {
+ 
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
@@ -126,18 +90,15 @@ export default {
     search() {
       this.$global
         .get_encapsulation(
-          `${this.$axios.defaults.baseURL}/bsl_admin_web/currency/getAllCurrency`
+          `${this.$axios.defaults.baseURL}/bsl_admin_web/contract/getWordContractTemplate`,
+          {
+            fileId: this.id
+          }
         )
         .then(res => {
+          console.log(res);
           if (res.data.resultCode == 10000) {
-            this.tableData = [...res.data.data];
-            this.tableData.forEach(item => {
-              if (item.currencyId == this.$route.query.currencyId) {
-                this.coin_category_summit.currencySort = item.currencySort;
-                this.coin_category_summit.currencyType = item.currencyType;
-                this.coin_category_summit.currencyName = item.currencyName;
-              }
-            });
+            this.textarea1 = res.data.data.readWord;
           }
         });
     },
@@ -178,11 +139,11 @@ export default {
     text-align: center;
   }
   .el-main {
-    width: 40%;
+    width: 60%;
     margin: 0 auto;
-    .contract_content{
+    .contract_content {
       width: 100%;
-      height: 500px;
+      // height: 500px;
       background-color: #fff;
     }
     .thick {

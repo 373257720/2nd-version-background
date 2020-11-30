@@ -9,11 +9,11 @@
       label-width="80px"
       :label-position="labelposition"
     >
-      <el-form-item label="合同名称" prop="bslEmail">
-        <el-input placeholder="Email" v-model.trim="ruleForm.bslEmail"></el-input>
+      <el-form-item label="合同名称" prop="fileName">
+        <el-input placeholder="Email" v-model.trim="ruleForm.fileName"></el-input>
       </el-form-item>
-      <el-form-item label="合同类型" prop="bslName">
-        <el-select v-model="value" placeholder="请选择">
+      <el-form-item label="合同类型" prop="contractType">
+        <el-select v-model="ruleForm.contractType" placeholder="请选择">
           <el-option
             v-for="item in options"
             :key="item.value"
@@ -24,32 +24,40 @@
       </el-form-item>
       <el-form-item label="上传合同模板word" prop="bslPwd">
         <el-upload
-          class="upload-demo"
+          class="file-upload"
+          ref="fileUpload"
+          action
+          :http-request="handleRequest"
+          :on-remove="handleRemove"
+          :before-remove="handleBeforeRemove"
+          :on-change="(file,filelist)=>{return handleChange(file,filelist,'wrod')}"
+          :file-list="fileList"
+          :multiple="false"
+          :auto-upload="true"
           accept=".doc, .docx"
-          action="https://jsonplaceholder.typicode.com/posts/"
-          :on-change="(file,filelist)=>{return upload(file,filelist,'word')}"
-          :show-file-list="true"
-          :auto-upload="false"
-          multiple
           :limit="1"
         >
-          <i class="el-icon-upload"></i>
+          <el-button size="small" type="primary">点击上传</el-button>
         </el-upload>
       </el-form-item>
       <el-form-item label="上传合同模板excl" prop="bslPwd2">
         <el-upload
+          :on-preview="handlePreview"
           class="upload-demo"
           ref="execl"
           accept=".xls, .xlsx"
           name="execl"
-          action="https://jsonplaceholder.typicode.com/posts/"
-          :on-change="(file,filelist)=>{return upload(file,filelist,'excel')}"
+          action="Fake Action"
+          :http-request="handleRequestExcel"
+          :on-remove="handleRemove"
+          :before-remove="handleBeforeRemove"
+          :on-change="(file,filelist)=>{return handleChange(file,filelist,'excel')}"
           :show-file-list="true"
-          :auto-upload="false"
+          :auto-upload="true"
           multiple
           :limit="1"
         >
-          <i class="el-icon-upload"></i>
+          <el-button size="small" type="primary">点击上传</el-button>
         </el-upload>
       </el-form-item>
       <!--      <el-form-item class="add_contract_bottom">-->
@@ -70,52 +78,27 @@
 import XLSX from "xlsx";
 export default {
   data() {
-    let self = this;
-    var validatePass = (rule, value, callback) => {
-      if (value === "") {
-        callback(new Error(self.$t("UserManagement.PleaseEnterNewPassword")));
-      } else {
-        // if (this.ruleForm.bslPwd !== '') {
-        //   // this.$refs.ruleForm.validateField('bslPwd');
-        // }
-        callback();
-      }
-    };
-    var validatePass2 = (rule, value, callback) => {
-      if (value === "") {
-        callback(
-          new Error(self.$t("UserManagement.PleaseEnterNewPasswordagain"))
-        );
-      } else if (value !== this.ruleForm.bslPwd) {
-        callback(
-          new Error(
-            self.$t("UserManagement.PasswordsEnteredTwiceAreInconsistent")
-          )
-        );
-      } else {
-        callback();
-      }
-    };
     return {
       labelposition: "top",
+      fileList: [],
       ruleForm: {
-        bslEmail: "",
-        bslName: "",
-        bslPwd: "",
-        bslPwd2: ""
+        fileName: "",
+        contractType: 0,
+        fileWord: "",
+        fileWordName: "",
+        fileExcel: "",
+        fileExcelName: ""
       },
+
       rules: {
-        bslPwd: [{ required: true, validator: validatePass, trigger: "blur" }],
-        bslPwd2: [
-          { required: true, validator: validatePass2, trigger: "blur" }
-        ],
-        bslName: [
+        fileName: [
           {
             required: true,
             message: this.$t("UserManagement.PleaseEnter"),
             trigger: "blur"
           }
         ],
+        contractType: [],
         bslEmail: [
           {
             required: true,
@@ -131,27 +114,15 @@ export default {
       },
       options: [
         {
-          value: "选项1",
-          label: "黄金糕"
+          value: 0,
+          label: "项目方与中间人"
         },
         {
-          value: "选项2",
-          label: "双皮奶"
-        },
-        {
-          value: "选项3",
-          label: "蚵仔煎"
-        },
-        {
-          value: "选项4",
-          label: "龙须面"
-        },
-        {
-          value: "选项5",
-          label: "北京烤鸭"
+          value: 1,
+          label: "中间人与中间人"
         }
-      ],
-      value: "项目方与中间人"
+      ]
+      // value: "项目方与中间人"
     };
   },
   created() {
@@ -159,70 +130,182 @@ export default {
     //  console.log(ActiveXObject);
   },
   methods: {
-    submitForm(formName) {
-      this.$routerto('contractClause');
-      // this.$refs[formName].validate(valid => {
-      //   if (valid) {
-
-      //   } else {
-      //     return false;
-      //   }
-      // });
+    handleExceed(files, fileList) {
+      this.$message.warning(
+        `当前限制选择 3 个文件，本次选择了 ${
+          files.length
+        } 个文件，共选择了 ${files.length + fileList.length} 个文件`
+      );
     },
-    upload(file, fileList, name) {
-      console.log("file", file);
-      console.log("fileList", fileList);
-      let files = { 0: file.raw };
-      this.readExcel1(files, name);
-    },
-    readExcel1(files, name) {
-      //表格导入
+    file2JSON(file) {
+      return new Promise((resolve, reject) => {
+        let reader = new FileReader();
 
-      if (files.length <= 0) {
-        //如果没有文件名
-        return false;
+        reader.onload = function(event) {
+          let resSheet = XLSX.read(event.target.result, {
+            type: "binary"
+          });
+
+          let resJSON = [];
+          resSheet.SheetNames.forEach(sheetName => {
+            resJSON.push({
+              sheetName: sheetName,
+              sheet: XLSX.utils.sheet_to_json(resSheet.Sheets[sheetName])
+            });
+          });
+
+          resolve(resJSON);
+        };
+
+        reader.readAsBinaryString(file.raw);
+      });
+    },
+    handleBeforeRemove(file, fileList) {
+      return this.$confirm(`确定移除 ${file.name}？`);
+    },
+    handleRequest(params) {
+      console.log(params);
+
+      let formData = new FormData();
+      formData.append("file", params.file);
+      formData.append("Ad_Token", this.$store.state.X_Token);
+      this.$axios({
+        method: "post",
+        url: `${this.$axios.defaults.baseURL}/bsl_admin_web/upload/wordFile`,
+        data: formData,
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
+      }).then(res => {
+        console.log(res);
+
+        if (res.data.resultCode == 10000) {
+          this.ruleForm.fileWord = res.data.data.path;
+          this.ruleForm.fileWordName = '\\'+ res.data.data.fileWordName;
+        } else {
+        }
+      });
+    },
+    handleRequestExcel(params) {
+      let formData = new FormData();
+      formData.append("file", params.file);
+      formData.append("Ad_Token", this.$store.state.X_Token);
+      this.$axios({
+        method: "post",
+        url: `${this.$axios.defaults.baseURL}/bsl_admin_web/upload/excelFile`,
+        data: formData,
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
+      }).then(res => {
+        console.log(res);
+        if (res.data.resultCode == 10000) {
+          this.ruleForm.fileExcel = res.data.data.path;
+          this.ruleForm.fileExcelName = '\\'+res.data.data.fileExcelName;
+  
+          
+        } else {
+        }
+      });
+    },
+    handlePreview(file) {
+      console.log(file);
+
+      if (!file.url) {
+        this.$message.error("下载失败");
+        return;
       }
+      const type = file.url.split(".")[4];
+      // 判断文件类型
+      if (
+        type === "doc" ||
+        type === "docx" ||
+        type === "xlsx" ||
+        type === "xls" ||
+        type === "ppt" ||
+        type === "pptx"
+      ) {
+        // 在当前浏览器直接下载
+        document.location.href = file.url;
+      } else {
+        // 图片在浏览器打开 新的页面展示
+        window.open(file.url, "hello");
+      }
+    },
+
+    handleRemove(file, fileList) {
+      console.log(file, fileList);
+    },
+
+    submitForm(formName) {
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          this.$global
+            .post_encapsulation(
+              `${this.$axios.defaults.baseURL}/bsl_admin_web/contract/saveContractTemplate`,
+              this.ruleForm
+            )
+            .then(res => {
+              if (res.data.resultCode === 10000) {
+                this.$routerto("contractClause", { filed: res.data.data.id });
+              }
+            });
+        } else {
+          return false;
+        }
+      });
+    },
+    handleChange(file, fileList, name) {
+      console.log(name);
+
+      // console.log("file", file);
+      // console.log("fileList", fileList);
       if (name === "excel") {
-        if (!/\.(xls|xlsx)$/.test(files[0].name.toLowerCase())) {
+        if (!/\.(xls|xlsx)$/.test(file.name.toLowerCase())) {
           this.$Message.error("上传格式不正确，请上传xls或者xlsx格式");
           return false;
         }
       } else if (name === "word") {
-        if (!/\.(doc|docx)$/.test(files[0].name.toLowerCase())) {
+        if (!/\.(doc|docx)$/.test(file.name.toLowerCase())) {
           this.$Message.error("上传格式不正确，请上传xls或者xlsx格式");
           return false;
         }
       }
-      var that = this;
-      // console.log(files);
-      const fileReader = new FileReader();
-      fileReader.onload = function(e) {
-        console.log(e.target.result);
-      };
-      fileReader.readAsText(files[0]);
+      // this.file = file.raw;
+      // console.log(file);
+    },
 
+    readExcel1(files, name) {
+      //表格导入
+      // if (files.length <= 0) {
+      //   //如果没有文件名
+      //   return false;
+      // }
+      // console.log(name);
+      // console.log(files);
+      // const fileReader = new FileReader();
+      // fileReader.onload = function(e) {
+      //   // console.log(e.target.result);
+      // };
+      // fileReader.readAsText(files[0]);
       // fileReader.onload = ev => {
       //   try {
       //     const data = ev.target.result;
       //     const workbook = XLSX.read(data, {
       //       type: "array"
       //     });
-
       //     // console.log(workbook);
       //     var result = {};
       //     const wsname = workbook.SheetNames[0]; //取第一张表
       //     console.log(XLSX);
       //     workbook.SheetNames.forEach(function(sheetName) {
       //       // console.log(workbook.Sheets[sheetName]);
-
       //       var roa = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], {
       //         header: 1
       //       });
-
       //       if (roa.length) result[sheetName] = roa;
       //     });
       //     console.log(result);
-
       //     // const ws = XLSX.utils.sheet_to_json(workbook.Sheets[wsname]); //生成json表格内容
       //     // console.log(ws);
       //     // that.peopleArr = [];//清空接收数据
@@ -234,13 +317,11 @@ export default {
       //     } catch (err) {
       //       console.log(err);
       //     }
-
       //     this.$refs.upload.value = "";
       //   } catch (e) {
       //     return false;
       //   }
       // };
-
       // fileReader.readAsArrayBuffer(files[0]);
     }
   }
