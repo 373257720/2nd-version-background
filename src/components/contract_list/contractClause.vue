@@ -12,22 +12,34 @@
       <el-form-item>
         <div class="Currencyrange">
           <div class="additem" v-for="(item,index) in arr" :key="index">
-            <el-form-item v-if="item.type===2" class="item-first">
-              <el-form-item label="合同名称" prop="bslEmail">
-                <i @click="additem" class="el-icon-circle-plus-outline addsymbol"></i>
-                <el-input placeholder="Email" v-model.trim="ruleForm.bslEmail"></el-input>
-                <ul>
-                  <li v-for="item in item2.listCell" :key="item">
-                    <el-input placeholder="Email" v-model.trim="item2"></el-input>
+            <el-form-item v-if="item.type===3" class="item-first" :label="item.cellInfo">
+              <i
+                @click="dialogFormVisible_redOption_add = true"
+                class="el-icon-circle-plus-outline addsymbol"
+              ></i>
+              <el-select v-model="ruleForm.Redoption" placeholder="请选择">
+                <el-option
+                  v-for="(item) in brands"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item v-if="istype3 && item.type===4" :label="item.cellInfo">
+              <i @click="additem" class="el-icon-circle-plus-outline addsymbol"></i>
+              <div v-for="(value,key) in item.listCell">
+                <ul class="orangeOption" v-if="key==ruleForm.Redoption">
+                  <li>
+                    {{value}}
+                    <!-- {{key}}{{ruleForm.Redoption}} -->
+                    <!-- {{itdd}} -->
+                    <!-- <el-input type="textarea" autosize placeholder="请输入内容" v-model="itdd"></el-input> -->
+                    <!-- <el-button type="primary" icon="el-icon-delete"></el-button> -->
                   </li>
                 </ul>
-              </el-form-item>
-              <!-- <el-input v-model="item.money_range_minimum"></el-input>
-              <i @click="additem" class="el-icon-circle-plus-outline addsymbol"></i>-->
+              </div>
             </el-form-item>
-            <!-- <el-form-item :prop="'arr.' + index + '.money_range_maximum'" :rules="rules.maximun">
-              <el-input v-model="item.money_range_maximum"></el-input>
-            </el-form-item>-->
           </div>
         </div>
       </el-form-item>
@@ -41,6 +53,40 @@
       <button @click="$router.go(-1)">{{ $t("project.Back") }}</button>
       <button @click="submitForm('ruleForm')">{{ $t("project.Confirm") }}</button>
     </p>
+    <el-dialog
+      :visible.sync="dialogFormVisible_redOption_add"
+      width="30%"
+      :modal="true"
+      :close-on-click-modal="false"
+      center
+    >
+      <span slot="title" class="dialog-footer">{{$t('CategoryOfCoin.Add')}}</span>
+      <el-form ref="add_coin" :model="Redoption_summit" label-width="120px" label-position="top">
+        <el-form-item :label="$t('project.Currency')" prop="currencyType">
+          <el-input
+            :placeholder="$t('CategoryOfCoin.forexampleHKD')"
+            show-word-limit
+            maxlength="50"
+            clearable
+            v-model="Redoption_summit.label"
+          ></el-input>
+        </el-form-item>
+        <!-- <el-form-item :label="$t('industry.SerialNumber')" prop="currencySort">
+          <el-input
+            :placeholder="$t('industry.Pleaseenterthanzero')"
+            show-word-limit
+            maxlength="9"
+            clearable
+            oninput="value=value.replace(/[^\d.]/g,'')"
+            v-model="coin_category_summit.currencySort"
+          ></el-input>
+        </el-form-item>-->
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <button @click="dialogFormVisible_redOption_add = false">{{$t('project.Cancel')}}</button>
+        <button @click="Redoption_summitFn('add_coin')">{{$t('project.Confirm')}}</button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -52,10 +98,26 @@ export default {
   data() {
     let self = this;
     return {
+      dialogFormVisible_redOption_add: false,
       labelposition: "top",
-      ruleForm: {},
+      ruleForm: {
+        Redoption: ""
+      },
+      Redoption_summit: {
+        value: 0,
+        label: ""
+      },
+      istype3: false,
+      orangeOption: [{}],
       fileId: null,
       arr: [],
+      brands: [],
+      defaultParams: {
+        // 转品牌选项
+        // label: "name",
+        // value: "brand_id",
+        // children: "children"
+      },
       rules: {
         bslName: [
           {
@@ -77,28 +139,7 @@ export default {
           }
         ]
       },
-      options: [
-        {
-          value: "选项1",
-          label: "黄金糕"
-        },
-        {
-          value: "选项2",
-          label: "双皮奶"
-        },
-        {
-          value: "选项3",
-          label: "蚵仔煎"
-        },
-        {
-          value: "选项4",
-          label: "龙须面"
-        },
-        {
-          value: "选项5",
-          label: "北京烤鸭"
-        }
-      ],
+
       value: "项目方与中间人"
     };
   },
@@ -110,16 +151,83 @@ export default {
         { fileId: this.fileId }
       )
       .then(res => {
-        console.log(res);
         if (res.data.resultCode == 10000) {
           this.arr = res.data.data.list;
+          this.arr.forEach(item => {
+            if (item.type === 3) {
+              this.istype3 = true;
+            }
+            if (item.type === 4) {
+              item.listCell = {};
+              // item.singer = new Array();
+            }
+          });
         }
+        // console.log(this.arr);
       });
     // console.log(XLSX);
     //  console.log(ActiveXObject);
   },
   methods: {
-    additem() {},
+    Redoption_summitFn() {
+      let obj = {
+        label: "",
+        value: 0
+      };
+      let sw = true;
+      if (this.Redoption_summit.label) {
+        Object.assign(obj, this.Redoption_summit);
+        obj.value = this.brands.length > 0 ? this.brands.length : 0;
+        this.brands.forEach(item => {
+          if (item.label === this.Redoption_summit.label) {
+            sw = false;
+            return;
+          }
+        });
+        if (sw) {
+
+
+          
+          this.arr.forEach(item => {
+            if (item.type === 4) {
+              item.listCell[this.ruleForm.Redoption] = [];
+              item.listCell[this.ruleForm.Redoption].push("");
+            }
+          });
+          this.brands.push(obj);
+          console.log(this.arr);
+          this.Redoption_summit.label = "";
+          console.log(this.brands);
+          this.dialogFormVisible_redOption_add = false;
+        }
+      }
+      // console.log();
+    },
+    async excludefn() {
+      this.brands.forEach(item => {
+        if (item.label === this.Redoption_summit.label) return;
+      });
+    },
+    addRedoption() {
+      this.dialogFormVisible_redOption_add = true;
+    },
+
+    additem() {
+      if (this.ruleForm.Redoption || this.ruleForm.Redoption === 0) {
+        this.arr.forEach(item => {
+          if (item.type === 4) {
+            // item.listCell[this.ruleForm.Redoption].push("");
+            console.log(item.listCell);
+
+            // item.listCell[this.ruleForm.Redoption].push("");
+            // console.log(item.listCell[this.ruleForm.Redoption]);
+          }
+        });
+
+        // this.arr = this.arr;
+        console.log(this.arr);
+      }
+    },
     submitForm(formName) {
       this.$routerto("");
       // this.$refs[formName].validate(valid => {
@@ -214,7 +322,7 @@ export default {
     width: 100%;
   }
   .el-button--primary {
-    width: 200px;
+    width: 80px;
   }
   .Currencyrange {
     margin-bottom: 22px;
@@ -223,7 +331,7 @@ export default {
       margin-bottom: 22px;
       .el-form-item__content {
         width: 220px;
-        display: flex;
+        // display: flex;
         align-items: center;
 
         .el-input {
@@ -371,6 +479,14 @@ export default {
       border: 1px solid #dcdfe6;
     }
   }
+  .orangeOption {
+    li {
+      display: flex;
+      .el-textarea {
+        margin-right: 50px;
+      }
+    }
+  }
   header {
     text-align: center;
     font-size: 26px;
@@ -387,34 +503,6 @@ export default {
     margin-bottom: 15px;
     > p {
       margin-bottom: 10px;
-    }
-  }
-  .industry {
-    i {
-      position: absolute;
-      cursor: pointer;
-      font-size: 16px;
-      text-align: center;
-      left: 50px;
-      top: -38px;
-      color: #606266;
-    }
-    i:hover {
-      color: #00adef;
-    }
-  }
-  .currencyType {
-    i {
-      position: absolute;
-      cursor: pointer;
-      font-size: 16px;
-      text-align: center;
-      left: 145px;
-      top: -38px;
-      color: #606266;
-    }
-    i:hover {
-      color: #00adef;
     }
   }
 }
