@@ -1,7 +1,7 @@
 <template>
   <div id="contractClause">
     <!-- <header>{{$t('UserManagement.Addnewbackgrounduser')}}</header> -->
-    <header>添加新合同</header>
+    <header>{{$t('Contract.addContract')}}</header>
     <el-form
       ref="ruleForm"
       :model="ruleForm"
@@ -11,35 +11,37 @@
     >
       <el-form-item>
         <div class="Currencyrange">
-          <div class="additem" v-for="(item,index) in arr" :key="index">
-            <el-form-item v-if="item.type===3" class="item-first" :label="item.cellInfo">
-              <i
-                @click="dialogFormVisible_redOption_add = true"
-                class="el-icon-circle-plus-outline addsymbol"
-              ></i>
-              <el-select v-model="ruleForm.Redoption" placeholder="请选择">
-                <el-option
-                  v-for="(item) in brands"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item v-if="istype3 && item.type===4" :label="item.cellInfo">
-              <i @click="additem" class="el-icon-circle-plus-outline addsymbol"></i>
-              <div v-for="(value,key) in item.listCell">
-                <ul class="orangeOption" v-if="key==ruleForm.Redoption">
-                  <li>
-                    {{value}}
-                    <!-- {{key}}{{ruleForm.Redoption}} -->
-                    <!-- {{itdd}} -->
-                    <!-- <el-input type="textarea" autosize placeholder="请输入内容" v-model="itdd"></el-input> -->
-                    <!-- <el-button type="primary" icon="el-icon-delete"></el-button> -->
-                  </li>
-                </ul>
-              </div>
-            </el-form-item>
+          <div v-for="(item,idx) in ruleForm.arr " :key="item.cellInfo">
+            <div v-if="item.type===3" class="item-first additem">
+              <el-form-item>
+                <Slot name="label" class="addredOption">
+                  <span>{{item.cellInfo}}</span>
+                  <i @click="addRedoption(item)" class="el-icon-circle-plus-outline addsymbol"></i>
+                </Slot>
+                <el-select v-model="item.redOption" :placeholder="$t('project.PleaseSelect')">
+                  <el-option
+                    v-for="(i) in item.listCell"
+                    :key="i.label"
+                    :label="i.label"
+                    :value="i.value"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item
+                v-for="(self) in item.listRedCell.orange"
+                :key="self.cellInfo"
+                :label="self.cellInfo"
+                :rules="{required: true, message: 'domain can not be null', trigger: 'blur'}"
+              >
+              <!-- {{ruleForm.arr[idx].listRedCell.orange+'.'+index+'.'+listCell[item.redOption]}} -->
+                <el-input
+                  type="textarea"
+                  :autosize="{minRows: 5,maxRows: 10 }"
+                  :placeholder="$t('UserManagement.PleaseEnter')"
+                  v-model="self.listCell[item.redOption]"
+                ></el-input>
+              </el-form-item>
+            </div>
           </div>
         </div>
       </el-form-item>
@@ -60,39 +62,27 @@
       :close-on-click-modal="false"
       center
     >
-      <span slot="title" class="dialog-footer">{{$t('CategoryOfCoin.Add')}}</span>
+      <span slot="title">{{$t('CategoryOfCoin.Add')}}</span>
       <el-form ref="add_coin" :model="Redoption_summit" label-width="120px" label-position="top">
-        <el-form-item :label="$t('project.Currency')" prop="currencyType">
+        <el-form-item :label="$t('Contract.Option')" prop="currencyType">
           <el-input
-            :placeholder="$t('CategoryOfCoin.forexampleHKD')"
+            :placeholder="$t('UserManagement.PleaseEnter')"
             show-word-limit
             maxlength="50"
             clearable
             v-model="Redoption_summit.label"
           ></el-input>
         </el-form-item>
-        <!-- <el-form-item :label="$t('industry.SerialNumber')" prop="currencySort">
-          <el-input
-            :placeholder="$t('industry.Pleaseenterthanzero')"
-            show-word-limit
-            maxlength="9"
-            clearable
-            oninput="value=value.replace(/[^\d.]/g,'')"
-            v-model="coin_category_summit.currencySort"
-          ></el-input>
-        </el-form-item>-->
       </el-form>
       <span slot="footer" class="dialog-footer">
         <button @click="dialogFormVisible_redOption_add = false">{{$t('project.Cancel')}}</button>
-        <button @click="Redoption_summitFn('add_coin')">{{$t('project.Confirm')}}</button>
+        <button @click="Redoption_summitFn">{{$t('project.Confirm')}}</button>
       </span>
     </el-dialog>
   </div>
 </template>
 
 <script>
-// import qs from "qs";
-// import { log } from "util";
 import XLSX from "xlsx";
 export default {
   data() {
@@ -101,23 +91,16 @@ export default {
       dialogFormVisible_redOption_add: false,
       labelposition: "top",
       ruleForm: {
-        Redoption: ""
+        Redoption: "",
+        arr: []
       },
       Redoption_summit: {
-        value: 0,
+        value: null,
         label: ""
       },
-      istype3: false,
-      orangeOption: [{}],
       fileId: null,
-      arr: [],
-      brands: [],
-      defaultParams: {
-        // 转品牌选项
-        // label: "name",
-        // value: "brand_id",
-        // children: "children"
-      },
+      // arr: [],
+      itemdata: {},
       rules: {
         bslName: [
           {
@@ -139,8 +122,40 @@ export default {
           }
         ]
       },
-
-      value: "项目方与中间人"
+      obj: {
+        red: {
+          title: "",
+          option: [
+            { label: "1", value: 0 },
+            { label: "2", value: 1 },
+            { label: "3", value: 2 }
+          ]
+        },
+        orange: {
+          title: {
+            0: {
+              name: "A",
+              caluse: [
+                ["A-01", "A-02"],
+                ["A-11", "A-12"],
+                ["A-21", "A-22"]
+              ]
+            },
+            1: {
+              name: "B",
+              caluse: [["B-01"], ["B-11"], ["B-21"]]
+            },
+            2: {
+              name: "C",
+              caluse: [
+                ["C-01", "C-02"],
+                ["C-11", "C-12"],
+                ["C-21", "C-22", "C-23"]
+              ]
+            }
+          }
+        }
+      }
     };
   },
   created() {
@@ -152,91 +167,104 @@ export default {
       )
       .then(res => {
         if (res.data.resultCode == 10000) {
-          this.arr = res.data.data.list;
-          this.arr.forEach(item => {
+          // this.ruleForm
+          this.ruleForm.arr = res.data.data.list;
+          this.ruleForm.arr.forEach((item, idx) => {
             if (item.type === 3) {
               this.istype3 = true;
-            }
-            if (item.type === 4) {
-              item.listCell = {};
+              item.listCell = [];
+              this.$set(item, "redOption", null);
+              item.listRedCell = { orange: [] };
+              let num = 1;
+              if (this.ruleForm.arr[idx + 1].type !== 4) {
+                this.ruleForm.arr.splice(idx, 1);
+                return;
+              }
+              while (this.ruleForm.arr[idx + num].type === 4) {
+                item.listRedCell.orange.push(this.ruleForm.arr[idx + num]);
+                num++;
+              }
+              // this.obj.red.option = [];
+              // this.arr.
+              // this.obj.red.title = item.cellInfo;
+            } else if (item.type === 4) {
+              item.listCell = [];
+              // this.obj.orange.title[num].name = item.cellInfo;
+              // num++;
               // item.singer = new Array();
             }
           });
+          console.log(this.ruleForm.arr);
+          
         }
-        // console.log(this.arr);
       });
-    // console.log(XLSX);
-    //  console.log(ActiveXObject);
   },
   methods: {
     Redoption_summitFn() {
-      let obj = {
-        label: "",
-        value: 0
-      };
-      let sw = true;
+      // let sw = true;
+      console.log(this.itemdata);
       if (this.Redoption_summit.label) {
-        Object.assign(obj, this.Redoption_summit);
-        obj.value = this.brands.length > 0 ? this.brands.length : 0;
-        this.brands.forEach(item => {
-          if (item.label === this.Redoption_summit.label) {
-            sw = false;
-            return;
-          }
+        // Object.assign(obj, this.Redoption_summit);
+        // obj.value = this.brands.length > 0 ? this.brands.length : 0;
+        let sw = this.itemdata.listCell.every(item => {
+          return item.label !== this.Redoption_summit.label;
         });
         if (sw) {
-
-
-          
-          this.arr.forEach(item => {
-            if (item.type === 4) {
-              item.listCell[this.ruleForm.Redoption] = [];
-              item.listCell[this.ruleForm.Redoption].push("");
-            }
+          this.itemdata.listCell.push({
+            label: this.Redoption_summit.label,
+            value: this.itemdata.listCell.length
           });
-          this.brands.push(obj);
-          console.log(this.arr);
+          // this.itemdata.listRedCell.orange.forEach(item => {
+          // });
           this.Redoption_summit.label = "";
-          console.log(this.brands);
           this.dialogFormVisible_redOption_add = false;
         }
       }
-      // console.log();
     },
-    async excludefn() {
-      this.brands.forEach(item => {
-        if (item.label === this.Redoption_summit.label) return;
-      });
-    },
-    addRedoption() {
+    addRedoption(item) {
+      console.log(item);
+      this.itemdata = item;
       this.dialogFormVisible_redOption_add = true;
+      // return this.Redoption_summitFn(item);
     },
-
-    additem() {
-      if (this.ruleForm.Redoption || this.ruleForm.Redoption === 0) {
-        this.arr.forEach(item => {
-          if (item.type === 4) {
-            // item.listCell[this.ruleForm.Redoption].push("");
-            console.log(item.listCell);
-
-            // item.listCell[this.ruleForm.Redoption].push("");
-            // console.log(item.listCell[this.ruleForm.Redoption]);
-          }
-        });
-
-        // this.arr = this.arr;
-        console.log(this.arr);
-      }
+    delectItem(key, num) {
+      console.log(this.obj.orange.title[key].caluse[this.ruleForm.Redoption]);
+      this.obj.orange.title[key].caluse[this.ruleForm.Redoption].splice(num, 1);
     },
     submitForm(formName) {
-      this.$routerto("");
-      // this.$refs[formName].validate(valid => {
-      //   if (valid) {
-
-      //   } else {
-      //     return false;
+      // this.$routerto("");
+      // let oo = {};
+      // let arr = this.$global.deepCopy(this.ruleForm.arr );
+      // arr.forEach(item => {
+      //   if (item.type === 3) {
+      //     item.listCell = item.listCell.map(i => {
+      //       return i.label;
+      //     });
       //   }
       // });
+      // // console.log(arr);
+      // let obj = {
+      //   importList: JSON.stringify(arr),
+      //   fileId: this.fileId * 1
+      // };
+      // this.$axios({
+      //   method: "post",
+      //   url: `${this.$axios.defaults.baseURL}/bsl_admin_web/contract/saveExcelContractTemplate?Ad_Token=${this.$store.state.X_Token}`,
+      //   data: this.$qs.stringify(obj),
+      //   headers: {
+      //     "Content-Type": "application/x-www-form-urlencoded"
+      //   }
+      // }).then(res => {
+      //   console.log(res);
+      // });
+
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          console.log(valid);
+        } else {
+          return false;
+        }
+      });
     },
     upload(file, fileList, name) {
       console.log("file", file);
@@ -324,30 +352,18 @@ export default {
   .el-button--primary {
     width: 80px;
   }
+  .el-form--label-top .el-form-item__label {
+    padding: 0;
+  }
   .Currencyrange {
-    margin-bottom: 22px;
-
-    .item-first {
-      margin-bottom: 22px;
-      .el-form-item__content {
-        width: 220px;
-        // display: flex;
-        align-items: center;
-
-        .el-input {
-          //   width: 200px;
-          margin-right: 22px;
-        }
-        i {
-          // margin-left: 22px;
-        }
-      }
-    }
-
+    // margin-bottom: 22px;
     div.additem {
       //   display: flex;
       //   justify-content: space-between;
-      margin-bottom: 20px;
+      margin-bottom: 80px;
+      > div {
+        margin-bottom: 10px;
+      }
     }
     .el-input {
       //   width: 120px;
@@ -358,42 +374,7 @@ export default {
       //   font-size: 12px;
     }
   }
-  .money_range {
-    margin-bottom: 22px;
-    span {
-      vertical-align: middle;
-      float: left;
-      float: none;
-      display: inline-block;
-      text-align: left;
-      padding: 0 0 10px;
-      font-size: 14px;
-      color: #606266;
-      line-height: 40px;
-      -webkit-box-sizing: border-box;
-      box-sizing: border-box;
-    }
-    span:before {
-      content: "*";
-      color: #f56c6c;
-      margin-right: 4px;
-    }
-    > div {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      .el-form-item {
-        width: 40%;
-        margin-bottom: 0;
-      }
-      i {
-        /*width: 20%;*/
-        font-size: 20px;
-        color: #606266;
-        text-align: center;
-      }
-    }
-  }
+
   .el-dialog {
     .el-dialog__header {
       background: #edf1f4;
@@ -430,27 +411,6 @@ export default {
       }
     }
   }
-  .companyname {
-    .my-autocomplete {
-      li {
-        line-height: normal;
-        padding: 7px;
-
-        .name {
-          text-overflow: ellipsis;
-          overflow: hidden;
-        }
-        .addr {
-          font-size: 12px;
-          color: #b4b4b4;
-        }
-
-        .highlighted .addr {
-          color: #ddd;
-        }
-      }
-    }
-  }
 }
 .add_contract_bottom {
   text-align: center;
@@ -464,6 +424,11 @@ export default {
 #contractClause {
   width: 600px;
   margin: 50px auto;
+  .addredOption {
+    i {
+      cursor: pointer;
+    }
+  }
   .dialog-footer {
     padding-top: 40px;
     display: flex;
@@ -479,31 +444,11 @@ export default {
       border: 1px solid #dcdfe6;
     }
   }
-  .orangeOption {
-    li {
-      display: flex;
-      .el-textarea {
-        margin-right: 50px;
-      }
-    }
-  }
+
   header {
     text-align: center;
     font-size: 26px;
-    margin: 50px 0;
-  }
-  .el-upload-dragger {
-    width: 600px !important;
-    .el-upload-dragger {
-      width: 600px !important;
-    }
-    //   height: 100px;
-  }
-  > div {
-    margin-bottom: 15px;
-    > p {
-      margin-bottom: 10px;
-    }
+    margin-bottom: 50px;
   }
 }
 </style>

@@ -1,11 +1,11 @@
 <template>
   <div class="coin_category_alter">
     <!-- <header class="coin_category_alter_header">{{title}}</header> -->
-    <header class="coin_category_alter_header">查看合同</header>
-    <header class="coin_category_alter_header">合同模板对象：项目方与中间人</header>
+    <header class="coin_category_alter_header">{{$t('Contract.ViewContract')}}</header>
+    <header class="coin_category_alter_header">合同模板对象：{{contractType[title]}}</header>
     <el-main>
-      <div class="contract_content">合同内容</div>
-      <el-input type="textarea" autosize placeholder="请输入内容" v-model="textarea1"></el-input>
+      <div class="contract_content">{{$t('Contract.Content')}}</div>
+      <el-input type="textarea" autosize placeholder v-model="textarea1"></el-input>
       <!-- <el-form
         ref="ruleForm"
         :model="coin_category_summit"
@@ -54,6 +54,11 @@
 export default {
   data() {
     return {
+      contractType: [
+        this.$t("Contract.ProjectownerAndIntermediary"),
+        this.$t("Contract.IntermediaryAndIntermediary")
+      ],
+      title: "",
       previewName: "",
       dialogVisible: false,
       textarea1: "",
@@ -61,7 +66,9 @@ export default {
     };
   },
   created() {
-    this.id = this.$route.query.Id || null;
+    this.id = parseInt(this.$route.query.Id);
+    this.title = parseInt(this.$route.query.type);
+    // console.log(this.title);
 
     this.search();
     // if (this.$route.query.currencyId) {
@@ -77,7 +84,6 @@ export default {
     // }
   },
   methods: {
- 
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {

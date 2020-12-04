@@ -7,7 +7,7 @@
           type="primary"
           icon="el-icon-circle-plus-outline"
           class="addbtn block"
-        >添加合同</el-button>
+        >{{$t('Contract.addContract')}}</el-button>
         <section>
           <el-input
             :placeholder="$t('project.ProjectName')"
@@ -23,16 +23,35 @@
           >{{$t('project.Search')}}</el-button>
         </section>
       </header>
-      <el-table
-        :data="tableData.slice((currentpage - 1) * pagesize, currentpage * pagesize)"
-        border
-      >
-        <el-table-column width="200" prop="createTime" label="创建日期" align="center"></el-table-column>
-        <el-table-column prop="fileName" show-overflow-tooltip label="合同名称" align="center"></el-table-column>
-        <el-table-column prop="fileType" show-overflow-tooltip label="合同类型" align="center"></el-table-column>
+      <el-table :data="tableData" border>
+        <el-table-column
+          width="200"
+          prop="createTime"
+          :label="$t('project.CreationDate')"
+          align="center"
+        ></el-table-column>
+        <el-table-column
+          prop="fileName"
+          width="200"
+          show-overflow-tooltip
+          :label="$t('Contract.ContractName')"
+          align="center"
+        ></el-table-column>
+        <el-table-column
+          width="200"
+          show-overflow-tooltip
+          :label="$t('Contract.ContractType')"
+          align="center"
+        >
+          <template slot-scope="scope">{{contractType[scope.row.contractType]}}</template>
+        </el-table-column>
         <el-table-column fixed="right" :label="$t('project.Operation')" width="200" align="center">
           <template slot-scope="scope">
-            <el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button>
+            <el-button
+              @click="handleClick(scope.row)"
+              type="text"
+              size="small"
+            >{{$t('project.View')}}</el-button>
             <el-button
               @click="deleterow(scope.row)"
               type="text"
@@ -48,7 +67,7 @@
         @current-change="handleCurrentChange"
         :current-page.sync="currentpage"
         @size-change="handleSizeChange"
-        :total="tableData.length"
+        :total="pagetotal"
       ></el-pagination>
     </el-main>
   </div>
@@ -67,6 +86,10 @@ export default {
       searchkey: "",
       currentpage: 1,
       pagesize: 8,
+      contractType: [
+        this.$t("Contract.ProjectownerAndIntermediary"),
+        this.$t("Contract.IntermediaryAndIntermediary")
+      ],
       pagetotal: null,
       tableData: [],
       deleteType: 0,
@@ -80,6 +103,7 @@ export default {
   methods: {
     handleCurrentChange(cpage) {
       this.currentpage = cpage;
+      this.search();
     },
     handleSizeChange(psize) {
       this.pagesize = psize;
@@ -101,13 +125,12 @@ export default {
         }
       )
         .then(() => {
+          // console.log(row);
           this.$global
             .get_encapsulation(
-              `${this.$axios.defaults.baseURL}/bsl_admin_web/contract/getContractTemplateList`,
+              `${this.$axios.defaults.baseURL}/bsl_admin_web/contract/deteleContractTemplate`,
               {
-                pageIndex: row.industryId,
-                pageSize: null
-                // fileName:
+                fileId: row.id
               }
             )
             .then(res => {
@@ -132,7 +155,8 @@ export default {
       this.$router.push({
         name: "contract_alter",
         query: {
-          Id: row.id
+          Id: row.id,
+          type: row.fileType
         }
       });
     },
@@ -159,10 +183,17 @@ export default {
         )
         .then(res => {
           console.log(res);
-
           if (res.data.resultCode == 10000) {
-            this.tableData=res.data.data.lists;
+            this.tableData = res.data.data.lists;
+            res.data.data.lists.forEach(item => {
+              // console.log(item.fileType);
+              item.createTime = this.$global.stamptodate(item.createTime);
+              // item.fileType = this.contractType[item.fileType];
+            });
+            this.pagetotal = res.data.data.pageTotal;
           }
+
+          // console.log(this.tableData.length);
         });
     }
   }

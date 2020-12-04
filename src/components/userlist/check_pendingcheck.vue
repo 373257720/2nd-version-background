@@ -254,6 +254,8 @@ export default {
     }
   },
   created() {
+   
+    
     let self = this;
     this.idx = this.$route.query.idx;
     this.identityType = this.$route.query.userIdentityType;

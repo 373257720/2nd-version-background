@@ -178,6 +178,9 @@ export default {
   .el-date-editor--timerange.el-input__inner {
     width: 260px;
   }
+  .el-textarea__inner{
+        font-family: '\5FAE\8F6F\96C5\9ED1';
+  }
   .el-table__fixed-right::before, .el-table__fixed::before{
   height:0;
 }

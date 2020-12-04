@@ -2,7 +2,6 @@
   <div class="check_pendingroot">
     <el-main>
       <header class="tosignup_header">
-        
         <el-input
           :placeholder="$t('project.ProjectName')"
           v-model="keywords"
@@ -66,20 +65,22 @@ export default {
     return {
       ischeck: false,
       currentpage: null,
+      bookmark: null,
       pagesize: 8,
       pagetotal: null,
       tableData: [],
       keywords: "",
+      pageArr: [""],
       projectStatus: 0
     };
   },
   created() {},
   activated() {
-    this.changepage(this.currentpage, this.pagesize);
+    this.changepage(this.bookmark, this.pagesize);
   },
   methods: {
     search(value, value1, pageindex, pagesize) {
-      this.changepage(this.currentpage, this.pagesize);
+      this.changepage(this.bookmark, this.pagesize);
     },
     changepage(currentpage, pagesize) {
       let self = this;
@@ -95,6 +96,18 @@ export default {
         )
         .then(res => {
           if (res.status === 200) {
+            let a = this.pageArr.every(item => {
+              return item !== res.data.data.bookmark;
+            });
+            if (a) {
+              this.pageArr.push(res.data.data.bookmark);
+            }
+            // console.log( );
+            this.bookmark = res.data.data.lastBookmark;
+            this.currentpage = this.pageArr.indexOf(res.data.data.lastBookmark);
+            this.pagetotal =
+              (this.pageArr.length - 1) * this.pagesize +
+              res.data.data.data.length;
             this.tableData = res.data.data.data.map(item => {
               let userType;
               if (item.record.userType) {
@@ -119,6 +132,7 @@ export default {
                   : ""
               };
             });
+
             // this.pagetotal = res.data.data.pageTotal;
           }
         });
@@ -134,6 +148,8 @@ export default {
       });
     },
     fromchildren1(data) {
+      console.log(data);
+
       this.currentpage = data.currentpage;
       this.changepage(data.currentpage, data.pagesize);
     }

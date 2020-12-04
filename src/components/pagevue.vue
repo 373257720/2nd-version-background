@@ -3,10 +3,12 @@
     <div class="pagevue">
       <el-pagination
         v-if="pagenum!=0"
-        :current-page="2"
+        :current-page="currentpages"
         :page-size="pagesizes"
-        layout="prev,pager, next"
-        :total="5"
+        layout="prev,pager,next"
+        :total="pagenum"
+        @prev-click="prevclick"
+        @next-click="nextclick"
       ></el-pagination>
       <!-- <el-pagination background layout="prev, pager, next" :total="1000"></el-pagination> -->
     </div>
@@ -22,7 +24,7 @@ export default {
     },
     currentpages: {
       type: Number,
-      default: 1
+      default: 0
     },
     pagesizes: {
       type: null,
@@ -37,7 +39,7 @@ export default {
     };
   },
   created() {
-    console.log(this.pagenum);
+    // console.log(this.pagenum);
   },
   watch: {
     //  pagenum:function(addd,oldd){
@@ -45,12 +47,15 @@ export default {
     //  }
   },
   methods: {
+    prevclick(num) {},
+    nextclick(num) {
+      console.log(this.pagenum);
+    },
     handleSizeChange(val) {
       // console.log(`每页 ${val} 条`);
     },
     handleCurrentChange(val) {
       // console.log(val);
-      
       // this.currentPag = val;
       // var obj = {};
       // obj.pagesize = this.pagesizes;

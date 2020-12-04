@@ -181,5 +181,15 @@ export default {
     logout:'Log out',
     Accountandpasswordcannotbeempty:'Account and password cannot be empty',
     network:'Network exception'
-  }
+  },
+  Contract:{
+    Option:"New option",
+    Content:'Content',
+    ViewContract:"View contract",
+    addContract:'Add contract',
+    ContractName:'Contract name',
+    ContractType:"Contract type",   
+    ProjectownerAndIntermediary:'Projectowner and intermediary',
+    IntermediaryAndIntermediary:'Intermediary and intermediary'
+  },
 }

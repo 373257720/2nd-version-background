@@ -182,5 +182,15 @@ export default {
     logout:'退出登录',
     Accountandpasswordcannotbeempty:'账号和密码不能为空',
     network:'网络异常'
-  }
+  },
+  Contract:{
+    Option:"新选项",
+    Content:'合同内容',
+    ViewContract:"查看合同",
+    ContractName:'合同名称',
+    ContractType:"合同类型",   
+    addContract:'添加合同',
+    ProjectownerAndIntermediary:'项目方与中间人',
+    IntermediaryAndIntermediary:'中间人与中间人'
+  },
 }

@@ -1,7 +1,7 @@
 <template>
   <div id="add_contract">
     <!-- <header>{{$t('UserManagement.Addnewbackgrounduser')}}</header> -->
-    <header>添加新合同</header>
+    <header>{{$t('Contract.addContract')}}</header>
     <el-form
       ref="ruleForm"
       :model="ruleForm"
@@ -9,11 +9,11 @@
       label-width="80px"
       :label-position="labelposition"
     >
-      <el-form-item label="合同名称" prop="fileName">
+      <el-form-item :label="$t('Contract.ContractName')" prop="fileName">
         <el-input placeholder="Email" v-model.trim="ruleForm.fileName"></el-input>
       </el-form-item>
-      <el-form-item label="合同类型" prop="contractType">
-        <el-select v-model="ruleForm.contractType" placeholder="请选择">
+      <el-form-item :label="$t('Contract.ContractType')" prop="contractType">
+        <el-select v-model="ruleForm.contractType" :placeholder="$t('project.PleaseSelect')">
           <el-option
             v-for="item in options"
             :key="item.value"
@@ -22,16 +22,15 @@
           ></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="上传合同模板word" prop="bslPwd">
+      <el-form-item label="上传合同模板word" prop="fileWord">
         <el-upload
           class="file-upload"
           ref="fileUpload"
           action
           :http-request="handleRequest"
-          :on-remove="handleRemove"
+          :on-remove="(file,filelist)=>{return handleRemove(file,filelist,'word')}"
           :before-remove="handleBeforeRemove"
-          :on-change="(file,filelist)=>{return handleChange(file,filelist,'wrod')}"
-          :file-list="fileList"
+          :on-change="(file,filelist)=>{return handleChange(file,filelist,'word')}"
           :multiple="false"
           :auto-upload="true"
           accept=".doc, .docx"
@@ -40,7 +39,7 @@
           <el-button size="small" type="primary">点击上传</el-button>
         </el-upload>
       </el-form-item>
-      <el-form-item label="上传合同模板excl" prop="bslPwd2">
+      <el-form-item label="上传合同模板excl" prop="fileExcel">
         <el-upload
           :on-preview="handlePreview"
           class="upload-demo"
@@ -49,7 +48,7 @@
           name="execl"
           action="Fake Action"
           :http-request="handleRequestExcel"
-          :on-remove="handleRemove"
+          :on-remove="(file,filelist)=>{return handleRemove(file,filelist,'excel')}"
           :before-remove="handleBeforeRemove"
           :on-change="(file,filelist)=>{return handleChange(file,filelist,'excel')}"
           :show-file-list="true"
@@ -95,7 +94,22 @@ export default {
           {
             required: true,
             message: this.$t("UserManagement.PleaseEnter"),
-            trigger: "blur"
+            trigger: ["blur", "change"]
+          }
+        ],
+
+        fileWord: [
+          {
+            required: true,
+            message: this.$t("UserManagement.PleaseEnterEmail"),
+            trigger: ["blur", "change"]
+          }
+        ],
+        fileExcel: [
+          {
+            required: true,
+            message: this.$t("UserManagement.PleaseEnterEmail"),
+            trigger: ["blur", "change"]
           }
         ],
         contractType: [],
@@ -115,11 +129,11 @@ export default {
       options: [
         {
           value: 0,
-          label: "项目方与中间人"
+          label: this.$t("Contract.ProjectownerAndIntermediary")
         },
         {
           value: 1,
-          label: "中间人与中间人"
+          label: this.$t("Contract.IntermediaryAndIntermediary")
         }
       ]
       // value: "项目方与中间人"
@@ -181,7 +195,7 @@ export default {
 
         if (res.data.resultCode == 10000) {
           this.ruleForm.fileWord = res.data.data.path;
-          this.ruleForm.fileWordName = '\\'+ res.data.data.fileWordName;
+          this.ruleForm.fileWordName = "\\" + res.data.data.fileWordName;
         } else {
         }
       });
@@ -201,9 +215,7 @@ export default {
         console.log(res);
         if (res.data.resultCode == 10000) {
           this.ruleForm.fileExcel = res.data.data.path;
-          this.ruleForm.fileExcelName = '\\'+res.data.data.fileExcelName;
-  
-          
+          this.ruleForm.fileExcelName = "\\" + res.data.data.fileExcelName;
         } else {
         }
       });
@@ -233,10 +245,17 @@ export default {
       }
     },
 
-    handleRemove(file, fileList) {
-      console.log(file, fileList);
+    handleRemove(file, fileList, name) {
+      console.log(file, fileList, name);
+      if (name === "excel") {
+        this.ruleForm.fileExcel = "";
+        this.ruleForm.fileExcelName = "";
+      } else if (name === "word") {
+        this.ruleForm.fileWord = "";
+        this.ruleForm.fileWordName = "";
+      }
+      console.log(this.ruleForm);
     },
-
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
