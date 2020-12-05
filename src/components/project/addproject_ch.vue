@@ -42,10 +42,11 @@
       <el-form-item :label="$t('project.Region')" class="region" prop="bslAreaCode">
         <el-select
           :popper-append-to-body="false"
-          @change="selectregion(regionlist[form.bslAreaCode])"
+          @change="selectregion(regionlist)"
           v-model="form.bslAreaCode"
           :placeholder="$t('project.PleaseSelect')"
           remote
+          multiple
           :remote-method="region_remoteMethod"
           filterable
         >
@@ -66,23 +67,21 @@
         <i @click="dialogFormVisible_industry = true" class="el-icon-circle-plus-outline"></i>
         <el-select
           :popper-append-to-body="false"
-          v-model="form.industryId"
+          v-model="form.projectIndustry"
           filterable
+          multiple
           @change="selectindustry"
           :placeholder="$t('project.PleaseSelect')"
         >
           <el-option
-            v-for="(item,idx) in industrylist"
+            v-for="(item) in industrylist"
             :key="item.industryId"
             :label="$i18n.locale=='zh_CN'?item.industryNameCh:item.industryNameEn"
             :value="item.industryId"
           >
-            <!-- <el-tooltip :disabled="item.industryNameEn.length<=10?true:false" class="item" effect="dark" :content="item.industryNameEn"
-            placement="top-start">-->
             <span
               style="float: left; "
             >{{item.industryNameEn.length <= 50 ?item.industryNameEn:item.industryNameEn.slice(0,50)+'...'}}</span>
-            <!-- </el-tooltip> -->
             <el-tooltip
               :disabled="item.industryNameCh.length<=10?true:false"
               class="item"
@@ -142,6 +141,36 @@
           </el-form-item>
         </div>
       </div>
+
+      <el-form-item>
+        <slot name="label">
+          <span>Potential investors</span>
+          <i @click="potentialInvestorarrFn" class="el-icon-circle-plus-outline"></i>
+        </slot>
+        <el-form-item
+          v-for="(self,idx) in form.potentialInvestorarr"
+          :prop="'potentialInvestorarr.'+idx+'.potentialInvestorsTagsEn'"
+          :rules="{required: true, message: 'domain can not be null', trigger: 'blur'}"
+          :key="idx"
+        >
+          <span>{{idx+1}}.</span>
+          <el-input v-model="self.potentialInvestorsTagsEn"></el-input>
+        </el-form-item>
+      </el-form-item>
+      <el-form-item label="潜在投资者要求(中文)">
+        <el-form-item
+          v-for="(self,idx) in form.potentialInvestorarr"
+          :key="idx"
+          :rules="{required: true, message: 'domain can not be null', trigger: 'blur'}"
+          :prop="'potentialInvestorarr.'+idx+'.potentialInvestorsTags'"
+        >
+          <span>{{idx+1}}.</span>
+          <el-input v-model="self.potentialInvestorsTags"></el-input>
+        </el-form-item>
+      </el-form-item>
+      <el-form-item label="百分比">
+        <el-input-number v-model="num" :precision="2" :step="0.1" :min="0" :max="100"></el-input-number>
+      </el-form-item>
       <el-form-item :label="$t('project.FinancingStage')" prop="financingStage">
         <el-select
           :popper-append-to-body="false"
@@ -193,22 +222,6 @@
           type="textarea"
           v-model="form.projectDetail"
           :autosize="{ minRows: 10, maxRows: 10}"
-        ></el-input>
-      </el-form-item>
-
-      <el-form-item label="Potential investors" prop="potentialInvestorsTagsEn">
-        <el-input
-          type="textarea"
-          v-model="form.potentialInvestorsTagsEn"
-          :autosize="{ minRows: 6, maxRows: 10}"
-        ></el-input>
-      </el-form-item>
-      <el-form-item label="潜在投资者要求(中文)" prop="potentialInvestorsTags">
-        <el-input
-          type="textarea"
-          show-word-limit
-          v-model="form.potentialInvestorsTags"
-          :autosize="{ minRows: 6, maxRows: 10}"
         ></el-input>
       </el-form-item>
 
@@ -391,6 +404,7 @@ export default {
       }
     };
     return {
+      num: 1,
       labelposition: "top",
       loading: false,
       dialogFormVisible_coin_add: false,
@@ -413,6 +427,12 @@ export default {
         currencyName: ""
       },
       form: {
+        potentialInvestorarr: [
+          {
+            potentialInvestorsTagsEn: "",
+            potentialInvestorsTags: ""
+          }
+        ],
         saveOrUpdate: this.$route.query.type,
         projectUserId: "",
         financingStage: "",
@@ -428,12 +448,12 @@ export default {
         projectDetail: "",
         projectLan: "",
         projectId: "",
-        industryId: "",
-        projectIndustry: "",
+        industryId: [],
+        projectIndustry: [],
         projectIndustryEn: "",
         potentialInvestorsTagsEn: "",
         potentialInvestorsTags: "",
-        bslAreaCode: "",
+        bslAreaCode: [],
         projectArea: "",
         projectAreaEn: "",
         projectNameEn: "",
@@ -746,6 +766,7 @@ export default {
   },
   created() {
     this.get_coin();
+    this.region_remoteMethod();
     let axiosList = [
       // this.$axios.get(`${this.$axios.defaults.baseURL}/bsl_admin_web/base/countryList?searchKey=`),
       // this.$axios.get(`${this.$axios.defaults.baseURL}/bsl_admin_web/industry/getAllIndustry?searchKey=`),
@@ -768,12 +789,10 @@ export default {
           for (let i = 0; i < res1.data.data.length; i++) {
             this.regionlist[res1.data.data[i].countryCode] = res1.data.data[i];
           }
-          // this.$nextTick()
         }
-        // console.log(this.regionlist)
         if (res2) {
           res2.data.data.forEach(item => {
-            if (item.industryStatus === 0) {
+            if (item.industryStatus === false) {
               this.industrylist.push(item);
             }
           });
@@ -789,6 +808,12 @@ export default {
   computed: {},
   mounted() {},
   methods: {
+    potentialInvestorarrFn() {
+      this.form.potentialInvestorarr.push({
+        potentialInvestorsTagsEn: "",
+        potentialInvestorsTags: ""
+      });
+    },
     add_xiaoshudian(newvalue, num) {
       var value = parseFloat(newvalue.replace(/,/gi, ""));
       value = Math.round(value * 100) / 100;
@@ -972,34 +997,40 @@ export default {
       // this.restaurants[item]
       // selected
       this.restaurants.forEach(itemm => {
-        if (itemm.userId === item) {
-          this.form.projectUserId = itemm.userId;
-          this.form.projectCompany = itemm.userCompanyCh;
-          this.form.projectCompanyEn = itemm.userCompanyEn;
-        }
+        // if (itemm.userId === item) {
+        //   this.form.projectUserId = itemm.userId;
+        //   this.form.projectCompany = itemm.userCompanyCh;
+        //   this.form.projectCompanyEn = itemm.userCompanyEn;
+        // }
       });
       // item.selected=true
-      console.log(this.form.projectUserId);
+      // console.log(this.form.projectUserId);
       // console.log(this.form.projectUserId,this.form.projectCompany);
     },
     selectregion(val) {
       console.log(val);
-      this.form.bslAreaCode = val.countryCode;
-      this.form.projectArea = val.countryZhname;
-      this.form.projectAreaEn = val.countryEnname;
+      console.log(this.form.bslAreaCode);
+
+      // this.form.bslAreaCode = val.countryCode;
+      // this.form.projectArea = val.countryZhname;
+      // this.form.projectAreaEn = val.countryEnname;
     },
     selectindustry(val) {
       console.log(val);
-      this.industrylist.forEach(item => {
-        if (item.industryId === val) {
-          // this.form.projectUserId = itemm.userId;
-          // this.form.projectCompany = itemm.userCompanyCh;
-          // this.form.projectCompanyEn = itemm.userCompanyEn;
-          this.form.industryId = item.industryId;
-          this.form.projectIndustry = item.industryNameCh;
-          this.form.projectIndustryEn = item.industryNameEn;
-        }
-      });
+
+      // this.industrylist.forEach(item => {
+      //   val.forEach(i => {
+      //     if (item.industryId === i) {
+      //       // console.log(i);
+      //       // this.form.projectUserId = itemm.userId;
+      //       // this.form.projectCompany = itemm.userCompanyCh;
+      //       // this.form.projectCompanyEn = itemm.userCompanyEn;
+      this.form.industryId = val;
+      //       this.form.projectIndustry = item.industryNameCh;
+      //       this.form.projectIndustryEn = item.industryNameEn;
+      //     }
+      //   });
+      // });
       // this.form.industryId =val.industryId;
       // this.form.projectIndustry = val.industryNameCh;
       // this.form.projectIndustryEn =val.industryNameEn;
@@ -1094,7 +1125,7 @@ export default {
     commit() {
       let cloneObj = this.deepClone(this.form);
       cloneObj.collectMoneyMax = cloneObj.collectMoneyMax.replace(/,/g, "") * 1;
-      cloneObj.collectMoneyMin = cloneObj.collectMoneyMin.replace(/,/g, '') * 1
+      cloneObj.collectMoneyMin = cloneObj.collectMoneyMin.replace(/,/g, "") * 1;
       this.$global
         .post_encapsulation(
           `${this.$axios.defaults.baseURL}/bsl_admin_web/project/saveProject`,
@@ -1116,7 +1147,7 @@ export default {
         showCancelButton: false
       }).then(() => {
         if (resultCode === 10000) {
-          this.$routerto('tosignuproot');
+          this.$routerto("tosignuproot");
         }
       });
     }
