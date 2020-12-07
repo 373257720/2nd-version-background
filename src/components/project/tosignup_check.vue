@@ -3,23 +3,9 @@
     <main>
       <header>{{title}}</header>
       <h1>{{projectname}}</h1>
-      <div class="invest_infro" v-if="status>5">
+      <!-- <div class="invest_infro" v-if="status>5">
         <h2>{{$t('project.InvestorInformation')}}</h2>
         <ul>
-          <!--          <li v-for="(item,key)  in investors_lists">-->
-          <!--            <div v-if="key!=='investorsCompany' && item.investorsType=='Company'">-->
-          <!--              <span class="row1">{{item.title}}</span>-->
-          <!--              <span class="row2">{{item.content}}</span>-->
-          <!--            </div>-->
-          <!--            <div v-else-if="key=='investorsName'">-->
-          <!--              <span class="row1">{{item.title}}</span>-->
-          <!--              <span class="row2">{{item.content}}</span>-->
-          <!--            </div>-->
-          <!--            <div else>-->
-          <!--              <span class="row1">{{item.title}}</span>-->
-          <!--              <span class="row2">{{item.content}}</span>-->
-          <!--            </div>-->
-          <!--          </li>-->
           <li>
             <div>
               <span class="row1">{{investors_lists.investorsType.title}}:</span>
@@ -56,7 +42,7 @@
             </div>
           </li>
         </ul>
-      </div>
+      </div>-->
       <div class="projectdetails">
         <h2>{{$t('project.ProjectDetails')}}</h2>
         <ul>
@@ -88,7 +74,7 @@
               <div class="pro_item" v-else>
                 <span>{{item.title}}</span>
                 <span class="row2" v-if="key=='collectMoney'">
-                  <p>{{item.min}}--{{item.max}}</p>
+                  <p>{{item.min}}-{{item.max}}</p>
                 </span>
                 <span class="row2" v-else>
                   <p>{{item.content}}</p>
@@ -135,7 +121,7 @@ export default {
           title: this.$t("project.InvestorName"),
           content: ""
         },
-        investorsArea: {
+        projectArea: {
           title: this.$t("project.InvestorRegion"),
           content: ""
         }
@@ -255,161 +241,211 @@ export default {
       .get_encapsulation(
         `${this.$axios.defaults.baseURL}/bsl_admin_web/project/getProjectDetails`,
         {
-          projectId: this.projectid,
-          signStatus: this.status,
-          signId: this.signId
+          projectId: this.projectid
+          // signStatus: this.status,
+          // signId: this.signId
         }
       )
       .then(res => {
-        console.log(res);
+        // console.log(res);
         if (res.data.resultCode == 10000) {
-          this.projectname = res.data.data.projectName;
+          let data = res.data.data.data;
+          this.projectname = data.projectName;
           this.details_lists.collectMoney.max = this.$global.formatNum(
-            res.data.data.collectMoneyMax
+            data.collectMoneyMax
           );
           this.details_lists.collectMoney.min = this.$global.formatNum(
-            res.data.data.collectMoneyMin
+            data.collectMoneyMin
           );
-          let a = res.data.data.userIdentityType;
-          let projectLan = res.data.data.projectLan;
-          if (a == 1) {
-            if (res.data.data.projectLan == "zh_CN") {
-              this.agent_lists = {
-                userIdentityType: {
-                  title: self.$t("project.MiddlemanType"),
-                  content: ""
-                },
-                userName: {
-                  title: self.$t("project.MiddlemanName"),
-                  content: ""
-                },
-                userCountryCh: {
-                  title: self.$t("project.Region"),
-                  content: ""
-                }
-              };
-            } else if (res.data.data.projectLan == "en_US") {
-              this.agent_lists = {
-                userIdentityType: {
-                  title: self.$t("project.MiddlemanType"),
-                  content: ""
-                },
-                userName: {
-                  title: self.$t("project.MiddlemanName"),
-                  content: ""
-                },
-                userCountryEn: {
-                  title: self.$t("project.Region"),
-                  content: ""
-                }
-              };
-            }
-          } else if (a == 2) {
-            if (res.data.data.projectLan == "zh_CN") {
-              this.agent_lists = {
-                userIdentityType: {
-                  title: self.$t("project.MiddlemanType"),
-                  content: ""
-                },
-                userCompanyCh: {
-                  title: self.$t("project.MiddlemanCountryName"),
-                  content: ""
-                },
-                userCountryCh: {
-                  title: self.$t("project.Region"),
-                  content: ""
-                }
-              };
-            } else if (res.data.data.projectLan == "en_US") {
-              this.agent_lists = {
-                userIdentityType: {
-                  title: self.$t("project.MiddlemanType"),
-                  content: ""
-                },
-                userCompanyEn: {
-                  title: self.$t("project.MiddlemanCountryName"),
-                  content: ""
-                },
-                userCountryEn: {
-                  title: self.$t("project.Region"),
-                  content: ""
-                }
-              };
-            }
-          }
+          // let a = data.userIdentityType;
+          // let projectLan = data.projectLan;
+          // if (a == 1) {
+          //   if (res.data.data.projectLan == "zh_CN") {
+          //     this.agent_lists = {
+          //       userIdentityType: {
+          //         title: self.$t("project.MiddlemanType"),
+          //         content: ""
+          //       },
+          //       userName: {
+          //         title: self.$t("project.MiddlemanName"),
+          //         content: ""
+          //       },
+          //       userCountryCh: {
+          //         title: self.$t("project.Region"),
+          //         content: ""
+          //       }
+          //     };
+          //   } else if (res.data.data.projectLan == "en_US") {
+          //     this.agent_lists = {
+          //       userIdentityType: {
+          //         title: self.$t("project.MiddlemanType"),
+          //         content: ""
+          //       },
+          //       userName: {
+          //         title: self.$t("project.MiddlemanName"),
+          //         content: ""
+          //       },
+          //       userCountryEn: {
+          //         title: self.$t("project.Region"),
+          //         content: ""
+          //       }
+          //     };
+          //   }
+          // } else if (a == 2) {
+          //   if (res.data.data.projectLan == "zh_CN") {
+          //     this.agent_lists = {
+          //       userIdentityType: {
+          //         title: self.$t("project.MiddlemanType"),
+          //         content: ""
+          //       },
+          //       userCompanyCh: {
+          //         title: self.$t("project.MiddlemanCountryName"),
+          //         content: ""
+          //       },
+          //       userCountryCh: {
+          //         title: self.$t("project.Region"),
+          //         content: ""
+          //       }
+          //     };
+          //   } else if (res.data.data.projectLan == "en_US") {
+          //     this.agent_lists = {
+          //       userIdentityType: {
+          //         title: self.$t("project.MiddlemanType"),
+          //         content: ""
+          //       },
+          //       userCompanyEn: {
+          //         title: self.$t("project.MiddlemanCountryName"),
+          //         content: ""
+          //       },
+          //       userCountryEn: {
+          //         title: self.$t("project.Region"),
+          //         content: ""
+          //       }
+          //     };
+          //   }
+          // }
 
-          for (var i in res.data.data) {
-            if (this.agent_lists.hasOwnProperty(i)) {
-              if (i == "userIdentityType") {
-                this.agent_lists[i].content =
-                  res.data.data[i] == 1
-                    ? self.$t("project.individual")
-                    : res.data.data[i] == 2
-                    ? self.$t("project.company")
-                    : "-";
+          for (var i in data) {
+            // if (this.agent_lists.hasOwnProperty(i)) {
+            //   if (i == "userIdentityType") {
+            //     this.agent_lists[i].content =
+            //       res.data.data[i] == 1
+            //         ? self.$t("project.individual")
+            //         : res.data.data[i] == 2
+            //         ? self.$t("project.company")
+            //         : "-";
+            //   } else {
+            //     this.agent_lists[i].content = res.data.data[i];
+            //   }
+            // }
+
+            // if (this.details_lists.hasOwnProperty(i)) {
+            //   this.details_lists[i].content = res.data.data[i];
+            // }
+            // if (this.details_lists.hasOwnProperty(i)) {
+
+            //   if (i == "investorsType") {
+            //     this.investors_lists.Type = data[i];
+            //     this.investors_lists[i].content =
+            //      data[i] == 1
+            //         ? self.$t("project.individual")
+            //         : data[i] == 2
+            //         ? self.$t("project.company")
+            //         : "";
+            //   } else if (i == "projectArea") {
+            //     // console.log(this.$i18n.locale);
+            //     if (this.$i18n.locale == "zh_CN") {
+            //       this.investors_lists[i].content = data.projectArea;
+            //     } else {
+            //       this.investors_lists[i].content =
+            //         data.projectAreaEn;
+            //     }
+            //     console.log();
+
+            //   } else if (i == "interestedIndustries") {
+            //     if (projectLan == "zh_CN") {
+            //       this.investors_lists[i].content =
+            //         res.data.data.interestedIndustries;
+            //     } else {
+            //       this.investors_lists[i].content =
+            //         res.data.data.interestedIndustriesEn;
+            //     }
+            //   } else if (i == "investorsCompany") {
+            //     if (projectLan == "zh_CN") {
+            //       this.investors_lists[i].content =
+            //         res.data.data.investorsCompany;
+            //     } else {
+            //       this.investors_lists[i].content =
+            //         res.data.data.investorsCompanyEn;
+            //     }
+            //   } else {
+            //     this.investors_lists[i].content = res.data.data[i];
+            //   }
+            // }
+            if (this.projectdetails.hasOwnProperty(i)) {
+              if (i == "financingStage") {
+                this.projectdetails[i].content = this.financingStage[data[i]];
               } else {
-                this.agent_lists[i].content = res.data.data[i];
+                this.projectdetails[i].content = data[i];
               }
             }
 
             if (this.details_lists.hasOwnProperty(i)) {
-              this.details_lists[i].content = res.data.data[i];
-            }
-            if (this.investors_lists.hasOwnProperty(i)) {
-              if (i == "investorsType") {
-                this.investors_lists.Type = res.data.data[i];
-                this.investors_lists[i].content =
-                  res.data.data[i] == 1
-                    ? self.$t("project.individual")
-                    : res.data.data[i] == 2
-                    ? self.$t("project.company")
-                    : "";
-              } else if (i == "investorsArea") {
-                console.log(res.data.data.investorsArea);
-                // let difang=
-                if (projectLan == "zh_CN") {
-                  this.investors_lists[i].content = res.data.data.investorsArea;
+              // this.projectdetails[i].content = data[i];
+              if (i == "projectIndustry") {
+                if (this.$i18n.locale == "zh_CN") {
+                  this.details_lists[i].content = data[i];
                 } else {
-                  this.investors_lists[i].content =
-                    res.data.data.investorsAreaEn;
+                  this.details_lists[i].content = data.projectIndustryEn;
                 }
-              } else if (i == "interestedIndustries") {
-                if (projectLan == "zh_CN") {
-                  this.investors_lists[i].content =
-                    res.data.data.interestedIndustries;
+              } else if (i == "projectArea") {
+                if (this.$i18n.locale == "zh_CN") {
+                  this.details_lists[i].content = data[i];
                 } else {
-                  this.investors_lists[i].content =
-                    res.data.data.interestedIndustriesEn;
+                  this.details_lists[i].content = data.projectAreaEn;
                 }
-              } else if (i == "investorsCompany") {
-                if (projectLan == "zh_CN") {
-                  this.investors_lists[i].content =
-                    res.data.data.investorsCompany;
+              } else if (i == "projectCompany") {
+                if (this.$i18n.locale == "zh_CN") {
+                  this.details_lists[i].content = data[i];
                 } else {
-                  this.investors_lists[i].content =
-                    res.data.data.investorsCompanyEn;
+                  this.details_lists[i].content = data.projectCompanyEn;
+                }
+              } else if (i == "projectCompany") {
+                if (this.$i18n.locale == "zh_CN") {
+                  this.details_lists[i].content = data[i];
+                } else {
+                  this.details_lists[i].content = data.projectCompanyEn;
+                }
+              } else if (i == "projectDescribe") {
+                if (this.$i18n.locale == "zh_CN") {
+                  this.details_lists[i].content = data[i];
+                } else {
+                  this.details_lists[i].content = data.projectDescribeEn;
+                }
+              } else if (i == "projectDetail") {
+                if (this.$i18n.locale == "zh_CN") {
+                  this.details_lists[i].content = data[i];
+                } else {
+                  this.details_lists[i].content = data.projectDetailEn;
+                }
+              } else if (i == "potentialInvestorsTags") {
+                if (this.$i18n.locale == "zh_CN") {
+                  this.details_lists[i].content = data[i];
+                } else {
+                  this.details_lists[i].content = data.potentialInvestorsTagsEn;
                 }
               } else {
-                this.investors_lists[i].content = res.data.data[i];
-              }
-            }
-            if (this.projectdetails.hasOwnProperty(i)) {
-              if (i == "financingStage") {
-                this.projectdetails[i].content = this.financingStage[
-                  res.data.data[i]
-                ];
-              } else {
-                this.projectdetails[i].content = res.data.data[i];
+                this.details_lists[i].content = data[i];
               }
             }
           }
           // console.log(this.agent_lists)
         }
-      })
+      });
   },
   methods: {
-    check_contract () {
-      let newWindow = window.open()
+    check_contract() {
+      let newWindow = window.open();
       // this.$axios({
       //   method: "get",
       //   url: `${this.$axios.defaults.baseURL}/bsl_admin_web/projectSign/getPdf?signId=${this.signId}`
@@ -423,9 +459,9 @@ export default {
         )
         .then(res => {
           if (res.data.resultCode === 10000) {
-            newWindow.location.href = res.data.data.pdfPath
+            newWindow.location.href = res.data.data.pdfPath;
           }
-        })
+        });
     }
     // handleClick() {
     //   let data = JSON.stringify(this.datalist.userRespList);
@@ -437,7 +473,7 @@ export default {
     //   });
     // }
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>

@@ -17,7 +17,7 @@
       >
         <el-select
           :popper-append-to-body="false"
-          v-model="form.projectUserId"
+          v-model="form.projectCompany"
           filterable
           remote
           @change="selectOne"
@@ -42,7 +42,7 @@
       <el-form-item :label="$t('project.Region')" class="region" prop="bslAreaCode">
         <el-select
           :popper-append-to-body="false"
-          @change="selectregion(regionlist)"
+          @change="selectregion"
           v-model="form.bslAreaCode"
           :placeholder="$t('project.PleaseSelect')"
           remote
@@ -67,7 +67,7 @@
         <i @click="dialogFormVisible_industry = true" class="el-icon-circle-plus-outline"></i>
         <el-select
           :popper-append-to-body="false"
-          v-model="form.projectIndustry"
+          v-model="form.industryId"
           filterable
           multiple
           @change="selectindustry"
@@ -148,28 +148,40 @@
           <i @click="potentialInvestorarrFn" class="el-icon-circle-plus-outline"></i>
         </slot>
         <el-form-item
+          class="potentialInvestors"
           v-for="(self,idx) in form.potentialInvestorarr"
           :prop="'potentialInvestorarr.'+idx+'.potentialInvestorsTagsEn'"
           :rules="{required: true, message: 'domain can not be null', trigger: 'blur'}"
           :key="idx"
         >
-          <span>{{idx+1}}.</span>
-          <el-input v-model="self.potentialInvestorsTagsEn"></el-input>
+          <div>
+            <span>{{idx+1}}.</span>
+            <el-input v-model="self.potentialInvestorsTagsEn"></el-input>
+          </div>
         </el-form-item>
       </el-form-item>
       <el-form-item label="潜在投资者要求(中文)">
         <el-form-item
+          class="potentialInvestors"
           v-for="(self,idx) in form.potentialInvestorarr"
           :key="idx"
           :rules="{required: true, message: 'domain can not be null', trigger: 'blur'}"
           :prop="'potentialInvestorarr.'+idx+'.potentialInvestorsTags'"
         >
-          <span>{{idx+1}}.</span>
-          <el-input v-model="self.potentialInvestorsTags"></el-input>
+          <div>
+            <span>{{idx+1}}.</span>
+            <el-input v-model="self.potentialInvestorsTags"></el-input>
+          </div>
         </el-form-item>
       </el-form-item>
       <el-form-item label="百分比">
-        <el-input-number v-model="num" :precision="2" :step="0.1" :min="0" :max="100"></el-input-number>
+        <el-input-number
+          v-model="form.sharingMechanism"
+          :precision="2"
+          :step="0.1"
+          :min="0"
+          :max="100"
+        ></el-input-number>
       </el-form-item>
       <el-form-item :label="$t('project.FinancingStage')" prop="financingStage">
         <el-select
@@ -224,7 +236,30 @@
           :autosize="{ minRows: 10, maxRows: 10}"
         ></el-input>
       </el-form-item>
-
+      <el-form-item label="标签" class="region" prop="projectTags">
+        <el-select
+          :popper-append-to-body="false"
+          @change="selectTags"
+          v-model="form.projectTags"
+          :placeholder="$t('project.PleaseSelect')"
+          remote
+          multiple
+          :remote-method="region_remoteMethod"
+          filterable
+        >
+          <el-option
+            v-for="item in regionlist"
+            :key="item.countryCode"
+            :label="$i18n.locale=='zh_CN'?item.countryZhname:item.countryEnname"
+            :value="item.countryCode"
+          >
+            <div class="region_display" style="display:flex;justify-content: space-between">
+              <span>{{item.countryEnname}}</span>
+              <span>{{ item.countryZhname }}</span>
+            </div>
+          </el-option>
+        </el-select>
+      </el-form-item>
       <el-form-item class="addproject_ch_bottom">
         <!--        <el-button type="primary" @click="$router.go(-1)">返回</el-button>-->
         <!--        <el-button type="primary" class="next" @click="submitForm('form')">提交</el-button>-->
@@ -404,7 +439,6 @@ export default {
       }
     };
     return {
-      num: 1,
       labelposition: "top",
       loading: false,
       dialogFormVisible_coin_add: false,
@@ -433,32 +467,40 @@ export default {
             potentialInvestorsTags: ""
           }
         ],
+        sharingMechanism: null,
         saveOrUpdate: this.$route.query.type,
+        projectId: "",
+        IsSign: true,
         projectUserId: "",
-        financingStage: "",
         projectName: "",
+        projectNameEn: "",
         projectDescribe: "",
+        projectDescribeEn: "",
         projectCompany: "",
         projectCompanyEn: "",
+        industryId: [],
+        projectIndustry: [],
+        projectIndustryEn: [],
+        bslAreaCode: [],
+        projectArea: [],
+        projectAreaEn: [],
         collectMoneyMin: "",
         collectMoneyMax: "",
         currencyType: "",
         projectMobile: "",
         projectEmail: "",
         projectDetail: "",
-        projectLan: "",
-        projectId: "",
-        industryId: [],
-        projectIndustry: [],
-        projectIndustryEn: "",
-        potentialInvestorsTagsEn: "",
+        projectDetailEn: "",
+        projectStatus: null,
+        projectLifeCycle: null,
+        financingStage: "",
+        interestProjectCount: null,
+        committedCount: null,
         potentialInvestorsTags: "",
-        bslAreaCode: [],
-        projectArea: "",
-        projectAreaEn: "",
-        projectNameEn: "",
-        projectDescribeEn: "",
-        projectDetailEn: ""
+        potentialInvestorsTagsEn: "",
+        projectTags: "",
+        projectTagsEn: "",
+        sharingMechanism: 1
       },
       coin_rules: {
         currencySort: [
@@ -808,6 +850,16 @@ export default {
   computed: {},
   mounted() {},
   methods: {
+    selectTags(val) {
+      this.form.projectTagsEn = [];
+      val.forEach(item => {
+        for (let key in this.regionlist) {
+          if (key === item) {
+            this.form.projectTagsEn.push(this.regionlist[key].countryEnname);
+          }
+        }
+      });
+    },
     potentialInvestorarrFn() {
       this.form.potentialInvestorarr.push({
         potentialInvestorsTagsEn: "",
@@ -863,31 +915,41 @@ export default {
         });
     },
     get_formdata() {
-      this.region_remoteMethod();
-      this.remoteMethod();
+      // this.region_remoteMethod();
+      // this.remoteMethod();
       let {
         projectId: projectId,
         signStatus: signStatus,
         signId: signId
       } = this.$route.query;
       let get_form = {
-        // lan:this.$i18n.locale,
-        projectId: projectId,
-        signStatus: signStatus,
-        signId: signId
+        projectId: projectId
       };
       this.$global
         .get_encapsulation(
-          `${this.$axios.defaults.baseURL}/bsl_admin_web/project/getProjectDetailsList`,
+          `${this.$axios.defaults.baseURL}/bsl_admin_web/project/getProjectDetails`,
           get_form
         )
         .then(res => {
-          let chineseLists = res.data.data[0];
-          let EngLists = res.data.data[1];
-          for (let i in chineseLists) {
+          // console.log(res.data.data.data);
+          let result = res.data.data.data;
+          for (let i in result) {
             for (let j in this.form) {
               if (j == i) {
-                this.form[j] = chineseLists[i];
+                this.form[j] = result[i];
+                if (
+                  j == "bslAreaCode" ||
+                  j == "projectArea" ||
+                  j == "projectAreaEn" ||
+                  j == "projectIndustry" ||
+                  j == "projectIndustryEn" ||
+                  j == "projectTags" ||
+                  j == "projectTagsEn" ||
+                  j == "potentialInvestorsTags" ||
+                  j == "potentialInvestorsTagsEn"
+                ) {
+                  this.form[j] = JSON.parse(this.form[j]);
+                }
                 if (j == "collectMoneyMin" || j == "collectMoneyMax") {
                   this.form[j] = this.form[j].toLocaleString();
                   if (/\./i.test(this.form[j])) {
@@ -904,13 +966,28 @@ export default {
               }
             }
           }
-          this.form.projectDescribeEn = EngLists.projectDescribe;
-          this.form.projectDetailEn = EngLists.projectDetail;
-          this.form.projectCompanyEn = EngLists.projectCompany;
-          this.form.projectNameEn = EngLists.projectName;
-          this.form.projectIndustryEn = EngLists.projectIndustry;
-          this.form.projectAreaEn = EngLists.projectArea;
-          this.form.potentialInvestorsTagsEn = EngLists.potentialInvestorsTags;
+          this.form.arr = [];
+          this.form.potentialInvestorsTags.forEach(item => {
+            this.form.arr.push({
+              potentialInvestorsTagsEn: "",
+              potentialInvestorsTags: item
+            });
+          });
+          this.form.potentialInvestorsTagsEn.forEach((item, index) => {
+            this.$set(this.form.arr[index], "potentialInvestorsTagsEn", item);
+          });
+          console.log(this.industrylist);
+          this.form.industryId= [this.form.industryId] ;
+          console.log(this.form);
+          
+
+          // this.form.projectDescribeEn = EngLists.projectDescribe;
+          // this.form.projectDetailEn = EngLists.projectDetail;
+          // this.form.projectCompanyEn = EngLists.projectCompany;
+          // this.form.projectNameEn = EngLists.projectName;
+          // this.form.projectIndustryEn = EngLists.projectIndustry;
+          // this.form.projectAreaEn = EngLists.projectArea;
+          // this.form.potentialInvestorsTagsEn = EngLists.potentialInvestorsTags;
         });
     },
     get_coin() {
@@ -994,43 +1071,57 @@ export default {
     //   this.$routerto('tosignup',{pagenum:this.$route.query.pagenum});
     // },
     selectOne(item) {
-      // this.restaurants[item]
-      // selected
-      this.restaurants.forEach(itemm => {
-        // if (itemm.userId === item) {
-        //   this.form.projectUserId = itemm.userId;
-        //   this.form.projectCompany = itemm.userCompanyCh;
-        //   this.form.projectCompanyEn = itemm.userCompanyEn;
-        // }
+      // console.log(item);
+      this.restaurants.forEach(self => {
+        if (self.userId === item) {
+          this.form.projectUserId = self.userId;
+          this.form.projectCompany = self.userCompanyCh;
+          this.form.projectCompanyEn = self.userCompanyEn;
+        }
       });
-      // item.selected=true
-      // console.log(this.form.projectUserId);
-      // console.log(this.form.projectUserId,this.form.projectCompany);
     },
     selectregion(val) {
-      console.log(val);
-      console.log(this.form.bslAreaCode);
+      this.form.projectArea = [];
+      this.form.projectAreaEn = [];
+      val.forEach(item => {
+        for (let key in this.regionlist) {
+          if (key === item) {
+            this.form.projectArea.push(this.regionlist[key].countryZhname);
+            this.form.projectAreaEn.push(this.regionlist[key].countryEnname);
+          }
+        }
+      });
+
+      // val.forEach(item => {
+      //   this.regionlist.forEach(it => {
+      //     if (it.countryCode === item) {
+      //       this.form.projectArea.push(it.countryZhname);
+      //       this.form.projectAreaEn.push(it.countryEnname);
+      //     }
+      //   });
+      // });
+      // console.log(this.form.projectArea);
 
       // this.form.bslAreaCode = val.countryCode;
       // this.form.projectArea = val.countryZhname;
       // this.form.projectAreaEn = val.countryEnname;
     },
     selectindustry(val) {
-      console.log(val);
-
-      // this.industrylist.forEach(item => {
-      //   val.forEach(i => {
-      //     if (item.industryId === i) {
-      //       // console.log(i);
-      //       // this.form.projectUserId = itemm.userId;
-      //       // this.form.projectCompany = itemm.userCompanyCh;
-      //       // this.form.projectCompanyEn = itemm.userCompanyEn;
+      // console.log(val);
       this.form.industryId = val;
-      //       this.form.projectIndustry = item.industryNameCh;
-      //       this.form.projectIndustryEn = item.industryNameEn;
-      //     }
-      //   });
-      // });
+      // console.log(this.industrylist);
+      this.form.projectIndustry = [];
+      this.form.projectIndustryEn = [];
+      this.industrylist.forEach(item => {
+        val.forEach(i => {
+          if (item.industryId === i) {
+            this.form.projectIndustry.push(item.industryNameCh);
+            this.form.projectIndustryEn.push(item.industryNameEn);
+          }
+        });
+      });
+      // console.log();
+
       // this.form.industryId =val.industryId;
       // this.form.projectIndustry = val.industryNameCh;
       // this.form.projectIndustryEn =val.industryNameEn;
@@ -1078,23 +1169,23 @@ export default {
           });
       }
     },
-    deepClone(source) {
-      const targetObj = source.constructor === Array ? [] : {}; // 判断复制的目标是数组还是对象
-      for (let keys in source) {
-        // 遍历目标
-        if (source.hasOwnProperty(keys)) {
-          if (source[keys] && typeof source[keys] === "object") {
-            // 如果值是对象，就递归一下
-            targetObj[keys] = source[keys].constructor === Array ? [] : {};
-            targetObj[keys] = deepClone(source[keys]);
-          } else {
-            // 如果不是，就直接赋值
-            targetObj[keys] = source[keys];
-          }
-        }
-      }
-      return targetObj;
-    },
+    // deepClone(source) {
+    //   const targetObj = source.constructor === Array ? [] : {}; // 判断复制的目标是数组还是对象
+    //   for (let keys in source) {
+    //     // 遍历目标
+    //     if (source.hasOwnProperty(keys)) {
+    //       if (source[keys] && typeof source[keys] === "object") {
+    //         // 如果值是对象，就递归一下
+    //         targetObj[keys] = source[keys].constructor === Array ? [] : {};
+    //         targetObj[keys] = this.deepClone(source[keys]);
+    //       } else {
+    //         // 如果不是，就直接赋值
+    //         targetObj[keys] = source[keys];
+    //       }
+    //     }
+    //   }
+    //   return targetObj;
+    // },
     industy_submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
@@ -1123,12 +1214,31 @@ export default {
       });
     },
     commit() {
-      let cloneObj = this.deepClone(this.form);
+      let cloneObj = this.$global.deepCopy(this.form);
       cloneObj.collectMoneyMax = cloneObj.collectMoneyMax.replace(/,/g, "") * 1;
       cloneObj.collectMoneyMin = cloneObj.collectMoneyMin.replace(/,/g, "") * 1;
+      cloneObj.potentialInvestorsTags = JSON.stringify(
+        cloneObj.potentialInvestorarr.map(item => {
+          return item.potentialInvestorsTags;
+        })
+      );
+      cloneObj.potentialInvestorsTagsEn = JSON.stringify(
+        cloneObj.potentialInvestorarr.map(item => {
+          return item.potentialInvestorsTagsEn;
+        })
+      );
+      cloneObj.industryId = cloneObj.industryId[0];
+      cloneObj.projectTags = JSON.stringify(cloneObj.projectTags);
+      cloneObj.projectTagsEn = JSON.stringify(cloneObj.projectTagsEn);
+      cloneObj.projectIndustry = JSON.stringify(cloneObj.projectIndustry);
+      cloneObj.projectIndustryEn = JSON.stringify(cloneObj.projectIndustryEn);
+      cloneObj.bslAreaCode = JSON.stringify(cloneObj.bslAreaCode);
+      cloneObj.projectArea = JSON.stringify(cloneObj.projectArea);
+      cloneObj.projectAreaEn = JSON.stringify(cloneObj.projectAreaEn);
+      delete cloneObj.potentialInvestorarr;
       this.$global
         .post_encapsulation(
-          `${this.$axios.defaults.baseURL}/bsl_admin_web/project/saveProject`,
+          `${this.$axios.defaults.baseURL}/bsl_admin_web/project/saveOrUpdateProject`,
           cloneObj
         )
         .then(res => {
@@ -1278,10 +1388,13 @@ div.selected {
     margin: 50px 0;
     font-size: 26px;
   }
-  > div {
-    margin-bottom: 15px;
-    > p {
-      margin-bottom: 10px;
+  .potentialInvestors {
+    // display: flex;
+    margin-bottom: 20px;
+    > span {
+      display: inline-block;
+      width: 30px;
+      margin-right: 30px;
     }
   }
   .industry {

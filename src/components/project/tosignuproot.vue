@@ -48,7 +48,7 @@
           align="center"
         ></el-table-column>
         <el-table-column
-          prop="signTime4Submit"
+          prop="optTime"
           :label="$t('project.DateOfApplication')"
           show-overflow-tooltip
           align="center"
@@ -66,7 +66,7 @@
           align="center"
         ></el-table-column>
         <el-table-column
-          prop="signstatus_ch"
+          prop="projectStatus"
           :label="$t('project.ProcessStatus')"
           show-overflow-tooltip
           align="center"
@@ -136,7 +136,7 @@ export default {
       currentpage: 1,
       pagesize: 8,
       pagetotal: null,
-      
+
       options: [
         {
           value: -1,
@@ -254,10 +254,10 @@ export default {
         .catch(err => {});
     },
     handleEdit(row) {
-      // console.log(row)
+      console.log(row)
       this.$routerto("addproject_ch", {
         type: 1,
-        projectId: row.projectId,
+        projectId: row.id,
         signStatus: row.signStatus,
         signId: row.signId
       });
@@ -267,9 +267,9 @@ export default {
       this.$router.push({
         name: "tosignup_check",
         query: {
-          projectid: row.projectId,
-          status: row.signStatus,
-          signId: row.signId
+          projectid: row.id,
+          status: row.projectStatus,
+          // signId: row.signId
           // pagenum:this.currentpage,
           // userRespList:testStr
         }
@@ -331,24 +331,29 @@ export default {
             this.$store.dispatch("commondialogfunctionaysn", true);
             // console.log( this.$store.state.commondialog);
           } else if (res.data.resultCode == 10000) {
-            this.tableData = [...res.data.data.lists];
+            this.tableData = [...res.data.data.projectList.data];
             this.tableData.forEach(item => {
+              for (let key in item.record) {
+                item[key] = item.record[key];
+              }
               item.projectName =
                 item.projectName || "English name of project not added";
               item.createTime = item.createTime
                 ? this.$global.timestampToTime(item.createTime)
                 : "-";
-              item.signTime4Submit = item.signTime4Submit
-                ? this.$global.timestampToTime(item.signTime4Submit)
+              item.optTime = item.optTime
+                ? this.$global.timestampToTime(item.optTime)
                 : "-";
-              item.signstatus_ch = this.project_status[item.signStatus];
-              if (item.projectLifeCycle === 0) {
-                item.projectstatus = this.$t("project.Normal");
-              } else if (item.projectLifeCycle === -1) {
-                item.projectstatus = this.$t("project.Deleted");
-              }
+              // item.projectStatus = this.project_status[item.projectStatus];
+              // if (item.projectLifeCycle === 0) {
+              //   item.projectstatus = this.$t("project.Normal");
+              // } else if (item.projectLifeCycle === -1) {
+              //   item.projectstatus = this.$t("project.Deleted");
+              // }
             });
-            this.pagetotal = res.data.data.pageTotal;
+            console.log(this.tableData);
+
+            this.pagetotal = res.data.data.projectList.fetchedRecordsCount;
           }
         });
     }
