@@ -41,7 +41,7 @@
             会员列表
           </template>
           <router-link to="/home/membership/membershipList">
-            <el-menu-item index="verified_user">会员管理</el-menu-item>
+            <el-menu-item index="membership">会员管理</el-menu-item>
           </router-link>
           <router-link to="/home/membership/MembershipSystemArrangment">
             <el-menu-item index="MembershipSystemArrangment">会员制度管理</el-menu-item>
@@ -50,12 +50,12 @@
             <el-menu-item index="Exchange">积分兑换</el-menu-item>
           </router-link>
           <router-link to="/home/membership/rankingList">
-            <el-menu-item index="check_pending">积分排行榜</el-menu-item>
+            <el-menu-item index="rankingList">积分排行榜</el-menu-item>
           </router-link>
         </el-submenu>
 
         <router-link to="/home/Recommand/RecommandList">
-          <el-menu-item index="user_management">
+          <el-menu-item index="Recommand">
             <i class="el-icon-news"></i>
             <!-- <span slot="title">{{ $t("Home.Backgroundusermanagement") }}</span> -->
             <span slot="title">推荐列表</span>
@@ -78,6 +78,13 @@
           <el-menu-item index="user_management">
             <i class="el-icon-news"></i>
             <span slot="title">{{$t('Home.Backgroundusermanagement')}}</span>
+          </el-menu-item>
+        </router-link>
+
+         <router-link to="/home/tag">
+          <el-menu-item index="tag">
+            <i class="el-icon-message"></i>
+            <span slot="title">{{$t('Home.tagList')}}</span>
           </el-menu-item>
         </router-link>
       </el-menu>

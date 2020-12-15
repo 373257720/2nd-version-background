@@ -176,6 +176,7 @@ export default {
     membershipList:"会员列表",
     Currencylist:'币种列表',
     Backgroundusermanagement:'后台用户管理',
+    tagList:'标签列表',
     Pleaseenteraccount:'请输入账号',
     Pleaseenterthepassword:'请输入密码',
     login:'登录',

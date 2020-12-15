@@ -266,6 +266,17 @@ const change_password = () =>
     /* webpackChunkName: "project_owner" */
     "@/components/user_management/change_password"
   );
+  const tag = () =>
+  import(
+    /* webpackChunkName: "project_owner" */
+    "@/components/tag/tag"
+  );
+  const tagList = () =>
+  import(
+    /* webpackChunkName: "project_owner" */
+    "@/components/tag/tag_list"
+  );
+
 
 // import user_managementlists from "../components/user_management/user_managementlists";
 // import user_management from '../components/user_management/user_management'
@@ -598,6 +609,22 @@ const routes = [
               title: "UserManagement.Addnewbackgrounduser"
             }
           }
+        ]
+      },
+      {
+        path: "tag",
+        name: "tag",
+        component: tag,
+        redirect: "/home/tag/tagList",
+        children: [
+          {
+            path: "tagList",
+            name: "tagList",
+            component: tagList,
+            meta: {
+              title: "Home.tagList"
+            }
+          },
         ]
       }
     ]
