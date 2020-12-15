@@ -48,7 +48,6 @@
           :placeholder="$t('project.PleaseSelect')"
           remote
           multiple
-          @focus="region_remoteMethod"
           :remote-method="region_remoteMethod"
           filterable
         >
@@ -467,7 +466,7 @@ export default {
       industrylist: [],
       formLabelWidth: "100px",
       regionlist: {},
-      ProjectTags:[],
+      ProjectTags: [],
       industry_summit: {
         industryId: -1,
         industryNameEn: "",
@@ -829,7 +828,7 @@ export default {
   created() {
     this.form.projectId = this.$route.query.projectId || null;
     this.get_coin();
-    this.getAllProjectTags()
+    // this.getAllProjectTags()
     this.region_remoteMethod();
     let axiosList = [
       // this.$axios.get(`${this.$axios.defaults.baseURL}/bsl_admin_web/base/countryList?searchKey=`),
@@ -875,11 +874,10 @@ export default {
     getAllProjectTags() {
       this.$global
         .get_encapsulation(
-          `${this.$axios.defaults.baseURL}/bsl_admin_web/project/getAllProjectTags`,
+          `${this.$axios.defaults.baseURL}/bsl_admin_web/project/getAllProjectTags`
         )
         .then(res => {
-            console.log(res);
-            
+          console.log(res);
         });
     },
     deleteitem(index) {

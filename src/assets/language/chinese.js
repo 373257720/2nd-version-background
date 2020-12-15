@@ -58,7 +58,7 @@ export default {
     NumberOfinvestorsHaveSubmitted: "已提交投资者数量",
     Numberofprojectsinterested: "已接受投资者数量",
     Industry: "行业",
-    Region: "资金需求(币种需要)",
+    Region: "地区",
     CompanyName: "公司名称",
     Currency: "币种",
     ContactNumber: "联系电话",
