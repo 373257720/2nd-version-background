@@ -26,42 +26,46 @@
             <el-menu-item index="check_pending">{{$t('Home.Pendingusers')}}</el-menu-item>
           </router-link>
         </el-submenu>
-
         <router-link to="/home/contractListsRoot">
           <el-menu-item index="contractListsRoot">
             <i class="el-icon-news"></i>
             <!-- <span slot="title">{{ $t("Home.Backgroundusermanagement") }}</span> -->
-            <span slot="title">合同列表</span>
+            <span slot="title">{{$t('Home.ContractList')}}</span>
           </el-menu-item>
         </router-link>
-
         <el-submenu index="memberlist">
           <template slot="title">
             <i class="el-icon-menu"></i>
-            会员列表
+            {{$t('Home.MemberList')}}
           </template>
           <router-link to="/home/membership/membershipList">
-            <el-menu-item index="verified_user">会员管理</el-menu-item>
+            <el-menu-item index="membershipList">{{$t('Membership.MemberManagement')}}</el-menu-item>
           </router-link>
           <router-link to="/home/membership/MembershipSystemArrangment">
-            <el-menu-item index="MembershipSystemArrangment">会员制度管理</el-menu-item>
+            <el-menu-item
+              index="MembershipSystemArrangment"
+            >{{$t('Membership.MembershipSystemManagement')}}</el-menu-item>
           </router-link>
           <router-link to="/home/membership/Exchange">
-            <el-menu-item index="Exchange">积分兑换</el-menu-item>
+            <el-menu-item index="Exchange">{{$t('Membership.redemption')}}</el-menu-item>
           </router-link>
           <router-link to="/home/membership/rankingList">
-            <el-menu-item index="check_pending">积分排行榜</el-menu-item>
+            <el-menu-item index="rankingList">{{$t('Membership.PointsRanking')}}</el-menu-item>
           </router-link>
         </el-submenu>
-
         <router-link to="/home/Recommand/RecommandList">
-          <el-menu-item index="user_management">
+          <el-menu-item index="Recommand">
             <i class="el-icon-news"></i>
             <!-- <span slot="title">{{ $t("Home.Backgroundusermanagement") }}</span> -->
-            <span slot="title">推荐列表</span>
+            <span slot="title">{{$t('Home.RecommandList')}}</span>
           </el-menu-item>
         </router-link>
-
+        <router-link to="/home/user_management/user_managementlists">
+          <el-menu-item index="user_management">
+            <i class="el-icon-news"></i>
+            <span slot="title">{{$t('Home.Backgroundusermanagement')}}</span>
+          </el-menu-item>
+        </router-link>
         <router-link to="/home/industry">
           <el-menu-item index="industry">
             <i class="el-icon-document"></i>
@@ -72,12 +76,6 @@
           <el-menu-item index="coin_category">
             <i class="el-icon-setting"></i>
             <span slot="title">{{$t('Home.Currencylist')}}</span>
-          </el-menu-item>
-        </router-link>
-        <router-link to="/home/user_management/user_managementlists">
-          <el-menu-item index="user_management">
-            <i class="el-icon-news"></i>
-            <span slot="title">{{$t('Home.Backgroundusermanagement')}}</span>
           </el-menu-item>
         </router-link>
       </el-menu>
@@ -115,6 +113,10 @@ export default {
       config => {
         // console.log(`${this.$axios.defaults.baseURL}/bsl_admin_web/user/adminLogin.do`)
         // 在发送请求之前做些什么
+
+        if (config.url.indexOf("/bsl_admin_web/base/countryList") > -1) {
+          return config;
+        }
         that.addLoading();
         return config;
       },
@@ -127,6 +129,7 @@ export default {
     );
     this.$axios.interceptors.response.use(
       res => {
+        // console.log(2222);
         that.isCloseLoading();
         if (res.data && res.data.resultCode) {
           let code = res.data.resultCode;
@@ -155,10 +158,9 @@ export default {
 
     isCloseLoading() {
       this.loadingCount--;
-      if (this.loadingCount === 0) {
-        // console.log( this.loadingCount)
+      if (this.loadingCount <= 0) {
+        this.loadingCount = 0;
         this.isShowLoading = false;
-        //  Vue.prototype.$toast.clear();
       }
     },
     getBreadcrumb() {
@@ -172,7 +174,7 @@ export default {
   watch: {
     $route(index) {
       let path = index.path.substr(1).split("/");
-      if (path[1] == "userlist") {
+      if (path[1] == "userlist" || path[1] == "membership") {
         this.activeName = path[2];
       } else {
         this.activeName = path[1];
@@ -182,7 +184,7 @@ export default {
   },
   mounted() {
     let path = this.$route.path.substr(1).split("/");
-    if (path[1] == "userlist") {
+    if (path[1] == "userlist" || path[1] == "membership") {
       this.activeName = path[2];
     } else {
       this.activeName = path[1];

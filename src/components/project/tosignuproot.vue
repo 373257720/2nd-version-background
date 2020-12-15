@@ -2,7 +2,7 @@
   <div class="tosignuproot">
     <el-main>
       <header class="tosignup_header">
-        <div class="block">
+        <!-- <div class="block">
           <el-date-picker
             v-model="value1"
             type="daterange"
@@ -11,15 +11,15 @@
             :default-time="['00:00:00', '23:59:59']"
             :end-placeholder="$t('project.End')"
           ></el-date-picker>
-        </div>
-        <el-select v-model="value" :placeholder="$t('project.PleaseSelect')" class="block">
+        </div>-->
+        <!-- <el-select v-model="value" :placeholder="$t('project.PleaseSelect')" class="block">
           <el-option
             v-for="item in options"
             :key="item.value"
             :label="item.label"
             :value="item.value"
           ></el-option>
-        </el-select>
+        </el-select>-->
         <el-input
           :placeholder="$t('project.ProjectName')"
           v-model="searchkey"
@@ -70,7 +70,11 @@
           :label="$t('project.ProcessStatus')"
           show-overflow-tooltip
           align="center"
-        ></el-table-column>
+        >
+          <template slot-scope="scope">
+            <span>{{project_status[scope.row.projectStatus]}}</span>
+          </template>
+        </el-table-column>
         <el-table-column
           prop="projectLifeCycle"
           :label="$t('project.ProjectStatus')"
@@ -78,7 +82,7 @@
           align="center"
         >
           <template slot-scope="scope">
-            <span>{{scope.row.projectLifeCycle===0?$t('project.Normal'):scope.row.projectLifeCycle==-1?$t('project.Deleted'):'-'}}</span>
+            <span>{{scope.row.projectLifeCycle===0?$t('project.Normal'):scope.row.projectLifeCycle==1?$t('project.Deleted'):'-'}}</span>
           </template>
         </el-table-column>
         <el-table-column fixed="right" :label="$t('project.Operation')" width="200" align="center">
@@ -104,12 +108,16 @@
           </template>
         </el-table-column>
       </el-table>
-      <pagevue
+      <!-- <pagevue
         :pagenum="pagetotal"
         :currentpages="currentpage"
         :pagesizes="pagesize"
         v-on:fromchildren="fromchildren1"
-      ></pagevue>
+      ></pagevue>-->
+      <el-pagination :page-size="pagesize" layout="slot">
+        <span class="finger" @click="changePage('previous')">上一页</span>
+        <span class="finger" @click="changePage('next')">下一页</span>
+      </el-pagination>
     </el-main>
 
     <el-dialog :title="$t('project.Reminder')" v-model="fafa" width="30%" height="50%">
@@ -133,10 +141,12 @@ export default {
       value1: null, //日期选择
       value: "", //项目状态
       searchkey: "",
-      currentpage: 1,
-      pagesize: 8,
+      currentpage: null,
+      pageArr: [null],
+      pagesize: 3,
+      bookmark: "",
+      currentpageSerial: 0,
       pagetotal: null,
-
       options: [
         {
           value: -1,
@@ -210,9 +220,25 @@ export default {
   },
   created() {},
   activated() {
-    this.search(this.value, this.value1, this.currentpage, this.pagesize);
+    this.search(this.currentpage, this.pagesize);
   },
   methods: {
+    changePage(num) {
+      if (num === "previous") {
+        if (this.currentpageSerial > 0) {
+          this.currentpageSerial--;
+          this.search(this.pageArr[this.currentpageSerial], this.pagesize);
+        }
+      } else if (num === "next") {
+        if (this.currentpageSerial < this.pageArr.length - 1) {
+          this.currentpageSerial++;
+          this.search(this.pageArr[this.currentpageSerial], this.pagesize);
+        }
+        // if (this.currentpageSerial <= this.pageArr.length - 1) {
+        //   this.search(this.pageArr[this.currentpageSerial + 1], this.pagesize);
+        // }
+      }
+    },
     deleterow(row) {
       // console.log(row);
       let self = this;
@@ -227,34 +253,23 @@ export default {
         }
       )
         .then(() => {
-          // this.$axios({
-          //   method: "get",
-          //   url: `${this.$axios.defaults.baseURL}/bsl_admin_web/project/updateLifeCycle?projectId=${row.projectId}`,
-          //   headers: {
-          //     "Content-Type": "application/x-www-form-urlencoded"
-          //   }
-          // })
           this.$global
             .get_encapsulation(
               `${this.$axios.defaults.baseURL}/bsl_admin_web/project/updateLifeCycle`,
               {
-                projectId: row.projectId
+                projectId: row.id,
+                projectLifeCycle: 1
               }
             )
             .then(res => {
               console.log(res);
-              this.search(
-                this.value,
-                this.value1,
-                this.currentpage,
-                this.pagesize
-              );
+              this.search(this.currentpage, this.pagesize);
             });
         })
         .catch(err => {});
     },
     handleEdit(row) {
-      console.log(row)
+      console.log(row);
       this.$routerto("addproject_ch", {
         type: 1,
         projectId: row.id,
@@ -268,7 +283,7 @@ export default {
         name: "tosignup_check",
         query: {
           projectid: row.id,
-          status: row.projectStatus,
+          status: row.projectStatus
           // signId: row.signId
           // pagenum:this.currentpage,
           // userRespList:testStr
@@ -280,57 +295,29 @@ export default {
       this.pagesize = data.pagesize;
       this.search(this.value, this.value1, this.currentpage, this.pagesize);
     },
-    search(status, time, pageindex, size) {
-      let start;
-      let end;
-      if (Array.isArray(time)) {
-        if (time.length > 1) {
-          start = time[0] / 1000;
-          end = time[1] / 1000;
-        } else {
-          start = "";
-          end = "";
-        }
-      } else {
-        start = "";
-        end = "";
-      }
-      if (pageindex == 1) {
-        this.currentpage = 1;
-      }
-      // this.$axios({
-      //   method: "post",
-      //   url: `${this.$axios.defaults.baseURL}/bsl_admin_web/project/getProject`,
-      //   data: this.$qs.stringify({
-      //     signStatus: status,
-      //     searchKey: this.searchkey,
-      //     startCreateTime: start,
-      //     endCreateTime: end,
-      //     pageIndex: pageindex,
-      //     pageSize: size
-      //   }),
-      //   headers: {
-      //     "Content-Type": "application/x-www-form-urlencoded"
-      //   }
-      // })
+    search(currentpage, size) {
       this.$global
-        .post_encapsulation(
+        .get_encapsulation(
           `${this.$axios.defaults.baseURL}/bsl_admin_web/project/getProject`,
           {
-            signStatus: status,
-            searchKey: this.searchkey,
-            startCreateTime: start,
-            endCreateTime: end,
-            pageIndex: pageindex,
-            pageSize: size
+            searchKeywords: this.searchkey,
+            pageSize: size,
+            bookmark: currentpage
           }
         )
         .then(res => {
-          // console.log(res);
           if (res.data.resultCode == 10090) {
             this.$store.dispatch("commondialogfunctionaysn", true);
             // console.log( this.$store.state.commondialog);
           } else if (res.data.resultCode == 10000) {
+            let a = this.pageArr.every(item => {
+              return item !== res.data.data.projectList.bookmark;
+            });
+            if (a) {
+              if (res.data.data.projectList.data.length > 0) {
+                this.pageArr.push(res.data.data.projectList.bookmark);
+              }
+            }
             this.tableData = [...res.data.data.projectList.data];
             this.tableData.forEach(item => {
               for (let key in item.record) {
@@ -344,16 +331,10 @@ export default {
               item.optTime = item.optTime
                 ? this.$global.timestampToTime(item.optTime)
                 : "-";
-              // item.projectStatus = this.project_status[item.projectStatus];
-              // if (item.projectLifeCycle === 0) {
-              //   item.projectstatus = this.$t("project.Normal");
-              // } else if (item.projectLifeCycle === -1) {
-              //   item.projectstatus = this.$t("project.Deleted");
-              // }
             });
-            console.log(this.tableData);
+            // console.log(this.tableData);
 
-            this.pagetotal = res.data.data.projectList.fetchedRecordsCount;
+            // this.pagetotal = res.data.data.projectList.fetchedRecordsCount;
           }
         });
     }
@@ -363,10 +344,15 @@ export default {
 
 <style lang='scss'>
 .tosignuproot {
-  // padding: 20px 0 60px 0;
+ .el-pagination{
+       text-align: center;
+ }
   .el-main {
     /*min-height: 590px;*/
     width: 80%;
+  }
+  .finger {
+    cursor: pointer;
   }
   .tosignup_header {
     // height: 40px;

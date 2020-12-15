@@ -69,7 +69,7 @@ const global = {
     if (stamp == "") {
       return "";
     }
-    var date = new Date(stamp* 1000);
+    var date = new Date(stamp * 1000);
     var Y = date.getFullYear() + "-";
     var M =
       (date.getMonth() + 1 < 10
@@ -192,6 +192,11 @@ const global = {
   cleanall() {
     this.$routerto("login");
     sessionStorage.clear();
+  },
+  goback() {
+    // this.$router.go(-1);
+    console.log();
+    
   }
 
   // abc:async function(url, num, currpage, pagesize){

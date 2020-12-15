@@ -5,6 +5,7 @@
     </header>
     <el-form
       ref="form"
+      @submit.native.prevent
       :model="form"
       :rules="rules"
       label-width="80px"
@@ -47,6 +48,7 @@
           :placeholder="$t('project.PleaseSelect')"
           remote
           multiple
+          @focus="region_remoteMethod"
           :remote-method="region_remoteMethod"
           filterable
         >
@@ -156,11 +158,19 @@
         >
           <div>
             <span>{{idx+1}}.</span>
-            <el-input v-model="self.potentialInvestorsTagsEn"></el-input>
+            <section>
+              <el-input v-model="self.potentialInvestorsTagsEn"></el-input>
+              <el-button
+                v-show="form.potentialInvestorarr.length>1"
+                @click="deleteitem(idx)"
+                type="primary"
+                icon="el-icon-delete"
+              ></el-button>
+            </section>
           </div>
         </el-form-item>
       </el-form-item>
-      <el-form-item label="潜在投资者要求(中文)">
+      <el-form-item label="理想的投资人(中文)">
         <el-form-item
           class="potentialInvestors"
           v-for="(self,idx) in form.potentialInvestorarr"
@@ -170,11 +180,19 @@
         >
           <div>
             <span>{{idx+1}}.</span>
-            <el-input v-model="self.potentialInvestorsTags"></el-input>
+            <section>
+              <el-input v-model="self.potentialInvestorsTags"></el-input>
+              <el-button
+                v-show="form.potentialInvestorarr.length>1"
+                @click="deleteitem(idx)"
+                type="primary"
+                icon="el-icon-delete"
+              ></el-button>
+            </section>
           </div>
         </el-form-item>
       </el-form-item>
-      <el-form-item label="百分比">
+      <el-form-item :label="$t('Contract.RecommmandPercent')">
         <el-input-number
           v-model="form.sharingMechanism"
           :precision="2"
@@ -197,6 +215,7 @@
           ></el-option>
         </el-select>
       </el-form-item>
+
       <el-form-item :label="$t('project.ContactNumber')" prop="projectMobile">
         <el-input v-model="form.projectMobile"></el-input>
       </el-form-item>
@@ -236,7 +255,7 @@
           :autosize="{ minRows: 10, maxRows: 10}"
         ></el-input>
       </el-form-item>
-      <el-form-item label="标签" class="region" prop="projectTags">
+      <el-form-item label="请为项目添加标签" class="region" prop="projectTags">
         <el-select
           :popper-append-to-body="false"
           @change="selectTags"
@@ -448,6 +467,7 @@ export default {
       industrylist: [],
       formLabelWidth: "100px",
       regionlist: {},
+      ProjectTags:[],
       industry_summit: {
         industryId: -1,
         industryNameEn: "",
@@ -807,7 +827,9 @@ export default {
     }
   },
   created() {
+    this.form.projectId = this.$route.query.projectId || null;
     this.get_coin();
+    this.getAllProjectTags()
     this.region_remoteMethod();
     let axiosList = [
       // this.$axios.get(`${this.$axios.defaults.baseURL}/bsl_admin_web/base/countryList?searchKey=`),
@@ -850,6 +872,20 @@ export default {
   computed: {},
   mounted() {},
   methods: {
+    getAllProjectTags() {
+      this.$global
+        .get_encapsulation(
+          `${this.$axios.defaults.baseURL}/bsl_admin_web/project/getAllProjectTags`,
+        )
+        .then(res => {
+            console.log(res);
+            
+        });
+    },
+    deleteitem(index) {
+      // console.log(index);
+      this.form.potentialInvestorarr.splice(index, 1);
+    },
     selectTags(val) {
       this.form.projectTagsEn = [];
       val.forEach(item => {
@@ -931,8 +967,7 @@ export default {
           get_form
         )
         .then(res => {
-          // console.log(res.data.data.data);
-          let result = res.data.data.data;
+          let result = res.data.data.bslProjectVO.data;
           for (let i in result) {
             for (let j in this.form) {
               if (j == i) {
@@ -966,20 +1001,26 @@ export default {
               }
             }
           }
-          this.form.arr = [];
+          this.form.potentialInvestorarr = [];
+          console.log(this.form);
+
           this.form.potentialInvestorsTags.forEach(item => {
-            this.form.arr.push({
+            this.form.potentialInvestorarr.push({
               potentialInvestorsTagsEn: "",
               potentialInvestorsTags: item
             });
           });
           this.form.potentialInvestorsTagsEn.forEach((item, index) => {
-            this.$set(this.form.arr[index], "potentialInvestorsTagsEn", item);
+            this.$set(
+              this.form.potentialInvestorarr[index],
+              "potentialInvestorsTagsEn",
+              item
+            );
           });
-          console.log(this.industrylist);
-          this.form.industryId= [this.form.industryId] ;
-          console.log(this.form);
-          
+          // console.log(this.industrylist);
+          this.form.industryId = [this.form.industryId];
+
+          // console.log(this.form);
 
           // this.form.projectDescribeEn = EngLists.projectDescribe;
           // this.form.projectDetailEn = EngLists.projectDetail;
@@ -1018,13 +1059,13 @@ export default {
         });
     },
     region_remoteMethod(query) {
+      let searchKey = query ? query : "";
       this.regionlist = {};
-      console.log(query);
       this.$global
         .get_encapsulation(
           `${this.$axios.defaults.baseURL}/bsl_admin_web/base/countryList`,
           {
-            searchKey: query
+            searchKey: searchKey
           }
         )
         .then(res => {
@@ -1241,6 +1282,14 @@ export default {
           `${this.$axios.defaults.baseURL}/bsl_admin_web/project/saveOrUpdateProject`,
           cloneObj
         )
+        // this.$axios({
+        //   method: "post",
+        //   url: `${this.$axios.defaults.baseURL}/bsl_admin_web/project/saveOrUpdateProject`,
+        //   data: this.$qs.stringify(cloneObj, { arrayFormat: "indices" }),
+        //   headers: {
+        //     "Content-Type": "application/x-www-form-urlencoded"
+        //   }
+        // })
         .then(res => {
           // if (res.data.resultCode == 10000) {
           //   this.$store.dispatch("submit_formdata_action", res.data.data);
@@ -1389,12 +1438,25 @@ div.selected {
     font-size: 26px;
   }
   .potentialInvestors {
-    // display: flex;
     margin-bottom: 20px;
     > span {
       display: inline-block;
       width: 30px;
       margin-right: 30px;
+    }
+
+    section {
+      display: flex;
+      // margin-bottom: 20px;
+
+      align-items: center;
+      div.el-input {
+        margin-right: 10px;
+      }
+      button.el-button--primary {
+        width: 100px;
+        height: 100%;
+      }
     }
   }
   .industry {

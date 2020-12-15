@@ -249,7 +249,7 @@ export default {
       .then(res => {
         // console.log(res);
         if (res.data.resultCode == 10000) {
-          let data = res.data.data.data;
+          let data = res.data.data.bslProjectVO.data;
           this.projectname = data.projectName;
           this.details_lists.collectMoney.max = this.$global.formatNum(
             data.collectMoneyMax
@@ -394,21 +394,26 @@ export default {
               // this.projectdetails[i].content = data[i];
               if (i == "projectIndustry") {
                 if (this.$i18n.locale == "zh_CN") {
-                  this.details_lists[i].content = data[i];
+                  // console.log(data[i] instanceof Array);
+                  // console.log( res.data.data.projectIndustryList);
+
+                  this.details_lists[
+                    i
+                  ].content = res.data.data.projectIndustryList.join(",");
                 } else {
-                  this.details_lists[i].content = data.projectIndustryEn;
+                  this.details_lists[
+                    i
+                  ].content = res.data.data.projectIndustryEnList.join(",");
                 }
               } else if (i == "projectArea") {
                 if (this.$i18n.locale == "zh_CN") {
-                  this.details_lists[i].content = data[i];
+                  this.details_lists[
+                    i
+                  ].content = res.data.data.projectAreaList.join(",");
                 } else {
-                  this.details_lists[i].content = data.projectAreaEn;
-                }
-              } else if (i == "projectCompany") {
-                if (this.$i18n.locale == "zh_CN") {
-                  this.details_lists[i].content = data[i];
-                } else {
-                  this.details_lists[i].content = data.projectCompanyEn;
+                  this.details_lists[
+                    i
+                  ].content = res.data.data.projectAreaEnList.join(",");
                 }
               } else if (i == "projectCompany") {
                 if (this.$i18n.locale == "zh_CN") {
@@ -430,9 +435,17 @@ export default {
                 }
               } else if (i == "potentialInvestorsTags") {
                 if (this.$i18n.locale == "zh_CN") {
-                  this.details_lists[i].content = data[i];
+                  this.details_lists[
+                    i
+                  ].content = res.data.data.potentialInvestorsTagsList.join(
+                    ","
+                  );
                 } else {
-                  this.details_lists[i].content = data.potentialInvestorsTagsEn;
+                  this.details_lists[
+                    i
+                  ].content = res.data.data.potentialInvestorsTagsEnList.join(
+                    ","
+                  );
                 }
               } else {
                 this.details_lists[i].content = data[i];

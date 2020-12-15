@@ -31,9 +31,8 @@
                 v-for="(self) in item.listRedCell.orange"
                 :key="self.cellInfo"
                 :label="self.cellInfo"
-                :rules="{required: true, message: 'domain can not be null', trigger: 'blur'}"
               >
-              <!-- {{ruleForm.arr[idx].listRedCell.orange+'.'+index+'.'+listCell[item.redOption]}} -->
+                <!-- {{ruleForm.arr[idx].listRedCell.orange+'.'+index+'.'+listCell[item.redOption]}} -->
                 <el-input
                   type="textarea"
                   :autosize="{minRows: 5,maxRows: 10 }"
@@ -195,7 +194,6 @@ export default {
             }
           });
           console.log(this.ruleForm.arr);
-          
         }
       });
   },
@@ -234,37 +232,37 @@ export default {
     submitForm(formName) {
       // this.$routerto("");
       // let oo = {};
-      // let arr = this.$global.deepCopy(this.ruleForm.arr );
-      // arr.forEach(item => {
-      //   if (item.type === 3) {
-      //     item.listCell = item.listCell.map(i => {
-      //       return i.label;
-      //     });
-      //   }
-      // });
-      // // console.log(arr);
-      // let obj = {
-      //   importList: JSON.stringify(arr),
-      //   fileId: this.fileId * 1
-      // };
-      // this.$axios({
-      //   method: "post",
-      //   url: `${this.$axios.defaults.baseURL}/bsl_admin_web/contract/saveExcelContractTemplate?Ad_Token=${this.$store.state.X_Token}`,
-      //   data: this.$qs.stringify(obj),
-      //   headers: {
-      //     "Content-Type": "application/x-www-form-urlencoded"
-      //   }
-      // }).then(res => {
-      //   console.log(res);
-      // });
-
-      this.$refs[formName].validate(valid => {
-        if (valid) {
-          console.log(valid);
-        } else {
-          return false;
+      let arr = this.$global.deepCopy(this.ruleForm.arr);
+      arr.forEach(item => {
+        if (item.type === 3) {
+          item.listCell = item.listCell.map(i => {
+            return i.label;
+          });
         }
       });
+      // console.log(arr);
+      let obj = {
+        importList: JSON.stringify(arr),
+        fileId: this.fileId * 1
+      };
+      this.$axios({
+        method: "post",
+        url: `${this.$axios.defaults.baseURL}/bsl_admin_web/contract/saveExcelContractTemplate?Ad_Token=${this.$store.state.X_Token}`,
+        data: this.$qs.stringify(obj),
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        }
+      }).then(res => {
+        console.log(res);
+      });
+
+      // this.$refs[formName].validate(valid => {
+      //   if (valid) {
+      //     console.log(valid);
+      //   } else {
+      //     return false;
+      //   }
+      // });
     },
     upload(file, fileList, name) {
       console.log("file", file);

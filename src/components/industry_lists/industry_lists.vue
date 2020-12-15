@@ -30,13 +30,13 @@
           align="center"
         >
           <template slot-scope="scope">
-            <span>{{scope.row.industryStatus===0?$t('project.Normal'):scope.row.industryStatus===-1?$t('project.Deleted'):''}}</span>
+            <span>{{scope.row.industryStatus?$t('project.Normal'):$t('project.Deleted')}}</span>
           </template>
         </el-table-column>
         <el-table-column fixed="right" :label="$t('project.Operation')" width="200" align="center">
           <template slot-scope="scope">
             <el-button
-              v-if="scope.row.industryStatus!==0"
+              v-if="!scope.row.industryStatus"
               disabled
               type="text"
               size="small"
@@ -48,7 +48,7 @@
               size="small"
             >{{$t('project.Edit')}}</el-button>
             <el-button
-              v-if="scope.row.industryStatus!==0"
+              v-if="!scope.row.industryStatus"
               disabled
               type="text"
               size="small"

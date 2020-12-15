@@ -7,17 +7,17 @@
             @click="$routerto('giftSetting')"
             type="primary"
             class="addbtn block"
-          >礼品设置</el-button>
+          >{{$t('Gift.GiftSettings')}}</el-button>
           <el-button
             @click="$routerto('pointsSetting')"
             type="primary"
             class="addbtn block"
-          >积分兑换设置</el-button>
+          >{{$t('Gift.PointsRedemptionSettings')}}</el-button>
           <el-button
             @click="$routerto('exchangeHistory')"
             type="primary"
             class="addbtn block"
-          >兑换历史</el-button>
+          >{{$t('Gift.ExchangeHistory')}}</el-button>
         </nav>
 
         <section>
@@ -30,7 +30,7 @@
           <el-button
             type="primary"
             icon="el-icon-search"
-                class="addbtn block"
+            class="addbtn block"
             @click="search(value,value1, 1, pagesize)"
           >{{$t('project.Search')}}</el-button>
         </section>
@@ -46,8 +46,18 @@
           :label="$t('Member.DateofRegister')"
           align="center"
         ></el-table-column>
-        <el-table-column prop="industryNameEn" show-overflow-tooltip label="兑换礼品" align="center"></el-table-column>
-        <el-table-column prop="industryNameEn" show-overflow-tooltip label="兑换积分" align="center"></el-table-column>
+        <el-table-column
+          prop="industryNameEn"
+          show-overflow-tooltip
+          :label="$t('Gift.RedeemGifts')"
+          align="center"
+        ></el-table-column>
+        <el-table-column
+          prop="industryNameEn"
+          show-overflow-tooltip
+          label="$t('Gift.RedeemPoints')"
+          align="center"
+        ></el-table-column>
         <el-table-column prop="industryNameEn" show-overflow-tooltip label="兑换状态" align="center"></el-table-column>
 
         <el-table-column fixed="right" :label="$t('project.Operation')" width="200" align="center">
@@ -215,7 +225,7 @@ export default {
     // margin-bottom: 20px;
     padding: 0 0 0 20px;
     box-sizing: border-box;
-    
+
     .block {
       margin-bottom: 20px;
     }
