@@ -120,7 +120,7 @@ export default {
         }
       });
     },
-
+// 添加标签
     add_tag() {
       // console.log(this.coin_category_summit)
       let self = this;
