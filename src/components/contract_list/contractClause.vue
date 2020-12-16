@@ -2,23 +2,26 @@
   <div id="contractClause">
     <!-- <header>{{$t('UserManagement.Addnewbackgrounduser')}}</header> -->
     <header>{{$t('Contract.addContract')}}</header>
-    <el-form
-      ref="ruleForm"
-      :model="ruleForm"
-      :rules="rules"
-      label-width="80px"
-      :label-position="labelposition"
-    >
+    <el-form ref="ruleForm" :model="ruleForm" label-width="80px" :label-position="labelposition">
       <el-form-item>
         <div class="Currencyrange">
           <div v-for="(item,idx) in ruleForm.arr " :key="item.cellInfo">
             <div v-if="item.type===3" class="item-first additem">
-              <el-form-item>
+              <el-form-item
+                :prop="'arr.' + idx + '.listCell'+'[0]'"
+                :rules="{
+                required: true, message: 'domain can not be null', trigger: 'change'
+              }"
+              >
                 <Slot name="label" class="addredOption">
                   <span>{{item.cellInfo}}</span>
                   <i @click="addRedoption(item)" class="el-icon-circle-plus-outline addsymbol"></i>
                 </Slot>
-                <el-select v-model="item.redOption" :placeholder="$t('project.PleaseSelect')">
+                <el-select
+                  @change="changeRedOption"
+                  v-model="item.redOption"
+                  :placeholder="$t('project.PleaseSelect')"
+                >
                   <el-option
                     v-for="(i) in item.listCell"
                     :key="i.label"
@@ -28,9 +31,13 @@
                 </el-select>
               </el-form-item>
               <el-form-item
-                v-for="(self) in item.listRedCell.orange"
+                v-for="(self,index) in item.orange"
                 :key="self.cellInfo"
                 :label="self.cellInfo"
+                :prop="'arr.'+idx+'.orange.'+index+'.listCell.'+item.redOption"
+                :rules="{
+                required: true, message:item.listCell[item.redOption] && item.listCell[item.redOption].label+self.cellInfo +' can not be null', trigger: 'blur'
+    }"
               >
                 <!-- {{ruleForm.arr[idx].listRedCell.orange+'.'+index+'.'+listCell[item.redOption]}} -->
                 <el-input
@@ -173,14 +180,15 @@ export default {
               this.istype3 = true;
               item.listCell = [];
               this.$set(item, "redOption", null);
-              item.listRedCell = { orange: [] };
+              this.$set(item, "orange", []);
+              // item.listRedCell = { orange: [] };
               let num = 1;
               if (this.ruleForm.arr[idx + 1].type !== 4) {
                 this.ruleForm.arr.splice(idx, 1);
                 return;
               }
               while (this.ruleForm.arr[idx + num].type === 4) {
-                item.listRedCell.orange.push(this.ruleForm.arr[idx + num]);
+                item.orange.push(this.ruleForm.arr[idx + num]);
                 num++;
               }
               // this.obj.red.option = [];
@@ -214,10 +222,33 @@ export default {
           });
           // this.itemdata.listRedCell.orange.forEach(item => {
           // });
+          // console.log(this.itemdata.listCell[0]);
+
+          // this.itemdata.redOption = this.itemdata.listCell[
+          //   this.itemdata.listCell.length - 1
+          // ].value;
           this.Redoption_summit.label = "";
           this.dialogFormVisible_redOption_add = false;
+          // this.$refs['ruleForm'].validate(valid => {
+          //   if (valid) {
+          //     console.log(valid);
+          //   } else {
+          //     return false;
+          //   }
+          // });
         }
       }
+    },
+    changeRedOption(value) {
+      // console.log(this.$refs["ruleForm"]);
+
+      this.$refs["ruleForm"].validate(valid => {
+        if (valid) {
+          console.log(valid);
+        } else {
+          return false;
+        }
+      });
     },
     addRedoption(item) {
       console.log(item);
@@ -232,6 +263,8 @@ export default {
     submitForm(formName) {
       // this.$routerto("");
       // let oo = {};
+      console.log(this.ruleForm.arr);
+
       let arr = this.$global.deepCopy(this.ruleForm.arr);
       arr.forEach(item => {
         if (item.type === 3) {
@@ -245,24 +278,24 @@ export default {
         importList: JSON.stringify(arr),
         fileId: this.fileId * 1
       };
-      this.$axios({
-        method: "post",
-        url: `${this.$axios.defaults.baseURL}/bsl_admin_web/contract/saveExcelContractTemplate?Ad_Token=${this.$store.state.X_Token}`,
-        data: this.$qs.stringify(obj),
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        }
-      }).then(res => {
-        console.log(res);
-      });
-
-      // this.$refs[formName].validate(valid => {
-      //   if (valid) {
-      //     console.log(valid);
-      //   } else {
-      //     return false;
+      // this.$axios({
+      //   method: "post",
+      //   url: `${this.$axios.defaults.baseURL}/bsl_admin_web/contract/saveExcelContractTemplate?Ad_Token=${this.$store.state.X_Token}`,
+      //   data: this.$qs.stringify(obj),
+      //   headers: {
+      //     "Content-Type": "application/x-www-form-urlencoded"
       //   }
+      // }).then(res => {
+      //   console.log(res);
       // });
+
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          console.log(valid);
+        } else {
+          return false;
+        }
+      });
     },
     upload(file, fileList, name) {
       console.log("file", file);

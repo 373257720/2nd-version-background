@@ -24,8 +24,6 @@
           @change="selectOne"
           :placeholder="$t('project.keyword')"
           :remote-method="remoteMethod"
-          :loading="loading"
-          @focus="remoteMethod"
         >
           <el-option
             v-for="(item) in restaurants"
@@ -260,9 +258,7 @@
           @change="selectTags"
           v-model="form.projectTags"
           :placeholder="$t('project.PleaseSelect')"
-          remote
           multiple
-          :remote-method="region_remoteMethod"
           filterable
         >
           <el-option
@@ -829,7 +825,8 @@ export default {
     this.form.projectId = this.$route.query.projectId || null;
     this.get_coin();
     // this.getAllProjectTags()
-    this.region_remoteMethod();
+    this.remoteMethod();
+    // this.region_remoteMethod();
     let axiosList = [
       // this.$axios.get(`${this.$axios.defaults.baseURL}/bsl_admin_web/base/countryList?searchKey=`),
       // this.$axios.get(`${this.$axios.defaults.baseURL}/bsl_admin_web/industry/getAllIndustry?searchKey=`),
