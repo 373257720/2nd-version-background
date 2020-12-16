@@ -32,13 +32,11 @@
         ></el-table-column>
         <el-table-column
           prop="fileName"
-          width="200"
           show-overflow-tooltip
           :label="$t('Contract.ContractName')"
           align="center"
         ></el-table-column>
         <el-table-column
-          width="200"
           show-overflow-tooltip
           :label="$t('Contract.ContractType')"
           align="center"

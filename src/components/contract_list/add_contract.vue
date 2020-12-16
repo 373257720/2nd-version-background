@@ -10,7 +10,7 @@
       :label-position="labelposition"
     >
       <el-form-item :label="$t('Contract.ContractName')" prop="fileName">
-        <el-input placeholder="Email" v-model.trim="ruleForm.fileName"></el-input>
+        <el-input v-model.trim="ruleForm.fileName"></el-input>
       </el-form-item>
       <el-form-item :label="$t('Contract.ContractType')" prop="contractType">
         <el-select v-model="ruleForm.contractType" :placeholder="$t('project.PleaseSelect')">
@@ -36,7 +36,7 @@
           accept=".doc, .docx"
           :limit="1"
         >
-          <el-button size="small" type="primary">点击上传</el-button>
+          <el-button size="small" type="primary">{{$t('Contract.Upload')}}</el-button>
         </el-upload>
       </el-form-item>
       <el-form-item label="上传合同模板excl" prop="fileExcel">
@@ -56,7 +56,7 @@
           multiple
           :limit="1"
         >
-          <el-button size="small" type="primary">点击上传</el-button>
+          <el-button size="small" type="primary">{{$t('Contract.Upload')}}</el-button>
         </el-upload>
       </el-form-item>
       <!--      <el-form-item class="add_contract_bottom">-->
@@ -101,14 +101,14 @@ export default {
         fileWord: [
           {
             required: true,
-            message: this.$t("UserManagement.PleaseEnterEmail"),
+            message: this.$t("Contract.PleaseUpload"),
             trigger: ["blur", "change"]
           }
         ],
         fileExcel: [
           {
             required: true,
-            message: this.$t("UserManagement.PleaseEnterEmail"),
+            message: this.$t("Contract.PleaseUpload"),
             trigger: ["blur", "change"]
           }
         ],
@@ -192,7 +192,6 @@ export default {
         }
       }).then(res => {
         console.log(res);
-
         if (res.data.resultCode == 10000) {
           this.ruleForm.fileWord = res.data.data.path;
           this.ruleForm.fileWordName = "\\" + res.data.data.fileWordName;

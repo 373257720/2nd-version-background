@@ -167,6 +167,7 @@ export default {
 
 <style lang='scss'>
 //
+
 #app {
   height: 100%;
   width: 100%;
@@ -178,6 +179,7 @@ export default {
   .el-date-editor--timerange.el-input__inner {
     width: 260px;
   }
+
   .el-textarea__inner{
         font-family: '\5FAE\8F6F\96C5\9ED1';
   }

@@ -3,16 +3,8 @@
     <el-main>
       <header class="tosignup_header">
         <nav>
-          <el-button
-            @click="$routerto('customPoints')"
-            type="primary"
-            class="addbtn block"
-          >积分自定义</el-button>
-          <el-button
-            @click="$routerto('industry_alter')"
-            type="primary"
-            class="addbtn block"
-          >积分清零</el-button>
+          <el-button @click="$routerto('customPoints')" type="primary" class="addbtn block">{{$t('Membership.Pointscustomization')}}</el-button>
+          <el-button @click="$routerto('industry_alter')" type="primary" class="addbtn block">{{$t('Membership.PointsCleared')}}</el-button>
         </nav>
         <section>
           <el-input
@@ -24,7 +16,7 @@
           <el-button
             type="primary"
             icon="el-icon-search"
-                    class="block"
+            class="block"
             @click="search(value,value1, 1, pagesize)"
           >{{$t('project.Search')}}</el-button>
         </section>
@@ -54,7 +46,7 @@
           align="center"
         >
           <!-- <input type="text" @input="CheckInputIntFloat" v-model="input" /> -->
-          <el-input v-model="input"       oninput="CheckInputIntFloat"  placeholder=""></el-input>
+          <el-input v-model="input" oninput="CheckInputIntFloat" placeholder></el-input>
         </el-table-column>
         <el-table-column
           prop="industryNameEn"
@@ -65,13 +57,13 @@
         <el-table-column
           prop="industryNameEn"
           show-overflow-tooltip
-          :label="$t('Member.Toagent')"
+          :label="$t('Membership.RecommendedMiddleman')"
           align="center"
         ></el-table-column>
         <el-table-column
           prop="industryNameEn"
           show-overflow-tooltip
-          :label="$t('Member.ToInvestor')"
+          :label="$t('Membership.ReferInvestors')"
           align="center"
         ></el-table-column>
         <el-table-column
@@ -149,7 +141,6 @@ export default {
         value = gg.match(regexp) === null ? "" : gg.match(regexp);
       }
       console.log(value);
-      
     },
     handleCurrentChange(cpage) {
       this.currentpage = cpage;

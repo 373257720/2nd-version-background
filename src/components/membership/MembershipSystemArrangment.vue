@@ -7,7 +7,7 @@
             @click="$routerto('addLevel')"
             type="primary"
             class="addbtn"
-          >新增会员等级</el-button>
+          >{{$t('Membership.NewMembershiplevel')}}</el-button>
         </nav>
       </header>
       <el-table
@@ -26,25 +26,35 @@
           :label="$t('Member.MembershipPoints')"
           align="center"
         ></el-table-column>
-        <el-table-column prop="industryNameEn" show-overflow-tooltip label="颜色" align="center"></el-table-column>
-        <el-table-column prop="industryNameEn" show-overflow-tooltip label="总共可推荐次数" align="center"></el-table-column>
         <el-table-column
           prop="industryNameEn"
           show-overflow-tooltip
-          label="优先推荐中间人时间"
+          :label="$t('Membership.Colour')"
           align="center"
         ></el-table-column>
         <el-table-column
           prop="industryNameEn"
           show-overflow-tooltip
-          label="优先推荐投资人时间"
+          :label="$t('Membership.Totalrecommendedtimes')"
+          align="center"
+        ></el-table-column>
+        <el-table-column
+          prop="industryNameEn"
+          show-overflow-tooltip
+          :label="$t('Membership.PriorityRecommendationOfIntermediaryTime')"
+          align="center"
+        ></el-table-column>
+        <el-table-column
+          prop="industryNameEn"
+          show-overflow-tooltip
+           :label="$t('Membership.PriorityTToRecommendInvestorTime')"
           align="center"
         ></el-table-column>
         <el-table-column fixed="right" :label="$t('project.Operation')" width="200" align="center">
           <!-- <template slot-scope="scope">
             <el-button  type="text" size="small">{{$t('project.Edit')}}</el-button>
             <el-button  type="text" size="small">{{$t('project.Delete')}}</el-button>
-          </template> -->
+          </template>-->
         </el-table-column>
       </el-table>
       <el-pagination

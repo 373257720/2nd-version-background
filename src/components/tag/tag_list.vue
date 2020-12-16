@@ -1,32 +1,46 @@
 <template>
   <div class="tagList">
-    <!-- <header class="industry_alter_header">{{title}}</header> -->
 
     <el-main>
       <el-form
         ref="ruleForm"
-        :model="industry_summit"
+        :model="coin_category_summit"
         :rules="rules"
         label-width="120px"
         label-position="top"
       >
-        <el-form-item label="标签：" prop="industryNameCh">
-         <el-input
-          placeholder="请输入标签"
-          v-model="tag"
-          class="block"
-          clearable
-        ></el-input>
-         
+        <el-form-item label="English Name" prop="tagsNameEn">
+          <el-input
+            placeholder="Exo（China）"
+            show-word-limit
+            maxlength="50"
+            clearable
+            v-model="coin_category_summit.tagsNameEn"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="中文标签" prop="tagsName">
+          <el-input
+            placeholder="例（China）"
+            show-word-limit
+            maxlength="50"
+            clearable
+            v-model="coin_category_summit.tagsName"
+          ></el-input>
+        </el-form-item>
+        <el-form-item :label="$t('industry.SerialNumber')" prop="tagsSort">
+          <el-input
+            :placeholder="$t('industry.Pleaseenterthanzero')"
+            show-word-limit
+            maxlength="9"
+            clearable
+            oninput="value=value.replace(/[^\d.]/g,'')"
+            v-model="coin_category_summit.tagsSort"
+          ></el-input>
         </el-form-item>
       </el-form>
       <p class="dialog-footer">
-        <button>
-          {{ $t("project.Cancel") }}
-        </button>
-        <button @click="submitForm('ruleForm')">
-          {{ $t("project.Confirm") }}
-        </button>
+        <button >{{$t('project.Cancel')}}</button>
+        <button @click="submitForm('ruleForm')">{{$t('project.Confirm')}}</button>
       </p>
     </el-main>
   </div>
@@ -35,109 +49,109 @@
 <script>
 export default {
   data() {
-    var valid_industryNameCh = (rule, value, callback) => {
+    var valid_currencytype = (rule, value, callback) => {
+      //  var str = value.replace(/(^\s*)|(\s*$)/g,"");
+      //  let a=/^[A-Za-z][A-Za-z\s]*[A-Za-z]$/.test(str);
+      if (value) {
+        this.coin_category_summit.tagsNameEn = value;
+        //  console.log(this.coin_category_summit.tagsNameEn)
+        callback();
+      } else {
+        callback(new Error("Please enter english"));
+      }
+    };
+    var valid_currencyName = (rule, value, callback) => {
       // var str = value.replace(/(^\s*)|(\s*$)/g,"");
       // let a=/^[\u4E00-\u9FA5][\u4E00-\u9FA5\s]*[\u4E00-\u9FA5]$/.test(str);
-      // if(a){
-      //   this.industry_summit.industryNameCh=str;
-      //   callback()
-      // }else {
-      //   callback(new Error('请输入中文'));
-      // }
       if (value) {
-        this.industry_summit.industryNameCh = value;
+        this.coin_category_summit.tagsName = value;
         callback();
       } else {
         callback(new Error("请输入中文"));
       }
     };
-    var valid_industryNameEn = (rule, value, callback) => {
-      // var str = value.replace(/(^\s*)|(\s*$)/g, "");
-      // let a = /^[A-Za-z][A-Za-z\s]*[A-Za-z]$/.test(str);
-      // if (a) {
-      //   this.industry_summit.industryNameEn = str;
-      //   callback();
-      // } else {
-      //   callback(new Error("Please Input English"));
-      // }
-
-      if (value) {
-        this.industry_summit.industryNameEn = value;
-        callback();
-      } else {
-        callback(new Error("Please Input English"));
-      }
-    };
     return {
       dialogFormVisible_industry: false,
-      tag:'',
       tableData: [],
       title: "",
-      industry_summit: {
-        industryId: -1,
-        industryNameEn: "",
-        industryNameCh: "",
-        industryStatus: 0,
-        industrySort: null,
+      coin_category_summit: {
+        currencyId: -1,
+        tagsSort: null,
+        tagsNameEn: "",
+        tagsName: ""
       },
       rules: {
-        industrySort: [
+        tagsSort: [
           {
             required: true,
             message: this.$t("industry.Pleaseenterthanzero"),
-            trigger: "blur",
-          },
+            trigger: "blur"
+          }
         ],
-        industryNameCh: [
-          { required: true, validator: valid_industryNameCh, trigger: "blur" },
+        tagsNameEn: [
+          { required: true, validator: valid_currencytype, trigger: "blur" }
         ],
-        industryNameEn: [
-          { required: true, validator: valid_industryNameEn, trigger: "blur" },
-        ],
-      },
+        tagsName: [
+          { required: true, validator: valid_currencyName, trigger: "blur" }
+        ]
+      }
     };
   },
   created() {
-    
+    if (this.$route.query.currencyId) {
+      this.title = this.$t(
+        "CategoryOfCoin.Pleaseenterthecurrencyyouwanttoedit"
+      );
+      this.coin_category_summit.currencyId = this.$route.query.currencyId;
+      this.search();
+    } else {
+      this.title = this.$t(
+        "CategoryOfCoin.Pleaseenterthecurrencyyouwanttoincrease"
+      );
+    }
   },
-  // watch:{
-  //   industry_summit: {
-  //     handler(newName, oldName) {
-  //       // console.log(newName, oldName)
-  //      // let str = newName.replace(/\s*/g,"");
-
-  //       // this.industry_summit.industryNameCh=newName.industryNameEn.replace(/\s*/g,"");
-  //       // this.value=this.value.replace(/[^\u4e00-\u9fa5]/g,'')
-  //       // if(/^[A-Za-z][A-Za-z\s]*[A-Za-z]$/.test(newName.industryNameEn)){
-  //       //   console.log(newName)
-  //       //   newName=oldName
-  //       // }
-  //       ;
-  //     },
-  //     deep: true,
-  //     immediate: true
-  //   },
-  // },
   methods: {
     submitForm(formName) {
-      this.$refs[formName].validate((valid) => {
+      this.$refs[formName].validate(valid => {
         if (valid) {
-         
+          this.add_tag();
         } else {
           return false;
         }
       });
     },
-   
-    
-  },
+
+    add_tag() {
+      // console.log(this.coin_category_summit)
+      let self = this;
+      this.$global
+        .post_encapsulation(
+          `${this.$axios.defaults.baseURL}/bsl_admin_web/project/addProjectTags`,
+          self.coin_category_summit
+        )
+        .then(result => {
+          console.log(result);
+          this.$confirm(result.data.resultDesc, self.$t("project.Reminder"), {
+            confirmButtonText: self.$t("project.Confirm"),
+            center: true,
+            showCancelButton: false
+          }).then(() => {
+            if (result.data.resultCode == 10000) {
+             self.coin_category_summit.tagsSort=null;
+               self.coin_category_summit.tagsNameEn='';
+                 self.coin_category_summit.tagsName='';
+            }
+          });
+        });
+    }
+  }
 };
 </script>
 
 <style lang='scss'>
 .tagList {
-  padding: 20px 0;
-  .industry_alter_header {
+  padding-top: 80px;
+  .coin_category_alter_header {
     height: 40px;
     width: 80%;
     font-size: 20px;
