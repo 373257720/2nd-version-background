@@ -11,35 +11,77 @@
     >
       <el-form-item>
         <div class="Currencyrange">
-          <div v-for="(item,idx) in ruleForm.arr " :key="item.cellInfo">
+          <div v-for="(item,index) in ruleForm.arr " :key="item.cellInfo">
             <div v-if="item.type===3" class="item-first additem">
               <el-form-item>
                 <Slot name="label" class="addredOption">
                   <span>{{item.cellInfo}}</span>
                   <i @click="addRedoption(item)" class="el-icon-circle-plus-outline addsymbol"></i>
                 </Slot>
-                <el-select v-model="item.redOption" :placeholder="$t('project.PleaseSelect')">
+                <div class="redoption" v-for="(i,d) in item.listCell" :key="d">
+                  <section>
+                    <h1>{{item.cellInfo}} Option {{d+1}}</h1>
+                    <el-button
+                      v-show="item.listCell.length>1"
+                      @click="deleteitem(item.listCell,d)"
+                      type="primary"
+                      icon="el-icon-delete"
+                    ></el-button>
+                  </section>
+                  <el-form-item
+                    :prop="'arr.'+index+ '.listCell.'+d+'.label'"
+                    :rules="{
+                    required: true, message: 'domain can not be null', trigger: 'blur'
+                  }"
+                  >
+                    <el-input
+                      type="text"
+                      :placeholder="$t('UserManagement.PleaseEnter')"
+                      v-model="i.label"
+                    ></el-input>
+                  </el-form-item>
+                  <el-form-item
+                    v-for="(self,e) in item.orange"
+                    :key="self.cellInfo"
+                    :label="self.cellInfo"
+                    :prop="'arr.'+index+ '.orange.'+e+'.listCell.'+d"
+                    :rules="{
+                    required: true, message: 'domain can not be null', trigger: 'blur'
+                  }"
+                  >
+                    <!-- {{'arr.'+index+ '.orange.'+e+'.listCell.'+d}} -->
+                    <!-- {{ruleForm.arr[idx].listRedCell.orange+'.'+index+'.'+listCell[item.redOption]}} -->
+                    <el-input
+                      type="textarea"
+                      :autosize="{minRows: 5,maxRows: 10 }"
+                      :placeholder="$t('UserManagement.PleaseEnter')"
+                      v-model="self.listCell[d]"
+                    ></el-input>
+                  </el-form-item>
+                </div>
+
+                <!-- <el-select v-model="item.redOption" :placeholder="$t('project.PleaseSelect')">
                   <el-option
                     v-for="(i) in item.listCell"
                     :key="i.label"
                     :label="i.label"
                     :value="i.value"
                   ></el-option>
-                </el-select>
+                </el-select>-->
               </el-form-item>
-              <el-form-item
+              <!-- <el-form-item
                 v-for="(self) in item.listRedCell.orange"
                 :key="self.cellInfo"
                 :label="self.cellInfo"
               >
-                <!-- {{ruleForm.arr[idx].listRedCell.orange+'.'+index+'.'+listCell[item.redOption]}} -->
+                {{ruleForm.arr[idx].listRedCell.orange+'.'+index+'.'+listCell[item.redOption]}}
                 <el-input
                   type="textarea"
                   :autosize="{minRows: 5,maxRows: 10 }"
                   :placeholder="$t('UserManagement.PleaseEnter')"
                   v-model="self.listCell[item.redOption]"
                 ></el-input>
-              </el-form-item>
+              </el-form-item>-->
             </div>
           </div>
         </div>
@@ -171,16 +213,22 @@ export default {
           this.ruleForm.arr.forEach((item, idx) => {
             if (item.type === 3) {
               this.istype3 = true;
-              item.listCell = [];
+              item.listCell = [
+                {
+                  label: "",
+                  value: 0
+                }
+              ];
               this.$set(item, "redOption", null);
-              item.listRedCell = { orange: [] };
+              this.$set(item, "orange", []);
+              // item.listRedCell = { orange: };
               let num = 1;
               if (this.ruleForm.arr[idx + 1].type !== 4) {
                 this.ruleForm.arr.splice(idx, 1);
                 return;
               }
               while (this.ruleForm.arr[idx + num].type === 4) {
-                item.listRedCell.orange.push(this.ruleForm.arr[idx + num]);
+                item.orange.push(this.ruleForm.arr[idx + num]);
                 num++;
               }
               // this.obj.red.option = [];
@@ -198,6 +246,10 @@ export default {
       });
   },
   methods: {
+    deleteitem(item, id) {
+      item.splice(id, 1);
+      // this.form.potentialInvestorarr.splice(index, 1);
+    },
     Redoption_summitFn() {
       // let sw = true;
       console.log(this.itemdata);
@@ -232,118 +284,52 @@ export default {
     submitForm(formName) {
       // this.$routerto("");
       // let oo = {};
-      let arr = this.$global.deepCopy(this.ruleForm.arr);
-      arr.forEach(item => {
-        if (item.type === 3) {
-          item.listCell = item.listCell.map(i => {
-            return i.label;
+
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          let arr = this.$global.deepCopy(this.ruleForm.arr);
+          arr.forEach(item => {
+            if (item.type === 3) {
+              item.listCell = item.listCell.map(i => {
+                return i.label;
+              });
+            }
           });
-        }
-      });
-      // console.log(arr);
-      let obj = {
-        importList: JSON.stringify(arr),
-        fileId: this.fileId * 1
-      };
-      this.$axios({
-        method: "post",
-        url: `${this.$axios.defaults.baseURL}/bsl_admin_web/contract/saveExcelContractTemplate?Ad_Token=${this.$store.state.X_Token}`,
-        data: this.$qs.stringify(obj),
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        }
-      }).then(res => {
-        console.log(res);
-      });
-
-      // this.$refs[formName].validate(valid => {
-      //   if (valid) {
-      //     console.log(valid);
-      //   } else {
-      //     return false;
-      //   }
-      // });
-    },
-    upload(file, fileList, name) {
-      console.log("file", file);
-      console.log("fileList", fileList);
-      let files = { 0: file.raw };
-      this.readExcel1(files, name);
-    },
-    readExcel1(files, name) {
-      //表格导入
-
-      if (files.length <= 0) {
-        //如果没有文件名
-        return false;
-      }
-      if (name === "excel") {
-        if (!/\.(xls|xlsx)$/.test(files[0].name.toLowerCase())) {
-          this.$Message.error("上传格式不正确，请上传xls或者xlsx格式");
+          console.log(arr);
+          let obj = {
+            importList: JSON.stringify(arr),
+            fileId: parseInt(this.fileId)
+          };
+          this.$axios({
+            method: "post",
+            url: `${this.$axios.defaults.baseURL}/bsl_admin_web/contract/saveExcelContractTemplate?Ad_Token=${this.$store.state.X_Token}`,
+            data: this.$qs.stringify(obj),
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded"
+            }
+          }).then(res => {
+            console.log(res);
+          });
+        } else {
           return false;
         }
-      } else if (name === "word") {
-        if (!/\.(doc|docx)$/.test(files[0].name.toLowerCase())) {
-          this.$Message.error("上传格式不正确，请上传xls或者xlsx格式");
-          return false;
-        }
-      }
-      var that = this;
-      // console.log(files);
-      const fileReader = new FileReader();
-      fileReader.onload = function(e) {
-        console.log(e.target.result);
-      };
-      fileReader.readAsText(files[0]);
-
-      // fileReader.onload = ev => {
-      //   try {
-      //     const data = ev.target.result;
-      //     const workbook = XLSX.read(data, {
-      //       type: "array"
-      //     });
-
-      //     // console.log(workbook);
-      //     var result = {};
-      //     const wsname = workbook.SheetNames[0]; //取第一张表
-      //     console.log(XLSX);
-      //     workbook.SheetNames.forEach(function(sheetName) {
-      //       // console.log(workbook.Sheets[sheetName]);
-
-      //       var roa = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], {
-      //         header: 1
-      //       });
-
-      //       if (roa.length) result[sheetName] = roa;
-      //     });
-      //     console.log(result);
-
-      //     // const ws = XLSX.utils.sheet_to_json(workbook.Sheets[wsname]); //生成json表格内容
-      //     // console.log(ws);
-      //     // that.peopleArr = [];//清空接收数据
-      //     // if(that.peopleArr.length == 1 && that.peopleArr[0].roleName == "" && that.peopleArr[0].enLine == ""){
-      //     //     that.peopleArr = [];
-      //     // }
-      //     //重写数据
-      //     try {
-      //     } catch (err) {
-      //       console.log(err);
-      //     }
-
-      //     this.$refs.upload.value = "";
-      //   } catch (e) {
-      //     return false;
-      //   }
-      // };
-
-      // fileReader.readAsArrayBuffer(files[0]);
+      });
     }
+    // upload(file, fileList, name) {
+    //   console.log("file", file);
+    //   console.log("fileList", fileList);
+    //   let files = { 0: file.raw };
+    //   this.readExcel1(files, name);
+    // },
   }
 };
 </script>
 
 <style lang='scss'>
 #contractClause {
+  .el-form-item__content {
+    margin-bottom: 30px;
+  }
   .el-select {
     width: 100%;
   }
@@ -422,9 +408,22 @@ export default {
 #contractClause {
   width: 600px;
   margin: 50px auto;
+
   .addredOption {
+    font-weight: bold;
     i {
       cursor: pointer;
+    }
+  }
+  .redoption {
+    margin-bottom: 50px;
+    section {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      .el-button--primary {
+        // width: 50px;
+      }
     }
   }
   .dialog-footer {
