@@ -170,6 +170,7 @@ export default {
     userlist:'用户列表',
     Authenticateduser:'已验证用户',
     Pendingusers:'待审核用户',
+    MemberList:"会员列表",
     Industrylist:'行业列表',
     ContractList:"合同列表",
     membershipList:"会员列表",
@@ -201,6 +202,10 @@ export default {
     SharingMechanism:"分成机制（利益%）",
     RecommendedResults:"推荐结果",
     OnchainInformation:"上链信息",
+  },
+  Tag:{
+    Tag:"标签",
+    AddTag:"添加标签"
   },
   Membership: {
     Colour: "颜色",

@@ -23,9 +23,8 @@
           remote
           @change="selectOne"
           :placeholder="$t('project.keyword')"
-          :remote-method="remoteMethod"
-          :loading="loading"
-          @focus="remoteMethod"
+          :remote-method="getRelationCompany"
+          @focus="getRelationCompany"
         >
           <el-option
             v-for="(item) in restaurants"
@@ -68,7 +67,7 @@
         <i @click="dialogFormVisible_industry = true" class="el-icon-circle-plus-outline"></i>
         <el-select
           :popper-append-to-body="false"
-          v-model="form.industryId"
+          v-model="industryId"
           filterable
           multiple
           @change="selectindustry"
@@ -258,7 +257,7 @@
         <el-select
           :popper-append-to-body="false"
           @change="selectTags"
-          v-model="form.projectTags"
+          v-model="SelectedProjectTags"
           :placeholder="$t('project.PleaseSelect')"
           remote
           multiple
@@ -266,14 +265,14 @@
           filterable
         >
           <el-option
-            v-for="item in regionlist"
-            :key="item.countryCode"
-            :label="$i18n.locale=='zh_CN'?item.countryZhname:item.countryEnname"
-            :value="item.countryCode"
+            v-for="item in ProjectTags"
+            :key="item.id"
+            :label="$i18n.locale=='zh_CN'?item.tagsName:item.tagsNameEn"
+            :value="item.id"
           >
             <div class="region_display" style="display:flex;justify-content: space-between">
-              <span>{{item.countryEnname}}</span>
-              <span>{{ item.countryZhname }}</span>
+              <span>{{item.tagsName}}</span>
+              <span>{{ item.tagsNameEn }}</span>
             </div>
           </el-option>
         </el-select>
@@ -467,6 +466,8 @@ export default {
       formLabelWidth: "100px",
       regionlist: {},
       ProjectTags: [],
+      industryId: [],
+      SelectedProjectTags: [],
       industry_summit: {
         industryId: -1,
         industryNameEn: "",
@@ -497,7 +498,6 @@ export default {
         projectDescribeEn: "",
         projectCompany: "",
         projectCompanyEn: "",
-        industryId: [],
         projectIndustry: [],
         projectIndustryEn: [],
         bslAreaCode: [],
@@ -828,7 +828,8 @@ export default {
   created() {
     this.form.projectId = this.$route.query.projectId || null;
     this.get_coin();
-    // this.getAllProjectTags()
+    // this.getAllProjectTags();
+    // this.getRelationCompany()
     this.region_remoteMethod();
     let axiosList = [
       // this.$axios.get(`${this.$axios.defaults.baseURL}/bsl_admin_web/base/countryList?searchKey=`),
@@ -839,15 +840,19 @@ export default {
           searchKey: ""
         }
       ),
+
       this.$global.get_encapsulation(
         `${this.$axios.defaults.baseURL}/bsl_admin_web/industry/getAllIndustry`,
         {
           searchKey: ""
         }
+      ),
+      this.$global.get_encapsulation(
+        `${this.$axios.defaults.baseURL}/bsl_admin_web/project/getAllProjectTags`
       )
     ];
     this.$axios.all(axiosList).then(
-      this.$axios.spread((res1, res2) => {
+      this.$axios.spread((res1, res2, res3) => {
         if (res1) {
           for (let i = 0; i < res1.data.data.length; i++) {
             this.regionlist[res1.data.data[i].countryCode] = res1.data.data[i];
@@ -860,13 +865,18 @@ export default {
             }
           });
         }
+        if (res3) {
+          // if (res.data.resultCode === 10000) {
+          this.ProjectTags = res3.data.data.projectTagsList;
+          // }
+        }
+        if (this.$route.query.type == 0) {
+        } else if (this.$route.query.type == 1) {
+          this.get_formdata();
+        }
       })
     );
     // 0 is add ,1 is edit
-    if (this.$route.query.type == 0) {
-    } else if (this.$route.query.type == 1) {
-      this.get_formdata();
-    }
   },
   computed: {},
   mounted() {},
@@ -878,22 +888,16 @@ export default {
         )
         .then(res => {
           console.log(res);
+          if (res.data.resultCode === 10000) {
+            this.ProjectTags = res.data.data.projectTagsList;
+          }
         });
     },
     deleteitem(index) {
       // console.log(index);
       this.form.potentialInvestorarr.splice(index, 1);
     },
-    selectTags(val) {
-      this.form.projectTagsEn = [];
-      val.forEach(item => {
-        for (let key in this.regionlist) {
-          if (key === item) {
-            this.form.projectTagsEn.push(this.regionlist[key].countryEnname);
-          }
-        }
-      });
-    },
+
     potentialInvestorarrFn() {
       this.form.potentialInvestorarr.push({
         potentialInvestorsTagsEn: "",
@@ -950,7 +954,7 @@ export default {
     },
     get_formdata() {
       // this.region_remoteMethod();
-      // this.remoteMethod();
+      // this.getRelationCompany();
       let {
         projectId: projectId,
         signStatus: signStatus,
@@ -981,7 +985,8 @@ export default {
                   j == "potentialInvestorsTags" ||
                   j == "potentialInvestorsTagsEn"
                 ) {
-                  this.form[j] = JSON.parse(this.form[j]);
+                  // this.form[j] = JSON.parse(this.form[j]);
+                  this.form[j] = eval("(" + this.form[j] + ")");
                 }
                 if (j == "collectMoneyMin" || j == "collectMoneyMax") {
                   this.form[j] = this.form[j].toLocaleString();
@@ -1001,7 +1006,6 @@ export default {
           }
           this.form.potentialInvestorarr = [];
           console.log(this.form);
-
           this.form.potentialInvestorsTags.forEach(item => {
             this.form.potentialInvestorarr.push({
               potentialInvestorsTagsEn: "",
@@ -1009,24 +1013,31 @@ export default {
             });
           });
           this.form.potentialInvestorsTagsEn.forEach((item, index) => {
-            this.$set(
-              this.form.potentialInvestorarr[index],
-              "potentialInvestorsTagsEn",
-              item
-            );
+            this.form.potentialInvestorarr[
+              index
+            ].potentialInvestorsTagsEn = item;
+            // this.$set(
+            //   this.form.potentialInvestorarr[index],
+            //   "potentialInvestorsTagsEn",
+            //   item
+            // );
           });
-          // console.log(this.industrylist);
-          this.form.industryId = [this.form.industryId];
 
-          // console.log(this.form);
-
-          // this.form.projectDescribeEn = EngLists.projectDescribe;
-          // this.form.projectDetailEn = EngLists.projectDetail;
-          // this.form.projectCompanyEn = EngLists.projectCompany;
-          // this.form.projectNameEn = EngLists.projectName;
-          // this.form.projectIndustryEn = EngLists.projectIndustry;
-          // this.form.projectAreaEn = EngLists.projectArea;
-          // this.form.potentialInvestorsTagsEn = EngLists.potentialInvestorsTags;
+          this.form.projectIndustryEn.forEach(item => {
+            this.industrylist.forEach(self => {
+              if (self.industryNameEn == item) {
+                this.industryId.push(self.industryId);
+              }
+            });
+          });
+          this.form.projectTagsEn.forEach(item => {
+            this.ProjectTags.forEach(self => {
+              if (self.tagsNameEn == item) {
+                this.SelectedProjectTags.push(self.id);
+              }
+            });
+          });
+        
         });
     },
     get_coin() {
@@ -1147,7 +1158,7 @@ export default {
     },
     selectindustry(val) {
       // console.log(val);
-      this.form.industryId = val;
+      this.industryId = val;
       // console.log(this.industrylist);
       this.form.projectIndustry = [];
       this.form.projectIndustryEn = [];
@@ -1159,16 +1170,35 @@ export default {
           }
         });
       });
+
       // console.log();
 
       // this.form.industryId =val.industryId;
       // this.form.projectIndustry = val.industryNameCh;
       // this.form.projectIndustryEn =val.industryNameEn;
     },
+    selectTags(val) {
+      this.form.projectTags = [];
+      this.form.projectTagsEn = [];
+      this.ProjectTags.forEach(item => {
+        val.forEach(i => {
+          if (item.id === i) {
+            this.form.projectTags.push(item.tagsName);
+            this.form.projectTagsEn.push(item.tagsNameEn);
+          }
+        });
+        // for (let key in this.regionlist) {
+        //   if (key === item) {
+        //     this.form.projectTagsEn.push(this.regionlist[key].countryEnname);
+        //   }
+        // }
+      });
+      console.log(this.form.projectTags, this.form.projectTagsEn);
+    },
     select_coin(val) {
       this.form.currencyType = val;
     },
-    remoteMethod(query) {
+    getRelationCompany(query) {
       let type = typeof query;
       if (type == "string") {
         this.loading = true;
@@ -1266,7 +1296,7 @@ export default {
           return item.potentialInvestorsTagsEn;
         })
       );
-      cloneObj.industryId = cloneObj.industryId[0];
+      // cloneObj.industryId = cloneObj.industryId[0];
       cloneObj.projectTags = JSON.stringify(cloneObj.projectTags);
       cloneObj.projectTagsEn = JSON.stringify(cloneObj.projectTagsEn);
       cloneObj.projectIndustry = JSON.stringify(cloneObj.projectIndustry);
@@ -1275,6 +1305,8 @@ export default {
       cloneObj.projectArea = JSON.stringify(cloneObj.projectArea);
       cloneObj.projectAreaEn = JSON.stringify(cloneObj.projectAreaEn);
       delete cloneObj.potentialInvestorarr;
+      console.log(cloneObj);
+
       this.$global
         .post_encapsulation(
           `${this.$axios.defaults.baseURL}/bsl_admin_web/project/saveOrUpdateProject`,

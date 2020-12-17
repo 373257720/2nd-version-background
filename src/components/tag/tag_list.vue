@@ -1,147 +1,160 @@
 <template>
-  <div class="tagList">
-
+  <div class="tag_list">
+    <header class="tosignup_header">
+      <div class="block"></div>
+      <el-button
+        @click="$routerto('addTag')"
+        type="primary"
+        icon="el-icon-circle-plus-outline"
+        class="addbtn"
+      >{{$t('Tag.AddTag')}}</el-button>
+    </header>
     <el-main>
-      <el-form
-        ref="ruleForm"
-        :model="coin_category_summit"
-        :rules="rules"
-        label-width="120px"
-        label-position="top"
+      <el-table
+        :data="tableData.slice((currentpage - 1) * pagesize, currentpage * pagesize)"
+        border
+        style="width:80%"
       >
-        <el-form-item label="English Name" prop="tagsNameEn">
-          <el-input
-            placeholder="Exo（China）"
-            show-word-limit
-            maxlength="50"
-            clearable
-            v-model="coin_category_summit.tagsNameEn"
-          ></el-input>
-        </el-form-item>
-        <el-form-item label="中文标签" prop="tagsName">
-          <el-input
-            placeholder="例（China）"
-            show-word-limit
-            maxlength="50"
-            clearable
-            v-model="coin_category_summit.tagsName"
-          ></el-input>
-        </el-form-item>
-        <el-form-item :label="$t('industry.SerialNumber')" prop="tagsSort">
-          <el-input
-            :placeholder="$t('industry.Pleaseenterthanzero')"
-            show-word-limit
-            maxlength="9"
-            clearable
-            oninput="value=value.replace(/[^\d.]/g,'')"
-            v-model="coin_category_summit.tagsSort"
-          ></el-input>
-        </el-form-item>
-      </el-form>
-      <p class="dialog-footer">
-        <button >{{$t('project.Cancel')}}</button>
-        <button @click="submitForm('ruleForm')">{{$t('project.Confirm')}}</button>
-      </p>
+        <el-table-column width="200" prop="idx" :label="$t('industry.SerialNumber')" align="center"></el-table-column>
+        <el-table-column prop="tagsName" show-overflow-tooltip label="标签名" align="center"></el-table-column>
+        <el-table-column prop="tagsNameEn" show-overflow-tooltip label="Tag name" align="center"></el-table-column>
+        <el-table-column fixed="right" :label="$t('project.Operation')" width="200" align="center">
+          <template slot-scope="scope">
+            <el-button
+              @click="deleterow(scope.row)"
+              type="text"
+              size="small"
+            >{{$t('project.Delete')}}</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
     </el-main>
+    <el-pagination
+      style="width:80%"
+      :page-size="pagesize"
+      :pager-count="5"
+      layout="prev, pager, next"
+      @current-change="handleCurrentChange"
+      :current-page.sync="currentpage"
+      @size-change="handleSizeChange"
+      :total="tableData.length"
+    ></el-pagination>
   </div>
 </template>
 
 <script>
+// import '@/components/eventBus'
+// import login from "../login";
 export default {
+  name: "tag_list",
   data() {
-    var valid_currencytype = (rule, value, callback) => {
-      //  var str = value.replace(/(^\s*)|(\s*$)/g,"");
-      //  let a=/^[A-Za-z][A-Za-z\s]*[A-Za-z]$/.test(str);
-      if (value) {
-        this.coin_category_summit.tagsNameEn = value;
-        //  console.log(this.coin_category_summit.tagsNameEn)
-        callback();
-      } else {
-        callback(new Error("Please enter english"));
-      }
-    };
-    var valid_currencyName = (rule, value, callback) => {
-      // var str = value.replace(/(^\s*)|(\s*$)/g,"");
-      // let a=/^[\u4E00-\u9FA5][\u4E00-\u9FA5\s]*[\u4E00-\u9FA5]$/.test(str);
-      if (value) {
-        this.coin_category_summit.tagsName = value;
-        callback();
-      } else {
-        callback(new Error("请输入中文"));
-      }
-    };
     return {
-      dialogFormVisible_industry: false,
+      centerDialogVisible: false,
+      value1: [], //日期选择
+      value: "", //项目状态
+      searchkey: "",
+      currentpage: 1,
+      pagesize: 8,
+      pagetotal: null,
       tableData: [],
-      title: "",
-      coin_category_summit: {
-        currencyId: -1,
-        tagsSort: null,
-        tagsNameEn: "",
-        tagsName: ""
-      },
-      rules: {
-        tagsSort: [
-          {
-            required: true,
-            message: this.$t("industry.Pleaseenterthanzero"),
-            trigger: "blur"
-          }
-        ],
-        tagsNameEn: [
-          { required: true, validator: valid_currencytype, trigger: "blur" }
-        ],
-        tagsName: [
-          { required: true, validator: valid_currencyName, trigger: "blur" }
-        ]
-      }
+      deleteType: 0,
+      industryId: ""
     };
   },
-  created() {
-    if (this.$route.query.currencyId) {
-      this.title = this.$t(
-        "CategoryOfCoin.Pleaseenterthecurrencyyouwanttoedit"
-      );
-      this.coin_category_summit.currencyId = this.$route.query.currencyId;
-      this.search();
-    } else {
-      this.title = this.$t(
-        "CategoryOfCoin.Pleaseenterthecurrencyyouwanttoincrease"
-      );
-    }
+  created() {},
+  activated() {
+    console.log();
+
+    this.search();
   },
   methods: {
-    submitForm(formName) {
-      this.$refs[formName].validate(valid => {
-        if (valid) {
-          this.add_tag();
-        } else {
-          return false;
+    handleCurrentChange(cpage) {
+      this.currentpage = cpage;
+    },
+    handleSizeChange(psize) {
+      this.pagesize = psize;
+    },
+    deleterow(row) {
+      console.log(row);
+      let self = this;
+      this.industryId = row.industryId;
+      this.centerDialogVisible = true;
+      this.$confirm(
+        self.$t("project.Confirmdelect"),
+        self.$t("project.Reminder"),
+        {
+          confirmButtonText: self.$t("project.Yes"),
+          cancelButtonText: self.$t("project.No"),
+          type: "warning",
+          center: true,
+          showCancelButton: true
+        }
+      )
+        .then(() => {
+          this.$global
+            .get_encapsulation(
+              `${this.$axios.defaults.baseURL}/bsl_admin_web/project/delProjectTags`,
+              { projectTagsId: row.id }
+            )
+            .then(res => {
+              if (res.data.resultCode == 10000) {
+                this.$message({
+                  message: res.data.resultDesc,
+                  type: "success"
+                });
+                this.search();
+              } else {
+                this.$message({
+                  message: res.data.resultDesc,
+                  type: "warn"
+                });
+              }
+            });
+        })
+        .catch(() => {});
+    },
+
+    handleClick(row) {
+      this.$router.push({
+        name: "industry_alter",
+        query: {
+          industryId: row.industryId
         }
       });
     },
-// 添加标签123123123123
-    add_tag() {
-      // console.log(this.coin_category_summit)
-      let self = this;
+    fromchildren1(data) {
+      this.currentpage = data.currentpage;
+      this.pagesize = data.pagesize;
+      this.search(
+        this.value,
+        this.value1[0] / 1000,
+        this.value1[1] / 1000,
+        this.currentpage,
+        this.pagesize
+      );
+    },
+    search() {
       this.$global
-        .post_encapsulation(
-          `${this.$axios.defaults.baseURL}/bsl_admin_web/project/addProjectTags`,
-          self.coin_category_summit
+        .get_encapsulation(
+          `${this.$axios.defaults.baseURL}/bsl_admin_web/project/getAllProjectTags`,
+          { searchKey: "" }
         )
-        .then(result => {
-          console.log(result);
-          this.$confirm(result.data.resultDesc, self.$t("project.Reminder"), {
-            confirmButtonText: self.$t("project.Confirm"),
-            center: true,
-            showCancelButton: false
-          }).then(() => {
-            if (result.data.resultCode == 10000) {
-             self.coin_category_summit.tagsSort=null;
-               self.coin_category_summit.tagsNameEn='';
-                 self.coin_category_summit.tagsName='';
-            }
-          });
+        .then(res => {
+          console.log(res);
+
+          if (res.data.resultCode == 10000) {
+            this.tableData = [...res.data.data.projectTagsList];
+            // console.log(this.tableData)
+            this.tableData.forEach((item, idx) => {
+              item.idx = idx + 1;
+              // if(item.industryStatus==-1){
+              //   item.industry_Status='已删除'
+              // }else if(item.industryStatus==0){
+              //   item.industry_Status='正常'
+              // }
+            });
+            // console.log(this.tableData);
+          }
         });
     }
   }
@@ -149,32 +162,37 @@ export default {
 </script>
 
 <style lang='scss'>
-.tagList {
-  padding-top: 80px;
-  .coin_category_alter_header {
-    height: 40px;
-    width: 80%;
-    font-size: 20px;
-    line-height: 40px;
-    margin: 0 auto;
-    text-align: center;
-  }
+.tag_list {
+  padding: 20px 0 0 0;
   .el-main {
-    width: 40%;
-    margin: 0 auto;
-    .thick {
-      p {
-        margin-bottom: 50px;
-        span {
-          display: block;
-          margin-bottom: 10px;
-        }
-      }
+    /*min-height: 580px;*/
+  }
+  .tosignup_header {
+    height: 40px;
+    /*width: 80%;*/
+    display: flex;
+    padding: 0 0 0 20px;
+    box-sizing: border-box;
+    .block {
+      margin-right: 20px;
     }
-    .dialog-footer {
-      padding-top: 20px;
-      display: flex;
-      justify-content: space-between;
+    .el-input--suffix {
+      width: 200px;
+      margin-right: 20px;
+    }
+  }
+  .el-pagination {
+    display: flex;
+    justify-content: center;
+  }
+  .remote_control {
+    .el-dialog__header {
+      background: #edf1f4;
+    }
+    .el-dialog--center .el-dialog__body {
+      padding: 30px 20px 10px 20px;
+    }
+    .el-dialog__footer {
       button {
         /*color: #FFF;*/
         width: 40%;
@@ -184,6 +202,31 @@ export default {
         border-radius: 5px;
         background-color: #edf1f4;
         border: 1px solid #dcdfe6;
+      }
+      button:nth-of-type(1) {
+      }
+    }
+    .el-radio-group {
+      width: 100%;
+      .el-radio {
+        width: 100%;
+      }
+      .el-radio__label {
+        display: inline-block;
+        word-wrap: break-word;
+        white-space: normal;
+        width: 100%;
+      }
+    }
+
+    p.thick {
+      color: black;
+      font-size: 16px;
+      margin-bottom: 30px;
+    }
+    .el-radio-group {
+      > div {
+        margin-bottom: 10px;
       }
     }
   }

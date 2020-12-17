@@ -1,5 +1,5 @@
 <template>
-    <keep-alive include="tag">
+    <keep-alive>
       <router-view></router-view>
     </keep-alive>
 

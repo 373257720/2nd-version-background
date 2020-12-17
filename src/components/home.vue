@@ -39,11 +39,7 @@
             {{$t('Home.MemberList')}}
           </template>
           <router-link to="/home/membership/membershipList">
-<<<<<<< HEAD
-            <el-menu-item index="membership">会员管理</el-menu-item>
-=======
             <el-menu-item index="membershipList">{{$t('Membership.MemberManagement')}}</el-menu-item>
->>>>>>> cebf69fc49e2891eff961f27b208d5b62a35109c
           </router-link>
           <router-link to="/home/membership/MembershipSystemArrangment">
             <el-menu-item
@@ -54,11 +50,7 @@
             <el-menu-item index="Exchange">{{$t('Membership.redemption')}}</el-menu-item>
           </router-link>
           <router-link to="/home/membership/rankingList">
-<<<<<<< HEAD
-            <el-menu-item index="rankingList">积分排行榜</el-menu-item>
-=======
             <el-menu-item index="rankingList">{{$t('Membership.PointsRanking')}}</el-menu-item>
->>>>>>> cebf69fc49e2891eff961f27b208d5b62a35109c
           </router-link>
         </el-submenu>
         <router-link to="/home/Recommand/RecommandList">
@@ -93,7 +85,7 @@
           </el-menu-item>
         </router-link>
 
-         <router-link to="/home/tag">
+        <router-link to="/home/tag">
           <el-menu-item index="tag">
             <i class="el-icon-message"></i>
             <span slot="title">{{$t('Home.tagList')}}</span>
@@ -134,10 +126,9 @@ export default {
       config => {
         // console.log(`${this.$axios.defaults.baseURL}/bsl_admin_web/user/adminLogin.do`)
         // 在发送请求之前做些什么
-
-        if (config.url.indexOf("/bsl_admin_web/base/countryList") > -1) {
-          return config;
-        }
+        // if (config.url.indexOf("/bsl_admin_web/base/countryList") > -1) {
+        //   return config;
+        // }
         that.addLoading();
         return config;
       },
@@ -158,8 +149,8 @@ export default {
         }
       },
       error => {
-        this.isShowLoading = false;
-        this.loadingCount = 0;
+        // this.isShowLoading = false;
+        that.isCloseLoading();
         return Promise.reject(error);
       }
     );

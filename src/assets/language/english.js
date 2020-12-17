@@ -174,6 +174,7 @@ export default {
     userlist:'User list',
     Authenticateduser:'Authenticated user',
     Pendingusers:'Pending users',
+    MemberList:"MemberList",
     Industrylist:'Industry list',
     ContractList:"Contract list",
     Currencylist:'Currency list',
@@ -205,6 +206,10 @@ export default {
     SharingMechanism:"Sharing mechanism (interest%)",
     RecommendedResults:"Recommended results",
     OnchainInformation:"On-chain information",
+  },
+  Tag:{
+    Tag:"Tag",
+    AddTag:"Add tag"
   },
   Membership: {
     Colour: "Colour",

@@ -11,7 +11,7 @@
     >
       <el-form-item>
         <div class="Currencyrange">
-          <div v-for="(item,idx) in ruleForm.arr " :key="item.cellInfo">
+          <div v-for="(item) in ruleForm.arr " :key="item.cellInfo">
             <div v-if="item.type===3" class="item-first additem">
               <el-form-item>
                 <Slot name="label" class="addredOption">
@@ -232,37 +232,38 @@ export default {
     submitForm(formName) {
       // this.$routerto("");
       // let oo = {};
-      let arr = this.$global.deepCopy(this.ruleForm.arr);
-      arr.forEach(item => {
-        if (item.type === 3) {
-          item.listCell = item.listCell.map(i => {
-            return i.label;
-          });
-        }
-      });
-      // console.log(arr);
-      let obj = {
-        importList: JSON.stringify(arr),
-        fileId: this.fileId * 1
-      };
-      this.$axios({
-        method: "post",
-        url: `${this.$axios.defaults.baseURL}/bsl_admin_web/contract/saveExcelContractTemplate?Ad_Token=${this.$store.state.X_Token}`,
-        data: this.$qs.stringify(obj),
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        }
-      }).then(res => {
-        console.log(res);
-      });
 
-      // this.$refs[formName].validate(valid => {
-      //   if (valid) {
-      //     console.log(valid);
-      //   } else {
-      //     return false;
-      //   }
-      // });
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          console.log(valid);
+          
+          // let arr = this.$global.deepCopy(this.ruleForm.arr);
+          // arr.forEach(item => {
+          //   if (item.type === 3) {
+          //     item.listCell = item.listCell.map(i => {
+          //       return i.label;
+          //     });
+          //   }
+          // });
+          // // console.log(arr);
+          // let obj = {
+          //   importList: JSON.stringify(arr),
+          //   fileId: this.fileId * 1
+          // };
+          // this.$axios({
+          //   method: "post",
+          //   url: `${this.$axios.defaults.baseURL}/bsl_admin_web/contract/saveExcelContractTemplate?Ad_Token=${this.$store.state.X_Token}`,
+          //   data: this.$qs.stringify(obj),
+          //   headers: {
+          //     "Content-Type": "application/x-www-form-urlencoded"
+          //   }
+          // }).then(res => {
+          //   console.log(res);
+          // });
+        } else {
+          return false;
+        }
+      });
     },
     upload(file, fileList, name) {
       console.log("file", file);

@@ -86,23 +86,23 @@ const contractItem = () =>
     /* webpackChunkName: "project_owner" */
     "@/components/contract_list/contractItem"
   );
-  const contractClause = () =>
+const contractClause = () =>
   import(
     /* webpackChunkName: "project_owner" */
     "@/components/contract_list/contractClause"
   );
-   
+
 const contractListsRoot = () =>
   import(
     /* webpackChunkName: "project_owner" */
     "@/components/contract_list/contractListsRoot"
   );
-  const add_contract = () =>
+const add_contract = () =>
   import(
     /* webpackChunkName: "project_owner" */
     "@/components/contract_list/add_contract"
   );
-  const contract_alter = () =>
+const contract_alter = () =>
   import(
     /* webpackChunkName: "project_owner" */
     "@/components/contract_list/contract_alter"
@@ -179,10 +179,11 @@ const pointsSetting = () =>
     /* webpackChunkName: "project_owner" */
     "@/components/membership/pointsSetting"
   );
-  const pointsSettingHistory=()=>import(
-     /* webpackChunkName: "project_owner" */
-     "@/components/membership/pointsSettingHistory"
-  )
+const pointsSettingHistory = () =>
+  import(
+    /* webpackChunkName: "project_owner" */
+    "@/components/membership/pointsSettingHistory"
+  );
 const addGift = () =>
   import(
     /* webpackChunkName: "project_owner" */
@@ -203,21 +204,21 @@ const MembershipSystemArrangment = () =>
     /* webpackChunkName: "project_owner" */
     "@/components/membership/MembershipSystemArrangment"
   );
-  const rankingList = () =>
+const rankingList = () =>
   import(
     /* webpackChunkName: "project_owner" */
     "@/components/membership/rankingList"
   );
-  const exchangeHistory=()=>
-    import(
-      /* webpackChunkName: "project_owner" */
-      "@/components/membership/exchangeHistory"
-    );
-    const exchangeDetails=()=>
-    import(
-      /* webpackChunkName: "project_owner" */
-      "@/components/membership/exchangeDetails"
-    );
+const exchangeHistory = () =>
+  import(
+    /* webpackChunkName: "project_owner" */
+    "@/components/membership/exchangeHistory"
+  );
+const exchangeDetails = () =>
+  import(
+    /* webpackChunkName: "project_owner" */
+    "@/components/membership/exchangeDetails"
+  );
 const membershipList = () =>
   import(
     /* webpackChunkName: "project_owner" */
@@ -266,17 +267,21 @@ const change_password = () =>
     /* webpackChunkName: "project_owner" */
     "@/components/user_management/change_password"
   );
-  const tag = () =>
+const tag = () =>
   import(
     /* webpackChunkName: "project_owner" */
     "@/components/tag/tag"
   );
-  const tagList = () =>
+const tagList = () =>
   import(
     /* webpackChunkName: "project_owner" */
     "@/components/tag/tag_list"
   );
-
+const addTag = () =>
+  import(
+    /* webpackChunkName: "project_owner" */
+    "@/components/tag/addTag"
+  );
 
 // import user_managementlists from "../components/user_management/user_managementlists";
 // import user_management from '../components/user_management/user_management'
@@ -422,7 +427,7 @@ const routes = [
             name: "contractClause",
             component: contractClause
           },
-          
+
           {
             path: "add_contract",
             name: "add_contract",
@@ -529,7 +534,7 @@ const routes = [
             name: "pointsSetting",
             component: pointsSetting
           },
-          
+
           {
             path: "addLevel",
             name: "addLevel",
@@ -625,6 +630,14 @@ const routes = [
               title: "Home.tagList"
             }
           },
+          {
+            path: "addTag",
+            name: "addTag",
+            component: addTag,
+            meta: {
+              title: "Home.tagList"
+            }
+          }
         ]
       }
     ]
