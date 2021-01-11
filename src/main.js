@@ -1,13 +1,13 @@
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
-import Vue from 'vue'
-import App from './App'
-import router from './router'
-import store from './store/store'
+import Vue from "vue";
+import App from "./App";
+import router from "./router";
+import store from "./store/store";
 import "./css/base.css";
-import qs from 'qs'
+import qs from "qs";
 // import ElementUI from 'element-ui';
-import Locale from 'element-ui/lib/locale'
+import Locale from "element-ui/lib/locale";
 const url = process.env.BASE_API;
 axios.defaults.baseURL = url;
 // translation
@@ -18,13 +18,13 @@ axios.defaults.baseURL = url;
 // Vue.prototype.$appid = appid;
 // Vue.prototype.$key = key;
 
-import enLocale  from 'element-ui/lib/locale/lang/en'
-import zhLocale from 'element-ui/lib/locale/lang/zh-CN'
-import axios from 'axios';
+import enLocale from "element-ui/lib/locale/lang/en";
+import zhLocale from "element-ui/lib/locale/lang/zh-CN";
+import axios from "axios";
 // import 'element-ui/lib/theme-chalk/index.css';
-import global from '@/components/global.js';
-import { i18n } from './language'
-Vue.prototype.$global = global
+import global from "@/components/global.js";
+import { i18n } from "./language";
+Vue.prototype.$global = global;
 
 // Vue.use(ElementUI);
 import {
@@ -58,9 +58,9 @@ import {
   Main,
   Loading,
   MessageBox,
-  Message,
+  Message
   // Notification
-} from 'element-ui';
+} from "element-ui";
 
 Vue.use(Pagination);
 Vue.use(Dialog);
@@ -143,16 +143,16 @@ Vue.prototype.$loading = Loading.service;
 Vue.prototype.$confirm = MessageBox.confirm;
 // Vue.prototype.$msgbox = MessageBox;
 Vue.config.productionTip = false;
-let loadingCount=0;
-let isShowLoading =true;
-Vue.prototype.$isShowLoading=isShowLoading;
-const restore_obj=deepCopy(store._modules.root.state);
-Vue.prototype.$restore_obj=restore_obj;
+let loadingCount = 0;
+let isShowLoading = true;
+Vue.prototype.$isShowLoading = isShowLoading;
+const restore_obj = deepCopy(store._modules.root.state);
+Vue.prototype.$restore_obj = restore_obj;
 function deepCopy(obj) {
   var result = Array.isArray(obj) ? [] : {};
   for (var key in obj) {
     if (obj.hasOwnProperty(key)) {
-      if (typeof obj[key] === 'object' && obj[key] !== null) {
+      if (typeof obj[key] === "object" && obj[key] !== null) {
         result[key] = deepCopy(obj[key]); //递归复制
       } else {
         result[key] = obj[key];
@@ -160,105 +160,115 @@ function deepCopy(obj) {
     }
   }
   return result;
-};
+}
 Vue.prototype.$routerto = function routerTo(name, obj) {
   this.$router.push({
     name: name,
     query: obj
-  })
-}
+  });
+};
 Vue.prototype.$qs = qs;
 axios.defaults.withCredentials = true;
 
-axios.interceptors.request.use(function (config) {
-  　　// 在发送请求之前做些什么
-  loadingCount++;
-  return config;
-  }, function (error) {
-  　　// 对请求错误做些什么
-  return Promise.reject(error)
-  });
-axios.interceptors.response.use(res => {
+axios.interceptors.request.use(
+  function(config) {
+    // 在发送请求之前做些什么
+    loadingCount++;
+    return config;
+  },
+  function(error) {
+    // 对请求错误做些什么
+    return Promise.reject(error);
+  }
+);
+axios.interceptors.response.use(
+  res => {
     if (res.data && res.data.resultCode) {
       let code = res.data.resultCode;
       loadingCount--;
-      if (code == 10090) {
-        if(isShowLoading){
-            isShowLoading=false;
-            let mes;
-            if(i18n.locale=='en_US'){
-            	mes=res.data.resultDesc.slice(11,-1)
-            }else{
-            	mes=res.data.resultDesc.slice(0,10)
+      if (code == 10090 || code == 10001) {
+        if (isShowLoading) {
+          isShowLoading = false;
+          let mes;
+          if (code == 10090) {
+            if (i18n.locale == "en_US") {
+              mes = res.data.resultDesc.slice(11, -1);
+            } else {
+              mes = res.data.resultDesc.slice(0, 10);
             }
+          } else if (code == 10001) {
+            mes = res.data.resultDesc;
+          }
           MessageBox({
-            title: i18n.t('project.Reminder'),
+            title: i18n.t("project.Reminder"),
             message: mes
-          }).then(()=>{
+          }).then(() => {
             store.dispatch("reset_actions", restore_obj);
             sessionStorage.clear();
-            router.push({name:'login'})
-          })
+            router.push({ name: "login" });
+          });
         }
       }
     }
-    if(loadingCount == 0){
-    	isShowLoading=true;
+    if (loadingCount == 0) {
+      isShowLoading = true;
     }
-    return res
+    return res;
   },
   error => {
-  if(isShowLoading){
-      isShowLoading=false;
+    if (isShowLoading) {
+      isShowLoading = false;
       MessageBox({
-        title: i18n.t('project.Reminder'),
-        message:i18n.t('Home.network'),
-      }).then(()=>{
+        title: i18n.t("project.Reminder"),
+        message: i18n.t("Home.network")
+      }).then(() => {
         store.dispatch("reset_actions", restore_obj);
         sessionStorage.clear();
-        router.push({name:'login'})
-      })
+        router.push({ name: "login" });
+      });
     }
-    return Promise.reject(error)
+    return Promise.reject(error);
   }
-)
+);
 
-
-Vue.prototype.$axios = axios
+Vue.prototype.$axios = axios;
 // //设置baseurl
 var baseurl = {
   // api:'http://czw.mynatapp.cc',
   // api: "http://192.168.1.37:80",
-  api: "http://47.90.62.114:8086",//(后台正式服务器)
-}
+  api: "http://47.90.62.114:8086" //(后台正式服务器)
+};
 // Vue.prototype.$axios.defaults.baseURL = baseurl.api
 function locales(a) {
-  if(a == 'en_US'){
+  if (a == "en_US") {
     Locale.use(enLocale);
   }
-  if(a == 'zh_CN'){
-    Locale.use(zhLocale )
+  if (a == "zh_CN") {
+    Locale.use(zhLocale);
   }
 }
 // Vue.use(ElementUI, {en_US});
 Vue.prototype.$Local = locales;
 // 多语言设置
-let z = window.localStorage.getItem('lan')?window.localStorage.getItem('lan'): 'en_US';
+let z = window.localStorage.getItem("lan")
+  ? window.localStorage.getItem("lan")
+  : "en_US";
 locales(z);
-i18n.locale=window.localStorage.getItem('lan')?window.localStorage.getItem('lan'): 'en_US';
+i18n.locale = window.localStorage.getItem("lan")
+  ? window.localStorage.getItem("lan")
+  : "en_US";
 // Locale.i18n((key, value) => i18n.t(key, value))
 
-
-import pagevue from './components/pagevue.vue'
-Vue.component('pagevue', pagevue)
+import pagevue from "./components/pagevue.vue";
+Vue.component("pagevue", pagevue);
 /* eslint-disable no-new */
 new Vue({
-  el: '#app',
+  el: "#app",
   router,
   store,
   i18n,
   components: {
     App
   },
-  template: '<App/>'
-})
+  template: "<App/>"
+});

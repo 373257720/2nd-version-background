@@ -84,10 +84,7 @@ export default {
       this.$store.replaceState(
         Object.assign(
           {},
-          this.$store.state,
-
-
-          
+          this.$store.state,   
           JSON.parse(sessionStorage.getItem("store"))
         )
       );

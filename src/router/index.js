@@ -517,7 +517,10 @@ const routes = [
           {
             path: "membershipList",
             name: "membershipList",
-            component: membershipList
+            component: membershipList,
+            meta: {
+              title:"Membership.MemberManagement"
+            },
           },
           {
             path: "giftSetting",
@@ -543,10 +546,10 @@ const routes = [
           {
             path: "MembershipSystemArrangment",
             name: "MembershipSystemArrangment",
-            component: MembershipSystemArrangment
-            // meta: {
-            //   title: '添加币种'i18n.t('project.Currencylist')
-            // },
+            component: MembershipSystemArrangment,
+            meta: {
+              title:"Membership.MembershipSystemManagement"
+            },
           },
           {
             path: "exchangeHistory",
@@ -566,12 +569,18 @@ const routes = [
           {
             path: "rankingList",
             name: "rankingList",
-            component: rankingList
+            component: rankingList,
+            meta: {
+              title:"Membership.PointsRanking"
+            },
           },
           {
             path: "Exchange",
             name: "Exchange",
-            component: Exchange
+            component: Exchange,
+            meta: {
+              title:"Membership.redemption"
+            },
           },
           {
             path: "customPoints",

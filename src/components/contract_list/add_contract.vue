@@ -39,7 +39,7 @@
           <el-button size="small" type="primary">{{$t('Contract.Upload')}}</el-button>
         </el-upload>
       </el-form-item>
-      <el-form-item label="上传合同模板excl" prop="fileExcel">
+      <el-form-item label="上传合同模板excel" prop="fileExcel">
         <el-upload
           :on-preview="handlePreview"
           class="upload-demo"
@@ -194,7 +194,7 @@ export default {
         console.log(res);
         if (res.data.resultCode == 10000) {
           this.ruleForm.fileWord = res.data.data.path;
-          this.ruleForm.fileWordName = "\\" + res.data.data.fileWordName;
+          this.ruleForm.fileWordName =  res.data.data.fileWordName;
         } else {
         }
       });
@@ -214,7 +214,7 @@ export default {
         console.log(res);
         if (res.data.resultCode == 10000) {
           this.ruleForm.fileExcel = res.data.data.path;
-          this.ruleForm.fileExcelName = "\\" + res.data.data.fileExcelName;
+          this.ruleForm.fileExcelName = res.data.data.fileExcelName;
         } else {
         }
       });
@@ -256,6 +256,7 @@ export default {
       console.log(this.ruleForm);
     },
     submitForm(formName) {
+ 
       this.$refs[formName].validate(valid => {
         if (valid) {
           this.$global

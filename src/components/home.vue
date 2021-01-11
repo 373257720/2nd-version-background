@@ -78,13 +78,6 @@
             <span slot="title">{{$t('Home.Currencylist')}}</span>
           </el-menu-item>
         </router-link>
-        <router-link to="/home/user_management/user_managementlists">
-          <el-menu-item index="user_management">
-            <i class="el-icon-news"></i>
-            <span slot="title">{{$t('Home.Backgroundusermanagement')}}</span>
-          </el-menu-item>
-        </router-link>
-
         <router-link to="/home/tag">
           <el-menu-item index="tag">
             <i class="el-icon-message"></i>
@@ -177,7 +170,7 @@ export default {
     },
     getBreadcrumb() {
       let matched = this.$route.matched.filter(item => item.meta.title);
-      // console.log(matched)
+      console.log(matched)
       // const first = matched[0];
       this.levelList = matched;
     },

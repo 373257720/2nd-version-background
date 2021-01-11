@@ -30,13 +30,14 @@
           align="center"
         >
           <template slot-scope="scope">
-            <span>{{scope.row.industryStatus?$t('project.Normal'):$t('project.Deleted')}}</span>
+           <!-- true normal flase delected -->
+            <span>{{!scope.row.industryStatus?$t('project.Normal'):$t('project.Deleted')}}</span>
           </template>
         </el-table-column>
         <el-table-column fixed="right" :label="$t('project.Operation')" width="200" align="center">
           <template slot-scope="scope">
             <el-button
-              v-if="!scope.row.industryStatus"
+              v-if="scope.row.industryStatus"
               disabled
               type="text"
               size="small"
@@ -48,7 +49,7 @@
               size="small"
             >{{$t('project.Edit')}}</el-button>
             <el-button
-              v-if="!scope.row.industryStatus"
+              v-if="scope.row.industryStatus"
               disabled
               type="text"
               size="small"
@@ -176,7 +177,7 @@ export default {
             this.tableData = [...res.data.data];
             // console.log(this.tableData)
             this.tableData.forEach((item, idx) => {
-              item.idx = idx + 1;
+              item.idx = idx + 1; 
               // if(item.industryStatus==-1){
               //   item.industry_Status='已删除'
               // }else if(item.industryStatus==0){

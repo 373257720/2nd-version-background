@@ -19,7 +19,7 @@
         </el-form-item>
         <el-form-item label="中文标签" prop="tagsName">
           <el-input
-            placeholder="例（China）"
+            placeholder="例（中国）"
             show-word-limit
             maxlength="50"
             clearable

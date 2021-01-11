@@ -1,9 +1,17 @@
 export default {
   project: {
+    English:"英语",
+    Chinese:"中文",
+    projectName:"项目名称",
+    PotentialInvestors:"理想的投资人",
+    Pleasetagtheitem: "请为项目添加标签",
+    cannotbenull:"不能为空",
+    Previous:"上一页",
+    Next:"下一页",
     Frozen: "冻结",
     Recover: "恢复",
     PleaseComfirm: "请确认操作",
-    Potential: "潜在客户要求",
+    Potential: "潜在客户要求", 
     contractTerms: "合同条款",
     MyProjectInformation: "我的项目资料",
     FundingRangeBewteen: "资金需求(资金范围)",
@@ -76,6 +84,7 @@ export default {
     ARound: "A轮",
     BRound: "B轮",
     CRound: "C轮",
+    PreIPO:"上市前融资",
     DebtFinancing: "债务融资",
     // IdentificationNumber:'身份证号码',
     IDCardFront: "身份证正面",
@@ -223,6 +232,8 @@ export default {
     PointsRanking: "积分排行榜"
   },
   Contract: {
+    AddOption:"添加选项",
+    contractformat:"合同格式不对,请重新上传",
     RecommmandPercent: "建议中间人募集资金额的百分比(%)",
     Upload: "点击上传",
     PleaseUpload: "请上传文件",

@@ -30,7 +30,7 @@
           type="primary"
           icon="el-icon-search"
           class="block"
-          @click="search(value,value1, 1, pagesize)"
+          @click="search(null,pagesize)"
         >{{$t('project.Search')}}</el-button>
         <el-button
           @click="$routerto('addproject_ch',{type:0})"
@@ -115,8 +115,8 @@
         v-on:fromchildren="fromchildren1"
       ></pagevue>-->
       <el-pagination :page-size="pagesize" layout="slot">
-        <span class="finger" @click="changePage('previous')">上一页</span>
-        <span class="finger" @click="changePage('next')">下一页</span>
+        <span class="finger" @click="changePage('previous')">{{$t('project.Previous')}}</span>
+        <span class="finger" @click="changePage('next')">{{$t('project.Next')}}</span>
       </el-pagination>
     </el-main>
 
@@ -143,8 +143,8 @@ export default {
       searchkey: "",
       currentpage: null,
       pageArr: [null],
-      pagesize: 3,
-      bookmark: "",
+      pagesize: 8,
+      bookmark: null,
       currentpageSerial: 0,
       pagetotal: null,
       options: [
@@ -323,8 +323,13 @@ export default {
               for (let key in item.record) {
                 item[key] = item.record[key];
               }
-              item.projectName =
-                item.projectName || "English name of project not added";
+              if (this.$i18n.locale == "en_US") {
+                item.projectName = item.projectNameEn;
+                item.projectCompany = item.projectCompanyEn;
+              } else if (this.$i18n.locale == "zh_CN") {
+                item.projectName = item.projectName;
+                item.projectCompany = item.projectCompany;
+              }
               item.createTime = item.createTime
                 ? this.$global.timestampToTime(item.createTime)
                 : "-";
@@ -332,7 +337,7 @@ export default {
                 ? this.$global.timestampToTime(item.optTime)
                 : "-";
             });
-            // console.log(this.tableData);
+            console.log(this.tableData);
 
             // this.pagetotal = res.data.data.projectList.fetchedRecordsCount;
           }
@@ -344,9 +349,11 @@ export default {
 
 <style lang='scss'>
 .tosignuproot {
- .el-pagination{
-       text-align: center;
- }
+  .el-pagination {
+    text-align: center;
+    color: #606266;
+    cursor: pointer;
+  }
   .el-main {
     /*min-height: 590px;*/
     width: 80%;

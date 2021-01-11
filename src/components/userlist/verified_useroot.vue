@@ -66,12 +66,16 @@
           </template>
         </el-table-column>
       </el-table>
-      <pagevue
+      <!-- <pagevue
         :pagenum="pagetotal"
         :currentpages="bookmark"
         :pagesizes="pagesize"
         v-on:fromchildren="fromchildren1"
-      ></pagevue>
+      ></pagevue>-->
+      <el-pagination :page-size="pagesize" layout="slot">
+        <span class="finger" @click="changePage('previous')">{{$t('project.Previous')}}</span>
+        <span class="finger" @click="changePage('next')">{{$t('project.Next')}}</span>
+      </el-pagination>
     </el-main>
     <el-dialog
       :title="$t('project.Reminder')"
@@ -100,7 +104,9 @@ export default {
       pagesize: 8,
       issuccessful: null,
       keywords: "",
+      pageArr: [null],
       pagetotal: null,
+      currentpageSerial: 0,
       tableData: [],
       bookmark: null,
       scopedRow: {},
@@ -121,19 +127,26 @@ export default {
     };
   },
   created() {
-    if (this.$route.query.pagenum) {
-      // this.currentpage = this.$route.query.pagenum * 1;
-    }
-    this.changepage(this.bookmark, this.pagesize);
+    this.search(this.currentpage, this.pagesize);
   },
   methods: {
-    handleClose(done) {
-      done();
+    changePage(num) {
+      if (num === "previous") {
+        if (this.currentpageSerial > 0) {
+          this.currentpageSerial--;
+          this.search(this.pageArr[this.currentpageSerial], this.pagesize);
+        }
+      } else if (num === "next") {
+        if (this.currentpageSerial < this.pageArr.length - 1) {
+          this.currentpageSerial++;
+          this.search(this.pageArr[this.currentpageSerial], this.pagesize);
+        }
+        // if (this.currentpageSerial <= this.pageArr.length - 1) {
+        //   this.search(this.pageArr[this.currentpageSerial + 1], this.pagesize);
+        // }
+      }
     },
-    search() {
-      this.changepage(null, this.pagesize);
-    },
-    changepage(currentpage, pagesize) {
+    search(currentpage, pagesize) {
       let self = this;
       this.$global
         .get_encapsulation(
@@ -146,7 +159,18 @@ export default {
           }
         )
         .then(res => {
-          if (res.status == 200) {
+          if (res.data.resultCode == 10000) {
+            console.log(res);
+
+            let a = this.pageArr.every(item => {
+              return item !== res.data.data.bookmark;
+            });
+
+            if (a) {
+              if (res.data.data.data.length > 0) {
+                this.pageArr.push(res.data.data.bookmark);
+              }
+            }
             this.tableData = res.data.data.data.map(item => {
               let newname;
               let optStatus;
@@ -191,6 +215,10 @@ export default {
           }
         });
     },
+    handleClose(done) {
+      done();
+    },
+
     frozenFun(data) {
       let userStatus;
       if (this.scopedRow.userStatus === 1) {
@@ -247,6 +275,11 @@ export default {
 
 <style lang='scss'>
 .userroot {
+  .el-pagination {
+    text-align: center;
+    color: #606266;
+    cursor: pointer;
+  }
   .el-dialog--center .el-dialog__body {
     text-align: center;
   }

@@ -30,7 +30,7 @@
                   <el-form-item
                     :prop="'arr.'+index+ '.listCell.'+d+'.label'"
                     :rules="{
-                    required: true, message: 'domain can not be null', trigger: 'blur'
+                    required: true, message: $t('project.cannotbenull'), trigger: 'blur'
                   }"
                   >
                     <el-input
@@ -45,7 +45,7 @@
                     :label="self.cellInfo"
                     :prop="'arr.'+index+ '.orange.'+e+'.listCell.'+d"
                     :rules="{
-                    required: true, message: 'domain can not be null', trigger: 'blur'
+                    required: true, message: $t('project.cannotbenull'), trigger: 'blur'
                   }"
                   >
                     <el-input
@@ -73,7 +73,7 @@
       :close-on-click-modal="false"
       center
     >
-      <span slot="title">{{$t('CategoryOfCoin.Add')}}</span>
+      <span slot="title">{{$t('Contract.AddOption')}}</span>
       <el-form ref="add_coin" :model="Redoption_summit" label-width="120px" label-position="top">
         <el-form-item :label="$t('Contract.Option')" prop="currencyType">
           <el-input
@@ -90,6 +90,19 @@
         <button @click="Redoption_summitFn">{{$t('project.Confirm')}}</button>
       </span>
     </el-dialog>
+
+    <el-dialog
+      class="contractformat"
+      :title="$t('project.Reminder')"
+      :visible.sync="dialogVisible"
+      width="40%"
+      :before-close="handleClose"
+    >
+      <span>{{$t('Contract.contractformat')}} ?</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="$router.go(-1)">{{$t('project.Confirm')}}</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -99,6 +112,7 @@ export default {
   data() {
     let self = this;
     return {
+      dialogVisible: false,
       dialogFormVisible_redOption_add: false,
       labelposition: "top",
       ruleForm: {
@@ -144,8 +158,15 @@ export default {
       )
       .then(res => {
         if (res.data.resultCode == 10000) {
-          // this.ruleForm
           this.ruleForm.arr = res.data.data.list;
+          let isTureformat = this.ruleForm.arr.some((item, idx) => {
+            return item.type === 3 && this.ruleForm.arr[idx + 1].type === 4;
+          });
+          // console.log(isTureformat);   
+          if (!isTureformat) {
+            this.dialogVisible = true;
+            return;
+          }
           this.ruleForm.arr.forEach((item, idx) => {
             if (item.type === 3) {
               this.istype3 = true;
@@ -176,6 +197,9 @@ export default {
       });
   },
   methods: {
+    handleClose(done) {
+      done();
+    },
     deleteitem(item, id) {
       item.splice(id, 1);
       // this.form.potentialInvestorarr.splice(index, 1);
@@ -238,7 +262,13 @@ export default {
               "Content-Type": "application/x-www-form-urlencoded"
             }
           }).then(res => {
-            console.log(res);
+            this.$message({
+              message: res.data.resultDesc,
+              type: "success"
+            });
+            this.$router.replace({
+              name: "contractItem"
+            });
           });
         } else {
           return false;
@@ -312,6 +342,20 @@ export default {
         border-radius: 5px;
         background-color: #edf1f4;
         border: 1px solid #dcdfe6;
+      }
+    }
+  }
+  .contractformat {
+    .el-dialog__body {
+      text-align: center;
+    }
+    .el-dialog__footer {
+      .dialog-footer {
+        display: flex;
+        justify-content: center;
+        .el-button--primary {
+          color: #606266;
+        }
       }
     }
   }

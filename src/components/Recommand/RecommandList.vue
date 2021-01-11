@@ -31,7 +31,7 @@
         <el-table-column prop="industryNameEn" label="推荐人类型" width="140" align="center"></el-table-column>
         <el-table-column label="被推荐人" width="140" align="center"></el-table-column>
         <el-table-column label="被推荐人类型" width="150" align="center"></el-table-column>
-        <el-table-column label="分成机制利益分成%" width="200" align="center"></el-table-column>
+        <el-table-column label="分成机制（利益%）" width="200" align="center"></el-table-column>
         <el-table-column label="推荐结果" width="100" align="center"></el-table-column>
         <el-table-column label="上链信息" width="200" align="center"></el-table-column>
       </el-table>

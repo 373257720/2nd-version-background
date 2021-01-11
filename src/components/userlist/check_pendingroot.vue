@@ -48,12 +48,16 @@
           </template>
         </el-table-column>
       </el-table>
-      <pagevue
+      <!-- <pagevue
         :pagenum="pagetotal"
         :currentpages="currentpage"
         :pagesizes="pagesize"
         v-on:fromchildren="fromchildren1"
-      ></pagevue>
+      ></pagevue>-->
+      <el-pagination :page-size="pagesize" layout="slot">
+        <span class="finger" @click="changePage('previous')">{{$t('project.Previous')}}</span>
+        <span class="finger" @click="changePage('next')">{{$t('project.Next')}}</span>
+      </el-pagination>
     </el-main>
   </div>
 </template>
@@ -70,19 +74,17 @@ export default {
       pagetotal: null,
       tableData: [],
       keywords: "",
-      pageArr: [""],
+      pageArr: [null],
+      currentpageSerial: 0,
       projectStatus: 0
     };
   },
   created() {},
   activated() {
-    this.changepage(this.bookmark, this.pagesize);
+    this.search(this.currentpage, this.pagesize);
   },
   methods: {
-    search(value, value1, pageindex, pagesize) {
-      this.changepage(this.bookmark, this.pagesize);
-    },
-    changepage(currentpage, pagesize) {
+    search(currentpage, pagesize) {
       let self = this;
       this.$global
         .get_encapsulation(
@@ -137,6 +139,21 @@ export default {
           }
         });
     },
+
+    changePage(num) {
+      if (num === "previous") {
+        if (this.currentpageSerial > 0) {
+          this.currentpageSerial--;
+          this.search(this.pageArr[this.currentpageSerial], this.pagesize);
+        }
+      } else if (num === "next") {
+        if (this.currentpageSerial < this.pageArr.length - 1) {
+          this.currentpageSerial++;
+          this.search(this.pageArr[this.currentpageSerial], this.pagesize);
+        }
+      }
+    },
+
     handleClick(row) {
       this.$router.push({
         name: "check",
@@ -168,6 +185,11 @@ export default {
 
 <style lang='scss'>
 .check_pendingroot {
+  .el-pagination {
+    text-align: center;
+    color: #606266;
+    cursor: pointer;
+  }
   .el-main {
     /*min-height: 570px;*/
     width: 80%;

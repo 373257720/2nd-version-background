@@ -4,7 +4,10 @@ import qs from "qs";
 import MD5 from "../../md5";
 var appid = "20200615000495980";
 var key = "ioT1P2UGZoGv7tkUu0lE";
+import { i18n } from "../../src/language";
 import store from "../store/store";
+
+
 const global = {
   async translateL(str) {
     var salt = new Date().getTime();
@@ -35,6 +38,14 @@ const global = {
     });
     // console.log(result)
     return result;
+  },
+
+  lan: function() {
+    if (i18n.locale == "zh_CN") {
+      return "";
+    } else if (i18n.locale == "en_US") {
+      return "En";
+    }
   },
   // format num
   formatNum: function(num) {
@@ -151,7 +162,9 @@ const global = {
           // }}
         )
         .then(res => {
-          resolve(res);
+          if (res.data.resultCode == 10000) {
+            resolve(res);
+          }
         })
         .catch(function(error) {
           reject(error);
@@ -175,7 +188,9 @@ const global = {
           }
         })
         .then(res => {
-          resolve(res);
+          if (res.data.resultCode == 10000) {
+            resolve(res);
+          }
         })
         .catch(function(error) {
           reject(error);
@@ -196,7 +211,6 @@ const global = {
   goback() {
     // this.$router.go(-1);
     console.log();
-    
   }
 
   // abc:async function(url, num, currpage, pagesize){
@@ -204,5 +218,4 @@ const global = {
   //   console.log(a);
   // }
 };
-
 export default global;

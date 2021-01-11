@@ -1,5 +1,13 @@
 export default {
   project: {
+    English:"English",
+    Chinese:"Chinese",
+    projectName:"projectName",
+    PotentialInvestors:"Potential investors",
+    Pleasetagtheitem: "Please tag the item",
+    cannotbenull:"Can not be null",
+    Previous:"Previous",
+    Next:"Next",
     Frozen: "Frozen",
     Recover: "Recover",
     PleaseComfirm: "Please comfirm",
@@ -78,6 +86,7 @@ export default {
     ARound: "Series A",
     BRound: "Series B",
     CRound: "Series C",
+    PreIPO:"Pre-IPO",
     // IdentificationNumber:'Identification Number',
     IDCardFront: "ID Card Front",
     IDCardBack: "ID Card Back",
@@ -223,12 +232,14 @@ export default {
     RecommendedMiddleman: "Recommended middleman",
     ReferInvestors: "Refer investors",
     MemberManagement: "Member Management",
-    MembershipSystemManagement: "Membership system management",
+    MembershipSystemManagement: "Member system management",
     redemption: "redemption",
     PointsRanking: "Points ranking"
   },
   Contract: {
-    RecommmandPercent: "建议中间人募集资金额的百分比(%)",
+    AddOption:"Add option",
+    contractformat:"The contract format is wrong, please re-upload it",
+    RecommmandPercent: "	Proposed middleman to raise the percentage of funds (%)",
     Upload: "Upload",
     PleaseUpload: "Please upload",
     Option: "New option",

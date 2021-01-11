@@ -24,7 +24,6 @@
           @change="selectOne"
           :placeholder="$t('project.keyword')"
           :remote-method="getRelationCompany"
-          @focus="getRelationCompany"
         >
           <el-option
             v-for="(item) in restaurants"
@@ -97,10 +96,10 @@
           </el-option>
         </el-select>
       </el-form-item>
-      <el-form-item prop="projectNameEn" label="Project Name">
+      <el-form-item prop="projectNameEn" :label="$t('project.projectName')+'('+$t('project.English')+')'">
         <el-input v-model="form.projectNameEn"></el-input>
       </el-form-item>
-      <el-form-item label="项目名称(中文)" prop="projectName">
+      <el-form-item :label="$t('project.projectName')+'('+$t('project.Chinese')+')'" prop="projectName">
         <el-input v-model="form.projectName"></el-input>
       </el-form-item>
       <el-form-item :label="$t('project.Currency')" class="currencyType" prop="currencyType">
@@ -144,14 +143,14 @@
 
       <el-form-item>
         <slot name="label">
-          <span>Potential investors</span>
+          <span>{{$t('project.PotentialInvestors')+'('+$t('project.English')+')'}}</span>
           <i @click="potentialInvestorarrFn" class="el-icon-circle-plus-outline"></i>
         </slot>
         <el-form-item
           class="potentialInvestors"
           v-for="(self,idx) in form.potentialInvestorarr"
           :prop="'potentialInvestorarr.'+idx+'.potentialInvestorsTagsEn'"
-          :rules="{required: true, message: 'domain can not be null', trigger: 'blur'}"
+          :rules="{required: true, message:$t('project.cannotbenull'), trigger: 'blur'}"
           :key="idx"
         >
           <div>
@@ -168,12 +167,12 @@
           </div>
         </el-form-item>
       </el-form-item>
-      <el-form-item label="理想的投资人(中文)">
+      <el-form-item :label="$t('project.PotentialInvestors')+'('+$t('project.Chinese')+')'">
         <el-form-item
           class="potentialInvestors"
           v-for="(self,idx) in form.potentialInvestorarr"
           :key="idx"
-          :rules="{required: true, message: 'domain can not be null', trigger: 'blur'}"
+          :rules="{required: true, message:$t('project.cannotbenull'), trigger: 'blur'}"
           :prop="'potentialInvestorarr.'+idx+'.potentialInvestorsTags'"
         >
           <div>
@@ -206,21 +205,20 @@
           :placeholder="$t('project.PleaseSelect')"
         >
           <el-option
-            v-for="item in options3"
+            v-for="item in financingStageOption"
             :key="item.value"
             :label="item.label"
             :value="item.value"
           ></el-option>
         </el-select>
       </el-form-item>
-
       <el-form-item :label="$t('project.ContactNumber')" prop="projectMobile">
         <el-input v-model="form.projectMobile"></el-input>
       </el-form-item>
       <el-form-item :label="$t('project.Email')" prop="projectEmail">
         <el-input v-model="form.projectEmail"></el-input>
       </el-form-item>
-      <el-form-item prop="projectDescribeEn" label="Project Profile">
+      <el-form-item prop="projectDescribeEn" :label="$t('project.ProjectDescription')+'('+$t('project.English')+')'">
         <el-input
           type="textarea"
           maxlength="1500"
@@ -229,7 +227,7 @@
           :autosize="{ minRows: 6, maxRows: 10}"
         ></el-input>
       </el-form-item>
-      <el-form-item label="项目简介(中文)" prop="projectDescribe">
+      <el-form-item :label="$t('project.ProjectDescription')+'('+$t('project.Chinese')+')'" prop="projectDescribe">
         <el-input
           type="textarea"
           maxlength="300"
@@ -238,7 +236,7 @@
           :autosize="{ minRows: 6, maxRows: 10}"
         ></el-input>
       </el-form-item>
-      <el-form-item prop="projectDetailEn" label="Project Details">
+      <el-form-item prop="projectDetailEn" :label="$t('project.ProjectDetails')+'('+$t('project.English')+')'">
         <el-input
           type="textarea"
           v-model="form.projectDetailEn"
@@ -246,14 +244,14 @@
         ></el-input>
       </el-form-item>
 
-      <el-form-item label="项目详情(中文)" prop="projectDetail">
+      <el-form-item :label="$t('project.ProjectDetails')+'('+$t('project.Chinese')+')'" prop="projectDetail">
         <el-input
           type="textarea"
           v-model="form.projectDetail"
           :autosize="{ minRows: 10, maxRows: 10}"
         ></el-input>
       </el-form-item>
-      <el-form-item label="请为项目添加标签" class="region" prop="projectTags">
+      <el-form-item :label="$t('project.Pleasetagtheitem')" class="region" prop="projectTags">
         <el-select
           :popper-append-to-body="false"
           @change="selectTags"
@@ -726,33 +724,29 @@ export default {
         ]
       },
       //融资阶段
-      options3: [
-        // {
-        //   value: 0,
-        //   label: this.$t("project.SeedRound")
-        // },
+      financingStageOption: [
         {
-          value: 1,
+          value: 0,
           label: this.$t("project.AngelWheel")
         },
         {
-          value: 2,
+          value: 1,
           label: this.$t("project.ARound")
         },
         {
-          value: 3,
+          value: 2,
           label: this.$t("project.BRound")
         },
         {
-          value: 4,
+          value: 3,
           label: this.$t("project.CRound")
         },
         {
-          value: 5,
-          label: "Pre-IPO"
+          value: 4,
+          label: this.$t("project.PreIPO")
         },
         {
-          value: 6,
+          value: 5,
           label: this.$t("project.DebtFinancing")
         }
       ]
@@ -829,8 +823,8 @@ export default {
     this.form.projectId = this.$route.query.projectId || null;
     this.get_coin();
     // this.getAllProjectTags();
-    // this.getRelationCompany()
-    this.region_remoteMethod();
+    this.getRelationCompany();
+    // this.region_remoteMethod();
     let axiosList = [
       // this.$axios.get(`${this.$axios.defaults.baseURL}/bsl_admin_web/base/countryList?searchKey=`),
       // this.$axios.get(`${this.$axios.defaults.baseURL}/bsl_admin_web/industry/getAllIndustry?searchKey=`),
@@ -1037,7 +1031,6 @@ export default {
               }
             });
           });
-        
         });
     },
     get_coin() {
@@ -1157,13 +1150,14 @@ export default {
       // this.form.projectAreaEn = val.countryEnname;
     },
     selectindustry(val) {
-      // console.log(val);
+      console.log(val);
       this.industryId = val;
       // console.log(this.industrylist);
       this.form.projectIndustry = [];
       this.form.projectIndustryEn = [];
-      this.industrylist.forEach(item => {
-        val.forEach(i => {
+
+      val.forEach(i => {
+        this.industrylist.forEach(item => {
           if (item.industryId === i) {
             this.form.projectIndustry.push(item.industryNameCh);
             this.form.projectIndustryEn.push(item.industryNameEn);
@@ -1180,8 +1174,8 @@ export default {
     selectTags(val) {
       this.form.projectTags = [];
       this.form.projectTagsEn = [];
-      this.ProjectTags.forEach(item => {
-        val.forEach(i => {
+      val.forEach(i => {
+        this.ProjectTags.forEach(item => {
           if (item.id === i) {
             this.form.projectTags.push(item.tagsName);
             this.form.projectTagsEn.push(item.tagsNameEn);
