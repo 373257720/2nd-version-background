@@ -39,7 +39,22 @@ const global = {
     // console.log(result)
     return result;
   },
-
+  isJSON(str) {
+    if (typeof str == 'string') {
+      try {
+        var obj = JSON.parse(str);
+        if (typeof obj == 'object' && obj) {
+          return true;
+        } else {
+          return false;
+        }
+      } catch (e) {
+        console.log('error：' + str + '!!!' + e);
+        return false;
+      }
+    }
+    console.log('It is not a string!')
+  },
   lan: function() {
     if (i18n.locale == "zh_CN") {
       return "";
@@ -57,6 +72,8 @@ const global = {
     } else if (s.length > 1) {
       if (s[1].length < 2) {
         format_num = value.toLocaleString().toString() + "0";
+      }else{
+        format_num = value.toLocaleString().toString()
       }
     }
     return format_num;
@@ -162,9 +179,9 @@ const global = {
           // }}
         )
         .then(res => {
-          if (res.data.resultCode == 10000) {
+      
             resolve(res);
-          }
+          
         })
         .catch(function(error) {
           reject(error);
@@ -188,9 +205,9 @@ const global = {
           }
         })
         .then(res => {
-          if (res.data.resultCode == 10000) {
+   
             resolve(res);
-          }
+          
         })
         .catch(function(error) {
           reject(error);

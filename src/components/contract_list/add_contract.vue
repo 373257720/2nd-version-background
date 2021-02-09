@@ -1,7 +1,7 @@
 <template>
   <div id="add_contract">
     <!-- <header>{{$t('UserManagement.Addnewbackgrounduser')}}</header> -->
-    <header>{{$t('Contract.addContract')}}</header>
+    <header>{{ $t("Contract.addContract") }}</header>
     <el-form
       ref="ruleForm"
       :model="ruleForm"
@@ -13,7 +13,10 @@
         <el-input v-model.trim="ruleForm.fileName"></el-input>
       </el-form-item>
       <el-form-item :label="$t('Contract.ContractType')" prop="contractType">
-        <el-select v-model="ruleForm.contractType" :placeholder="$t('project.PleaseSelect')">
+        <el-select
+          v-model="ruleForm.contractType"
+          :placeholder="$t('project.PleaseSelect')"
+        >
           <el-option
             v-for="item in options"
             :key="item.value"
@@ -25,38 +28,45 @@
       <el-form-item label="上传合同模板word" prop="fileWord">
         <el-upload
           class="file-upload"
-          ref="fileUpload"
           action
-          :http-request="handleRequest"
-          :on-remove="(file,filelist)=>{return handleRemove(file,filelist,'word')}"
+          :http-request="handleRequestWord"
+          :before-upload="beforeImgUpload"
+          :on-remove="
+            (file, filelist) => {
+              return handleRemove(file, filelist, 'word');
+            }
+          "
           :before-remove="handleBeforeRemove"
-          :on-change="(file,filelist)=>{return handleChange(file,filelist,'word')}"
-          :multiple="false"
           :auto-upload="true"
           accept=".doc, .docx"
+          :multiple="false"
           :limit="1"
         >
-          <el-button size="small" type="primary">{{$t('Contract.Upload')}}</el-button>
+          <el-button size="small" type="primary">{{
+            $t("Contract.Upload")
+          }}</el-button>
         </el-upload>
       </el-form-item>
       <el-form-item label="上传合同模板excel" prop="fileExcel">
         <el-upload
-          :on-preview="handlePreview"
           class="upload-demo"
-          ref="execl"
           accept=".xls, .xlsx"
-          name="execl"
-          action="Fake Action"
+          action
           :http-request="handleRequestExcel"
-          :on-remove="(file,filelist)=>{return handleRemove(file,filelist,'excel')}"
+          :before-upload="beforeImgUpload"
+          :on-remove="
+            (file, filelist) => {
+              return handleRemove(file, filelist, 'excel');
+            }
+          "
           :before-remove="handleBeforeRemove"
-          :on-change="(file,filelist)=>{return handleChange(file,filelist,'excel')}"
-          :show-file-list="true"
           :auto-upload="true"
-          multiple
+          :multiple="false"
           :limit="1"
         >
-          <el-button size="small" type="primary">{{$t('Contract.Upload')}}</el-button>
+          <el-button size="small" type="primary">{{
+            $t("Contract.Upload")
+          }}</el-button>
         </el-upload>
       </el-form-item>
       <!--      <el-form-item class="add_contract_bottom">-->
@@ -66,7 +76,9 @@
     </el-form>
     <p class="dialog-footer">
       <button @click="$router.go(-1)">{{ $t("project.Back") }}</button>
-      <button @click="submitForm('ruleForm')">{{ $t("project.Confirm") }}</button>
+      <button @click="submitForm('ruleForm')">
+        {{ $t("project.Confirm") }}
+      </button>
     </p>
   </div>
 </template>
@@ -79,63 +91,62 @@ export default {
   data() {
     return {
       labelposition: "top",
-      fileList: [],
+      fileListWord: [],
       ruleForm: {
         fileName: "",
         contractType: 0,
         fileWord: "",
         fileWordName: "",
         fileExcel: "",
-        fileExcelName: ""
+        fileExcelName: "",
       },
-
       rules: {
         fileName: [
           {
             required: true,
             message: this.$t("UserManagement.PleaseEnter"),
-            trigger: ["blur", "change"]
-          }
+            trigger: ["blur", "change"],
+          },
         ],
 
         fileWord: [
           {
             required: true,
             message: this.$t("Contract.PleaseUpload"),
-            trigger: ["blur", "change"]
-          }
+            trigger: ["blur", "change"],
+          },
         ],
         fileExcel: [
           {
             required: true,
             message: this.$t("Contract.PleaseUpload"),
-            trigger: ["blur", "change"]
-          }
+            trigger: ["blur", "change"],
+          },
         ],
         contractType: [],
         bslEmail: [
           {
             required: true,
             message: this.$t("UserManagement.PleaseEnterEmail"),
-            trigger: "blur"
+            trigger: "blur",
           },
           {
             type: "email",
             message: this.$t("UserManagement.EmailFormatIsIncorrect"),
-            trigger: ["blur", "change"]
-          }
-        ]
+            trigger: ["blur", "change"],
+          },
+        ],
       },
       options: [
         {
           value: 0,
-          label: this.$t("Contract.ProjectownerAndIntermediary")
+          label: this.$t("Contract.ProjectownerAndIntermediary"),
         },
         {
           value: 1,
-          label: this.$t("Contract.IntermediaryAndIntermediary")
-        }
-      ]
+          label: this.$t("Contract.IntermediaryAndIntermediary"),
+        },
+      ],
       // value: "项目方与中间人"
     };
   },
@@ -144,27 +155,21 @@ export default {
     //  console.log(ActiveXObject);
   },
   methods: {
-    handleExceed(files, fileList) {
-      this.$message.warning(
-        `当前限制选择 3 个文件，本次选择了 ${
-          files.length
-        } 个文件，共选择了 ${files.length + fileList.length} 个文件`
-      );
-    },
+ 
     file2JSON(file) {
       return new Promise((resolve, reject) => {
         let reader = new FileReader();
 
-        reader.onload = function(event) {
+        reader.onload = function (event) {
           let resSheet = XLSX.read(event.target.result, {
-            type: "binary"
+            type: "binary",
           });
 
           let resJSON = [];
-          resSheet.SheetNames.forEach(sheetName => {
+          resSheet.SheetNames.forEach((sheetName) => {
             resJSON.push({
               sheetName: sheetName,
-              sheet: XLSX.utils.sheet_to_json(resSheet.Sheets[sheetName])
+              sheet: XLSX.utils.sheet_to_json(resSheet.Sheets[sheetName]),
             });
           });
 
@@ -175,11 +180,19 @@ export default {
       });
     },
     handleBeforeRemove(file, fileList) {
-      return this.$confirm(`确定移除 ${file.name}？`);
+      // return this.$confirm(`确定移除 ${file.name}？`);
     },
-    handleRequest(params) {
+    beforeImgUpload(file) {
+      console.log(file);
+      let filename = file.name;
+      if (escape(filename).indexOf("%u") >= 0) {
+        this.$message.error(this.$t("project.p1"));
+        return false;
+      }
+      // if(file.name)
+    },
+    handleRequestWord(params) {
       console.log(params);
-
       let formData = new FormData();
       formData.append("file", params.file);
       formData.append("Ad_Token", this.$store.state.X_Token);
@@ -188,14 +201,16 @@ export default {
         url: `${this.$axios.defaults.baseURL}/bsl_admin_web/upload/wordFile`,
         data: formData,
         headers: {
-          "Content-Type": "multipart/form-data"
-        }
-      }).then(res => {
-        console.log(res);
+          "Content-Type": "multipart/form-data",
+        },
+      }).then((res) => {
+        console.log(this.fileListWord);
         if (res.data.resultCode == 10000) {
           this.ruleForm.fileWord = res.data.data.path;
-          this.ruleForm.fileWordName =  res.data.data.fileWordName;
+          this.ruleForm.fileWordName = res.data.data.fileWordName;
+          this.$refs.ruleForm.validateField("fileWord");
         } else {
+          this.$message.error(res.data.resultDesc);
         }
       });
     },
@@ -208,14 +223,16 @@ export default {
         url: `${this.$axios.defaults.baseURL}/bsl_admin_web/upload/excelFile`,
         data: formData,
         headers: {
-          "Content-Type": "multipart/form-data"
-        }
-      }).then(res => {
+          "Content-Type": "multipart/form-data",
+        },
+      }).then((res) => {
         console.log(res);
         if (res.data.resultCode == 10000) {
           this.ruleForm.fileExcel = res.data.data.path;
           this.ruleForm.fileExcelName = res.data.data.fileExcelName;
+          this.$refs.ruleForm.validateField("fileExcel");
         } else {
+          this.$message.error(res.data.resultDesc);
         }
       });
     },
@@ -243,7 +260,9 @@ export default {
         window.open(file.url, "hello");
       }
     },
-
+    Uploadsuccess(response, file, filelist, name) {
+      console.log(response);
+    },
     handleRemove(file, fileList, name) {
       console.log(file, fileList, name);
       if (name === "excel") {
@@ -256,15 +275,14 @@ export default {
       console.log(this.ruleForm);
     },
     submitForm(formName) {
- 
-      this.$refs[formName].validate(valid => {
+      this.$refs[formName].validate((valid) => {
         if (valid) {
           this.$global
             .post_encapsulation(
               `${this.$axios.defaults.baseURL}/bsl_admin_web/contract/saveContractTemplate`,
               this.ruleForm
             )
-            .then(res => {
+            .then((res) => {
               if (res.data.resultCode === 10000) {
                 this.$routerto("contractClause", { filed: res.data.data.id });
               }
@@ -276,7 +294,6 @@ export default {
     },
     handleChange(file, fileList, name) {
       console.log(name);
-
       // console.log("file", file);
       // console.log("fileList", fileList);
       if (name === "excel") {
@@ -342,8 +359,8 @@ export default {
       //   }
       // };
       // fileReader.readAsArrayBuffer(files[0]);
-    }
-  }
+    },
+  },
 };
 </script>
 

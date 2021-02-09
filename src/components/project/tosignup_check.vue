@@ -1,8 +1,8 @@
 <template>
   <div id="project_check">
     <main>
-      <header>{{title}}</header>
-      <h1>{{projectname}}</h1>
+      <header>{{ title }}</header>
+      <h1>{{ projectname }}</h1>
       <!-- <div class="invest_infro" v-if="status>5">
         <h2>{{$t('project.InvestorInformation')}}</h2>
         <ul>
@@ -44,12 +44,12 @@
         </ul>
       </div>-->
       <div class="projectdetails">
-        <h2>{{$t('project.ProjectDetails')}}</h2>
+        <h2>{{ $t("project.ProjectDetails") }}</h2>
         <ul>
-          <li v-for="(item,key,index) in projectdetails" class="box">
+          <li v-for="(item, key, index) in projectdetails" class="box">
             <div>
-              <span>{{item.title}}</span>
-              <span>{{item.content}}</span>
+              <span>{{ item.title }}</span>
+              <span>{{ item.content }}</span>
             </div>
           </li>
         </ul>
@@ -57,13 +57,17 @@
       <article>
         <aside>
           <ul>
-            <li v-for="(item,key) in details_lists">
+            <li v-for="(item, key) in details_lists">
               <div
                 class="pro_content"
-                v-if="key=='projectDescribe' || key=='projectDetail' || key=='potentialInvestorsTags'"
+                v-if="
+                  key == 'projectDescribe' ||
+                  key == 'projectDetail' ||
+                  key == 'potentialInvestorsTags'
+                "
               >
                 <div>
-                  <p>{{item.title}}</p>
+                  <p>{{ item.title }}</p>
                   <p v-html="item.content"></p>
                 </div>
                 <!--                <span>{{item.title}}</span>-->
@@ -72,12 +76,12 @@
                 <!--              </span>-->
               </div>
               <div class="pro_item" v-else>
-                <span>{{item.title}}</span>
-                <span class="row2" v-if="key=='collectMoney'">
-                  <p>{{item.min}}-{{item.max}}</p>
+                <span>{{ item.title }}</span>
+                <span class="row2" v-if="key == 'collectMoney'">
+                  <p>{{ item.min }}-{{ item.max }}</p>
                 </span>
                 <span class="row2" v-else>
-                  <p>{{item.content}}</p>
+                  <p>{{ item.content }}</p>
                 </span>
               </div>
               <!--              <span class="row2" v-else  v-html="item.content"></span>-->
@@ -86,16 +90,20 @@
         </aside>
       </article>
       <footer>
-        <p v-if="status>1" class="dialog-footer">
-          <button @click="$router.go(-1)">{{$t('project.Back')}}</button>
+        <p v-if="status > 1" class="dialog-footer">
+          <button @click="$router.go(-1)">{{ $t("project.Back") }}</button>
           <button
-            v-if="status>1 && status<5"
-            @click="$routerto('contract',{signId:signId})"
-          >{{$t('project.CheckContract')}}</button>
-          <button v-else-if="status>=5" @click="check_contract">{{$t('project.CheckContract')}}</button>
+            v-if="status > 1 && status < 5"
+            @click="$routerto('contract', { signId: signId })"
+          >
+            {{ $t("project.CheckContract") }}
+          </button>
+          <button v-else-if="status >= 5" @click="check_contract">
+            {{ $t("project.CheckContract") }}
+          </button>
         </p>
         <p v-else class="dialog-footer-back">
-          <button @click="$router.go(-1)">{{$t('project.Back')}}</button>
+          <button @click="$router.go(-1)">{{ $t("project.Back") }}</button>
         </p>
       </footer>
     </main>
@@ -111,57 +119,57 @@ export default {
       investors_lists: {
         investorsType: {
           title: this.$t("project.typeofinvestor"),
-          content: ""
+          content: "",
         },
         investorsCompany: {
           title: this.$t("project.InvestorCompany"),
-          content: ""
+          content: "",
         },
         investorsName: {
           title: this.$t("project.InvestorName"),
-          content: ""
+          content: "",
         },
         projectArea: {
           title: this.$t("project.InvestorRegion"),
-          content: ""
-        }
+          content: "",
+        },
       },
       agent_lists: {},
       projectdetails: {
         financingStage: {
           title: this.$t("project.FinancingStage"),
-          content: ""
+          content: "",
         },
         committedCount: {
           title: this.$t("project.NumberOfinvestorsHaveSubmitted"),
-          content: ""
+          content: "",
         },
         interestProjectCount: {
           title: this.$t("project.Numberofprojectsinterested"),
-          content: ""
-        }
+          content: "",
+        },
       },
       details_lists: {
         projectIndustry: {
           title: this.$t("project.Industry"),
-          content: ""
+          content: "",
         },
         projectArea: {
           title: this.$t("project.Region"),
-          content: ""
+          content: "",
         },
         projectCompany: {
           title: this.$t("project.CompanyName"),
-          content: ""
+          content: "",
         },
         currencyType: {
           title: this.$t("project.Currency"),
-          content: ""
+          content: "",
         },
         collectMoney: {
           title: this.$t("project.FundingAmount"),
           max: "",
-          min: ""
+          min: "",
         },
 
         // projectStatus: {
@@ -170,50 +178,49 @@ export default {
         // },
         projectMobile: {
           title: this.$t("project.ContactNumber"),
-          content: ""
+          content: "",
         },
         projectEmail: {
           title: this.$t("project.Email"),
-          content: ""
+          content: "",
         },
         projectDescribe: {
           title: this.$t("project.ProjectDescription"),
-          content: ""
+          content: "",
         },
         projectDetail: {
           title: this.$t("project.ProjectDetails"),
-          content: ""
+          content: "",
         },
         potentialInvestorsTags: {
           title: this.$t("project.Potential"),
-          content: ""
-        }
+          content: "",
+        },
       },
       financingStage: {
-        "0": this.$t("project.SeedRound"),
-        "1": this.$t("project.AngelWheel"),
-        "2": this.$t("project.ARound"),
-        "3": this.$t("project.BRound"),
-        "4": this.$t("project.CRound"),
-        "5": "PRE-IPO",
-        "6": "IPO"
+        0: this.$t("project.AngelWheel"),
+        1: this.$t("project.ARound"),
+        2: this.$t("project.BRound"),
+        3: this.$t("project.CRound"),
+        4: this.$t("project.PreIPO"),
+        5: this.$t("project.DebtFinancing"),
       },
       project_status: {
-        "0": this.$t("project.UnPendingItems"),
-        "1": this.$t("project.PendingItems"),
-        "2": this.$t("project.ToBeSignedProject"),
-        "3": this.$t("project.InvestmentBankHasRejected"),
-        "4": this.$t("project.SignedForChain"),
-        "5": this.$t("project.ChainedForRecommendation"),
-        "6": this.$t("project.PendingReview"),
-        "7": this.$t("project.InvestmentBankHasRejectedinvestors"),
-        "8": this.$t("project.ReviewedPending"),
-        "9": this.$t("project.ProjectsToBeConfirmedByInvestors"),
-        "10": this.$t("project.SignedContract"),
-        "11": this.$t("project.InvestorHasRejected")
+        0: this.$t("project.UnPendingItems"),
+        1: this.$t("project.PendingItems"),
+        2: this.$t("project.ToBeSignedProject"),
+        3: this.$t("project.InvestmentBankHasRejected"),
+        4: this.$t("project.SignedForChain"),
+        5: this.$t("project.ChainedForRecommendation"),
+        6: this.$t("project.PendingReview"),
+        7: this.$t("project.InvestmentBankHasRejectedinvestors"),
+        8: this.$t("project.ReviewedPending"),
+        9: this.$t("project.ProjectsToBeConfirmedByInvestors"),
+        10: this.$t("project.SignedContract"),
+        11: this.$t("project.InvestorHasRejected"),
       },
       projectid: "",
-      projectname: ""
+      projectname: "",
       // projectStartTime: "",
       // picurl: ""
     };
@@ -231,12 +238,12 @@ export default {
       .get_encapsulation(
         `${this.$axios.defaults.baseURL}/bsl_admin_web/project/getProjectDetails`,
         {
-          projectId: this.projectid
+          projectId: this.projectid,
           // signStatus: this.status,
           // signId: this.signId
         }
       )
-      .then(res => {
+      .then((res) => {
         // console.log(res);
         if (res.data.resultCode == 10000) {
           let data = res.data.data.bslProjectVO.data;
@@ -290,15 +297,15 @@ export default {
         .get_encapsulation(
           `${this.$axios.defaults.baseURL}/bsl_admin_web/projectSign/getPdf`,
           {
-            signId: this.signId
+            signId: this.signId,
           }
         )
-        .then(res => {
+        .then((res) => {
           if (res.data.resultCode === 10000) {
             newWindow.location.href = res.data.data.pdfPath;
           }
         });
-    }
+    },
     // handleClick() {
     //   let data = JSON.stringify(this.datalist.userRespList);
     //   this.$router.push({
@@ -308,14 +315,14 @@ export default {
     //     }
     //   });
     // }
-  }
+  },
 };
 </script>
 
 <style lang="scss" scoped>
 #project_check {
   width: 100%;
-  height: 100%;
+  // height: 100%;
   position: absolute;
   main {
     margin: 80px auto;

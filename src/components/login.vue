@@ -3,10 +3,15 @@
     <div class="register con">
       <h2>{{$t('Home.login')}}</h2>
       <div class="username">
-        <el-input :placeholder="$t('Home.Pleaseenteraccount')" v-model="username" clearable></el-input>
+        <el-input :placeholder="$t('Home.Pleaseenteraccount')" v-model.trim="username" clearable></el-input>
       </div>
       <div class="password">
-        <el-input :placeholder="$t('Home.Pleaseenterthepassword')" v-model="password" show-password clearable></el-input>
+        <el-input
+          :placeholder="$t('Home.Pleaseenterthepassword')"
+          v-model.trim="password"
+          show-password
+          clearable
+        ></el-input>
       </div>
       <p>{{remind}}</p>
       <button @click="login">{{$t('Home.login')}}</button>
@@ -16,7 +21,7 @@
 <script>
 export default {
   name: "register",
-  inject: ['reload'],
+  inject: ["reload"],
   data() {
     return {
       username: "",
@@ -27,38 +32,48 @@ export default {
   },
   created() {
     // if(this.$i18n.locale){
-      // if (this.$i18n.locale== "en_US") {
-      //   this.language = "English";
-      // } else if (this.$i18n.locale == "zh_CN")
-      // {this.language = "中文"}
-      this.$global.get_encapsulation(`${this.$axios.defaults.baseURL}/bsl_admin_web/base/language.do`,
-        {lan:this.$i18n.locale})
-        .then(res => {
-          if(res.data.resultCode==10000){
-            window.localStorage.setItem('lan',this.$i18n.locale);
-            this.$Local(this.$i18n.locale);
-            this.$i18n.locale=this.$i18n.locale;
-            this.$store.dispatch("X_Token_actions",JSON.parse(res.data.data).Ad_Token
-            );
-          }
-        })
-        .catch(err => {
-          console.log(err);
-        });
+    // if (this.$i18n.locale== "en_US") {
+    //   this.language = "English";
+    // } else if (this.$i18n.locale == "zh_CN")
+    // {this.language = "中文"}
+    this.$global
+      .get_encapsulation(
+        `${this.$axios.defaults.baseURL}/bsl_admin_web/base/language.do`,
+        { lan: this.$i18n.locale }
+      )
+      .then(res => {
+        if (res.data.resultCode == 10000) {
+          window.localStorage.setItem("lan", this.$i18n.locale);
+          this.$Local(this.$i18n.locale);
+          this.$i18n.locale = this.$i18n.locale;
+          this.$store.dispatch("X_Token_actions", res.data.data.Ad_Token);
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      });
     // }else{
     //   this.language = "English";
     // };
   },
   methods: {
+    lan() {},
     login() {
       this.remind = "";
       this.loading = true;
+     
+      
       if (this.username && this.password) {
-        this.$global.post_encapsulation(`${this.$axios.defaults.baseURL}/bsl_admin_web/user/adminLogin.do`,{
-          bslEmail: this.username,
-          bslPwd: this.password
-        })
+        this.$global
+          .post_encapsulation(
+            `${this.$axios.defaults.baseURL}/bsl_admin_web/user/adminLogin.do`,
+            {
+              bslEmail: this.username,
+              bslPwd: this.password
+            }
+          )
           .then(res => {
+             console.log(123);
             var rescode = res.data.resultCode;
             if (rescode == 10000) {
               window.sessionStorage.clear();
@@ -68,15 +83,16 @@ export default {
               this.$store.dispatch("usertype_action", res.data.data.userType);
               this.reload();
               this.$routerto("home");
-            } else  {
+            } else {
               this.remind = res.data.resultDesc;
             }
           })
-          .catch(error => {});
+          .catch(error => {
+            
+          });
       } else {
         // this.loading = false;
-        this.remind = this.$t('Home.Accountandpasswordcannotbeempty');
-
+        this.remind = this.$t("Home.Accountandpasswordcannotbeempty");
       }
     }
   }
@@ -140,7 +156,7 @@ export default {
     cursor: pointer;
     // color:
   }
-  button:hover{
+  button:hover {
     // background: grey;
     background: #1599e5;
   }

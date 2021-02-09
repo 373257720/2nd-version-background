@@ -21,7 +21,7 @@
         label-width="120px"
         label-position="top"
       >
-        <el-form-item label="积分兑换礼品名称:" prop="industryNameCh">
+        <el-form-item label="积分兑换活动名称:" prop="industryNameCh">
           <el-input
             placeholder="中文名称"
             show-word-limit
@@ -35,30 +35,48 @@
             placeholder="会员积分"
             show-word-limit
             maxlength="50"
+            type="number"
+            min="0"
             clearable
             v-model="industry_summit.industryNameEn"
           ></el-input>
         </el-form-item>
-        <el-form-item label="兑换积分渲染内容:" prop="industryNameEn">
+        <el-form-item label="礼品:" prop="industrychoosegift">
+          <el-select
+            @change="addgiftSeting()"
+            v-model="industry_summit.value"
+            placeholder="请选择"
+          >
+            <el-option
+              v-for="item in options"
+              :key="item.id"
+              :label="item.giftName"
+              :value="item.id"
+            >
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="兑换积分渲染内容:" prop="industryNameCh">
           <el-input
             placeholder="会员积分"
             show-word-limit
-            maxlength="50"
+            maxlength="100"
             clearable
-            v-model="industry_summit.industryNameEn"
+            v-model="industry_summit.text"
           ></el-input>
         </el-form-item>
-        <el-form-item label="兑换积分时限:" prop="industryNameEn">
+        <el-form-item label="兑换积分时限:" prop="industrytime">
           <el-date-picker
-            v-model="industry_summit.industryNameEn"
+            v-model="industry_summit.starttime"
             type="daterange"
             range-separator="至"
             start-placeholder="开始日期"
             end-placeholder="结束日期"
+            
           >
           </el-date-picker>
         </el-form-item>
-        <el-form-item label="是否公开:" prop="industryNameEn">
+        <el-form-item label="是否公开:" prop="">
           <el-radio v-model="radio" label="1">是</el-radio>
           <el-radio v-model="radio" label="2">否</el-radio>
         </el-form-item>
@@ -108,11 +126,32 @@ export default {
         this.industry_summit.industryNameEn = value;
         callback();
       } else {
-        callback(new Error("Please Input English"));
+        callback(new Error("请输入大于0的正整数"));
+      }
+    };
+    var valid_industrytime = (rule, value, callback) => {
+      console.log(value)
+      if (value) {
+        this.industry_summit.starttime = value;
+        callback();
+      } else {
+        callback(new Error("请选择日期"));
+      }
+    };
+    var valid_choosegift = (rule, value, callback) => {
+      if (value) {
+        this.industry_summit.value = value;
+        
+        callback();
+      } else {
+        callback(new Error("请选择兑换礼品"));
       }
     };
     return {
+      value: "",
+      options: [],
       radio: "1",
+
       dialogFormVisible_industry: false,
       tableData: [],
       title: "",
@@ -120,6 +159,9 @@ export default {
         industryId: -1,
         industryNameEn: "",
         industryNameCh: "",
+      value: "",
+        text: "",
+        starttime: "",
         industryStatus: 0,
         industrySort: null,
       },
@@ -137,17 +179,23 @@ export default {
         industryNameEn: [
           { required: true, validator: valid_industryNameEn, trigger: "blur" },
         ],
+       
+        industrychoosegift: [
+          { required: true, validator: valid_choosegift, trigger: "blur" },
+        ],
       },
     };
   },
   created() {
-    if (this.$route.query.industryId) {
-      this.title = this.$t("industry.Pleaseenterindustrytobeedited");
-      this.industry_summit.industryId = this.$route.query.industryId;
-      this.search();
-    } else {
-      this.title = this.$t("industry.Pleaseentertheindustrytobeadded");
-    }
+    this.getgift();
+
+    // if (this.$route.query.industryId) {
+    //   this.title = this.$t("industry.Pleaseenterindustrytobeedited");
+    //   this.industry_summit.industryId = this.$route.query.industryId;
+    //   this.search();
+    // } else {
+    //   this.title = this.$t("industry.Pleaseentertheindustrytobeadded");
+    // }
   },
   // watch:{
   //   industry_summit: {
@@ -168,10 +216,43 @@ export default {
   //   },
   // },
   methods: {
+    // 添加礼品兑换设置
+    addgiftSeting() {
+      // console.log(this.industry_summit.value); //兑换礼品id
+      // console.log(this.industry_summit.industryNameEn); //兑换礼品需要积分
+      // console.log(this.industry_summit.industryNameCh); //兑换礼品活动名称
+      // console.log(this.industry_summit.text); //兑换内容
+      console.log(this.industry_summit.starttime); //兑换开始时间
+
+      var date1 = new Date(this.industry_summit.starttime[0]); //获取当前时间
+      var starttime = date1.getTime() / 1000;
+      console.log(starttime); //兑换开始时间
+      var date2 = new Date(this.industry_summit.starttime[1]); //获取当前时间
+      var endtime = date2.getTime() / 1000;
+      console.log(endtime); //兑换开始时间
+      console.log(this.radio); //是否公开
+    },
+    //获取礼品
+    getgift() {
+      this.$global
+        .get_encapsulation(
+          `${this.$axios.defaults.baseURL}/bsl_admin_web/member/getBslExchangeGiftList`,
+          { searchKey: "" }
+        )
+        .then((res) => {
+          if (res.data.resultCode == 10000) {
+            this.options = [...res.data.data.lists];
+            // console.log(this.options);
+            this.options.forEach((item, idx) => {
+              // item.idx = idx + 1;
+            });
+          }
+        });
+    },
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          this.add_industry();
+          this.addgiftSeting();
         } else {
           return false;
         }

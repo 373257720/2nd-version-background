@@ -18,20 +18,32 @@
             v-model="industry_summit.industryNameCh"
           ></el-input>
         </el-form-item>
-        <el-form-item label="数量:" prop="industryNameEn">
+        <el-form-item label="礼品名称:" prop="industryNameCh">
           <el-input
-            placeholder="会员积分"
+            placeholder="英文文名称"
             show-word-limit
             maxlength="50"
             clearable
             v-model="industry_summit.industryNameEn"
           ></el-input>
         </el-form-item>
-
+        <el-form-item label="礼品数量:" prop="industryNameEn">
+          <el-input
+            placeholder="礼品数量"
+            show-word-limit
+            maxlength="50"
+            clearable
+            v-model="industry_summit.industryStatus"
+          ></el-input>
+        </el-form-item>
       </el-form>
       <p class="dialog-footer">
-        <button @click="$routerto('industry_lists')">{{$t('project.Cancel')}}</button>
-        <button @click="submitForm('ruleForm')">{{$t('project.Confirm')}}</button>
+        <button @click="$routerto('giftSetting')">
+          {{ $t("project.Cancel") }}
+        </button>
+        <button @click="submitForm('ruleForm')">
+          {{ $t("project.Confirm") }}
+        </button>
       </p>
     </el-main>
   </div>
@@ -82,23 +94,23 @@ export default {
         industryNameEn: "",
         industryNameCh: "",
         industryStatus: 0,
-        industrySort: null
+        industrySort: null,
       },
       rules: {
         industrySort: [
           {
             required: true,
             message: this.$t("industry.Pleaseenterthanzero"),
-            trigger: "blur"
-          }
+            trigger: "blur",
+          },
         ],
         industryNameCh: [
-          { required: true, validator: valid_industryNameCh, trigger: "blur" }
+          { required: true, validator: valid_industryNameCh, trigger: "blur" },
         ],
         industryNameEn: [
-          { required: true, validator: valid_industryNameEn, trigger: "blur" }
-        ]
-      }
+          { required: true, validator: valid_industryNameEn, trigger: "blur" },
+        ],
+      },
     };
   },
   created() {
@@ -130,8 +142,9 @@ export default {
   // },
   methods: {
     submitForm(formName) {
-      this.$refs[formName].validate(valid => {
+      this.$refs[formName].validate((valid) => {
         if (valid) {
+          console.log(valid);
           this.add_industry();
         } else {
           return false;
@@ -144,10 +157,10 @@ export default {
           `${this.$axios.defaults.baseURL}/bsl_admin_web/industry/getAllIndustry`,
           { searchKey: "" }
         )
-        .then(res => {
+        .then((res) => {
           if (res.data.resultCode == 10000) {
             this.tableData = [...res.data.data];
-            this.tableData.forEach(item => {
+            this.tableData.forEach((item) => {
               if (item.industryId == this.$route.query.industryId) {
                 this.industry_summit.industryStatus = item.industryStatus;
                 this.industry_summit.industryNameEn = item.industryNameEn;
@@ -160,25 +173,27 @@ export default {
     },
     add_industry() {
       // console.log(this.industry_summit)
-      let self = this;
+      // let self = this;
       this.$global
         .post_encapsulation(
-          `${this.$axios.defaults.baseURL}/bsl_admin_web/industry/saveIndustry`,
-          self.industry_summit
+          `${this.$axios.defaults.baseURL}/bsl_admin_web/member/saveModifyBslExchangeGift`,
+          {
+            giftName: this.industry_summit.industryNameCh,
+            giftNameEn: this.industry_summit.industryNameEn,
+            giftNumber: this.industry_summit.industryStatus,
+          }
         )
-        .then(result => {
-          this.$confirm(result.data.resultDesc, self.$t("project.Reminder"), {
-            confirmButtonText: self.$t("project.Yes"),
-            center: true,
-            showCancelButton: false
-          }).then(() => {
-            if (result.data.resultCode == 10000) {
-              this.$routerto("industry_lists");
-            }
-          });
+        .then((result) => {
+          if (result.data.resultCode == 10000) {
+             this.$message({
+                  message: result.data.resultDesc,
+                  type: "success"
+                });
+            this.$routerto("giftSetting");
+          }
         });
-    }
-  }
+    },
+  },
 };
 </script>
 

@@ -1,64 +1,104 @@
 <template>
   <div id="check_pendingcheck">
     <div class="check_pending">
-      <div class="check_pendingcheck" v-if="identityType!=2">
+      <div class="check_pendingcheck" v-if="identityType != 2">
         <header>
           <ul class="pending_left">
-            <li v-for="(value,key) in pending_individual" :key="key">
-              <p>{{value.title}}</p>
-              <el-input placeholder v-model="value.value" :disabled="true"></el-input>
+            <li v-for="(value, key) in pending_individual" :key="key">
+              <p>{{ value.title }}</p>
+              <el-input
+                placeholder
+                v-model="value.value"
+                :disabled="true"
+              ></el-input>
             </li>
           </ul>
         </header>
-        <main v-if="nationality==1 && identityPicOne">
+        <main v-if="nationality == 1 && identityPicOne">
           <aside>
-            <p>{{$t('project.IDCardFront')}}</p>
+            <p>{{ $t("project.IDCardFront") }}</p>
             <nav>
               <el-popover placement="top" trigger="click">
-                <img class="pic" :src="$axios.defaults.baseURL+identityPicOne" alt />
-                <img slot="reference" :src="$axios.defaults.baseURL+identityPicOne" alt />
+                <img
+                  class="pic"
+                  :src="$axios.defaults.baseURL + identityPicOne"
+                  alt
+                />
+                <img
+                  slot="reference"
+                  :src="$axios.defaults.baseURL + identityPicOne"
+                  alt
+                />
               </el-popover>
             </nav>
           </aside>
           <section>
-            <p>{{$t('project.IDCardBack')}}</p>
+            <p>{{ $t("project.IDCardBack") }}</p>
             <nav>
               <!--              <img :src="identityPicTwo" alt />-->
               <el-popover placement="top" trigger="click">
-                <img class="pic" :src="$axios.defaults.baseURL+identityPicTwo" alt />
-                <img slot="reference" :src="$axios.defaults.baseURL+identityPicTwo" alt />
+                <img
+                  class="pic"
+                  :src="$axios.defaults.baseURL + identityPicTwo"
+                  alt
+                />
+                <img
+                  slot="reference"
+                  :src="$axios.defaults.baseURL + identityPicTwo"
+                  alt
+                />
               </el-popover>
             </nav>
           </section>
         </main>
-        <main v-else-if="nationality==2 && identityPicOne">
+        <main v-else-if="nationality == 2 && identityPicOne">
           <aside>
-            <p>{{$t('project.passport')}}</p>
+            <p>{{ $t("project.passport") }}</p>
             <nav>
               <el-popover placement="top" trigger="click">
-                <img class="pic" :src="$axios.defaults.baseURL+identityPicOne" alt />
-                <img slot="reference" :src="$axios.defaults.baseURL+identityPicOne" alt />
+                <img
+                  class="pic"
+                  :src="$axios.defaults.baseURL + identityPicOne"
+                  alt
+                />
+                <img
+                  slot="reference"
+                  :src="$axios.defaults.baseURL + identityPicOne"
+                  alt
+                />
               </el-popover>
             </nav>
           </aside>
         </main>
       </div>
-      <div class="check_pendingcheck" v-if="identityType==2">
+      <div class="check_pendingcheck" v-if="identityType == 2">
         <header>
           <ul class="pending_left">
-            <li v-for="(value,key) in pending_company" :key="key">
-              <p>{{value.title}}</p>
-              <el-input placeholder v-model="value.value" :disabled="true"></el-input>
+            <li v-for="(value, key) in pending_company" :key="key">
+              <p>{{ value.title }}</p>
+              <el-input
+                placeholder
+                v-model="value.value"
+                :disabled="true"
+              ></el-input>
             </li>
           </ul>
         </header>
         <main v-if="userCompanyPic">
           <section>
-            <p>{{$t('project.Certificate')}}</p>
+            <p>{{ $t("project.Certificate") }}</p>
             <nav>
               <el-popover placement="right" trigger="click">
-                <img class="pic" :src="$axios.defaults.baseURL+userCompanyPic" alt />
-                <img slot="reference" :src="$axios.defaults.baseURL+userCompanyPic" alt />
+                <img
+                  class="pic"
+                  :src="$axios.defaults.baseURL + userCompanyPic"
+                  alt
+                />
+                <img
+                  slot="reference"
+                  :src="$axios.defaults.baseURL + userCompanyPic"
+                  alt
+                />
               </el-popover>
             </nav>
           </section>
@@ -66,25 +106,51 @@
         </main>
       </div>
       <p class="dialog-footer">
-        <button @click="dialogFormVisible = true">{{$t('project.Disapprove')}}</button>
-        <button @click="dialogVisible = true">{{$t('project.Approve')}}</button>
+        <button @click="dialogFormVisible = true">
+          {{ $t("project.Disapprove") }}
+        </button>
+        <button @click="dialogVisible = true">
+          {{ $t("project.Approve") }}
+        </button>
       </p>
     </div>
 
-    <el-dialog :title="$t('project.Disapprove')" :visible.sync="dialogFormVisible">
-      <el-form ref="form" :model="form" label-width="90px">
+    <el-dialog
+      :title="$t('project.Disapprove')"
+      :visible.sync="dialogFormVisible"
+    >
+      <el-form ref="form" :model="form">
         <el-form-item :label="$t('project.DenialReason')">
           <el-checkbox-group v-model="form.type">
-            <el-checkbox :label="$t('project.IDpictureisnotclear')" name="type"></el-checkbox>
-            <el-checkbox :label="$t('project.Companynamedoesnotmatch')" name="type"></el-checkbox>
-            <el-checkbox :label="$t('project.Personalinformationisincorrect')" name="type"></el-checkbox>
-            <el-checkbox :label="$t('project.Else')" name="type"></el-checkbox>
+            <el-checkbox
+              v-for="item in refuseReasonsList"
+              :label="item"
+              :key="item.value"
+              >{{ item.label }}</el-checkbox
+            >
+            <!-- <el-checkbox
+              :label="$t('project.IDpictureisnotclear')"
+              name="type"
+            ></el-checkbox>
+            <el-checkbox
+              :label="$t('project.Companynamedoesnotmatch')"
+              name="type"
+            ></el-checkbox>
+            <el-checkbox
+              :label="$t('project.Personalinformationisincorrect')"
+              name="type"
+            ></el-checkbox>
+            <el-checkbox :label="$t('project.Else')" name="type"></el-checkbox> -->
           </el-checkbox-group>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">{{$t('project.Cancel')}}</el-button>
-        <el-button type="primary" @click="check(2)">{{$t('project.Confirm')}}</el-button>
+        <el-button @click="dialogFormVisible = false">{{
+          $t("project.Cancel")
+        }}</el-button>
+        <el-button type="primary" @click="check(2)">{{
+          $t("project.Confirm")
+        }}</el-button>
       </div>
     </el-dialog>
     <el-dialog
@@ -93,10 +159,14 @@
       width="40%"
       :before-close="handleClose"
     >
-      <span>{{$t('project.Approve')}} ?</span>
+      <span>{{ $t("project.Approve") }} ?</span>
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="dialogVisible= false">{{$t('project.Cancel')}}</el-button>
-        <el-button type="primary" @click="check(1)">{{$t('project.Confirm')}}</el-button>
+        <el-button type="primary" @click="dialogVisible = false">{{
+          $t("project.Cancel")
+        }}</el-button>
+        <el-button type="primary" @click="check(1)">{{
+          $t("project.Confirm")
+        }}</el-button>
       </span>
     </el-dialog>
   </div>
@@ -107,7 +177,7 @@ export default {
   data() {
     return {
       form: {
-        type: []
+        type: [],
       },
       identityType: "",
       dialogFormVisible: false,
@@ -116,37 +186,59 @@ export default {
       identityPicTwo: "",
       userCompanyPic: "",
       idx: "",
+      refuseReasonsList: [
+        {
+          label: this.$t("project.IDpictureisnotclear"),
+          chinese: "证件图片不清晰",
+          eng: "ID picture is notclear",
+        },
+        {
+          label: this.$t("project.Companynamedoesnotmatch"),
+          chinese: "公司名称不符",
+          eng: "Company name does not match",
+        },
+        {
+          label: this.$t("project.Personalinformationisincorrect"),
+          chinese: "个人信息不正确",
+          eng: "Personal information is incorrect",
+        },
+        {
+          label: this.$t("project.Else"),
+          chinese: "其他",
+          eng: "Else",
+        },
+      ],
       // formLabelWidth: "120px",
       pending_individual: {
         registrationTime: {
           title: this.$t("project.registerTime"),
-          value: ""
+          value: "",
         },
         userType: {
           title: this.$t("project.Type"),
-          value: ""
+          value: "",
         },
         identityType: {
           title: this.$t("project.Identity"),
-          value: ""
+          value: "",
         },
         bslEmail: {
           title: this.$t("project.Email"),
-          value: ""
+          value: "",
         },
 
         userCountry: {
           title: this.$t("project.Nationality"),
-          value: ""
+          value: "",
         },
         userName: {
           title: this.$t("project.PersonalName"),
-          value: ""
+          value: "",
         },
         userIdentity: {
           title: this.$t("project.IdentificationNumber"),
-          value: ""
-        }
+          value: "",
+        },
         // optTime: {
         //   title: "验证时间",
         //   value: ""
@@ -156,71 +248,41 @@ export default {
       pending_company: {
         registrationTime: {
           title: this.$t("project.registerTime"),
-          value: ""
+          value: "",
         },
         userType: {
           title: this.$t("project.Type"),
-          value: ""
+          value: "",
         },
         identityType: {
           title: this.$t("project.Identity"),
-          value: ""
+          value: "",
         },
         bslEmail: {
           title: this.$t("project.Email"),
-          value: ""
+          value: "",
         },
         userCountry: {
           title: this.$t("project.Nationality"),
-          value: ""
+          value: "",
         },
         userCompanyCh: {
           title: "公司名称",
-          value: ""
+          value: "",
         },
         userCompanyEn: {
           title: "Company name",
-          value: ""
+          value: "",
         },
         userAddressCh: {
           title: "公司地址",
-          value: ""
+          value: "",
         },
         userAddressEn: {
           title: "Company address",
-          value: ""
-        }
-      }
-      // pending_eng: {
-      //   createTime: {
-      //     title: "Registration time",
-      //     value: ""
-      //   },
-      //   userType: {
-      //     title: "type",
-      //     value: ""
-      //   },
-      //   bslName: {
-      //     title: "User Name",
-      //     value: ""
-      //   },
-      //   userCountryEn: {
-      //     title: "nationality",
-      //     value: ""
-      //   },
-      //   userCompanyEn: {
-      //     title: "Corporate name",
-      //     value: ""
-      //   },
-      //   userIdentity: {
-      //     title: "ID card",
-      //     value: ""
-      //   },
-      //   optTime: {
-      //     title: "Verification time",
-      //     value: ""
-      //   }
-      // },
+          value: "",
+        },
+      },
     };
   },
   methods: {
@@ -228,34 +290,55 @@ export default {
       done();
     },
     check(num) {
-      var str;
+      let str;
       if (num == 1) {
         str = "";
+        this.dialogVisible = false;
       } else if (num == 2) {
-        str = this.form.type.join(",");
+        let obj = {
+          eng: [],
+          chinese: [],
+        };
+        if (this.form.type.length) {
+          this.form.type.forEach((item) => {
+            obj.eng.push(item.eng);
+            obj.chinese.push(item.chinese);
+          });
+          // console.log(obj);
+          str = JSON.stringify(obj);
+          this.dialogFormVisible = false;
+        } else {
+          this.$message({
+            message: this.$t("project.PleaseSelect"),
+            type: "warning",
+          });
+          return;
+        }
       }
-      this.dialogVisible = false;
-      this.dialogFormVisible = false;
       this.$global
         .post_encapsulation(
           `${this.$axios.defaults.baseURL}/bsl_admin_web/user/saveAuth`,
           {
             userId: this.idx,
             optStatus: num,
-            optRemark: str
+            optRemark: str,
           }
         )
-        .then(res => {
+        .then((res) => {
           console.log(res);
           if (res.data.resultCode == 10000) {
+            this.$message({
+              message: res.data.resultDesc,
+              type: "success",
+            });
             this.$router.push({ name: "verified_user" });
+          } else {
+            this.$message.error(res.data.resultDesc);
           }
         });
-    }
+    },
   },
   created() {
-   
-    
     let self = this;
     this.idx = this.$route.query.idx;
     this.identityType = this.$route.query.userIdentityType;
@@ -263,10 +346,10 @@ export default {
       .get_encapsulation(
         `${this.$axios.defaults.baseURL}/bsl_admin_web/user/getUserAuthDetail`,
         {
-          userId: this.idx
+          userId: this.idx,
         }
       )
-      .then(res => {
+      .then((res) => {
         var arr = res.data.data;
         for (var key in arr) {
           if (key == "userType") {
@@ -305,7 +388,6 @@ export default {
               }
             }
             console.log(self.pending_individual);
-            
           } else if (this.identityType == 2) {
             arr.identityType = self.$t("project.company");
             self.userCompanyPic = arr.userCompanyPic;
@@ -322,11 +404,10 @@ export default {
           }
         }
       });
-  }
+  },
 };
 </script>
 <style lang='scss'>
-
 .pic {
   width: 500px;
   height: 420px;

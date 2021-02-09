@@ -10,9 +10,9 @@
         label-width="120px"
         label-position="top"
       >
-        <el-form-item label="积分排行刷新时间：:" prop="industryNameCh">
+        <el-form-item label="积分排行刷新时间：:" prop="Integral_refreshtime">
           <el-date-picker
-            v-model="industry_summit.industryNameCh"
+            v-model="Integral_refreshtime"
             type="date"
             placeholder="选择日期"
           >
@@ -68,6 +68,7 @@ export default {
       }
     };
     return {
+      Integral_refreshtime:null,//积分刷新时间
       dialogFormVisible_industry: false,
       tableData: [],
       title: "",
@@ -122,6 +123,9 @@ export default {
   //     immediate: true
   //   },
   // },
+  created(){
+    this.search();
+  },
   methods: {
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
@@ -135,20 +139,21 @@ export default {
     search() {
       this.$global
         .get_encapsulation(
-          `${this.$axios.defaults.baseURL}/bsl_admin_web/industry/getAllIndustry`,
-          { searchKey: "" }
+          `${this.$axios.defaults.baseURL}/bsl_admin_web/member/getBslRankingSystem`,
         )
         .then((res) => {
           if (res.data.resultCode == 10000) {
-            this.tableData = [...res.data.data];
-            this.tableData.forEach((item) => {
-              if (item.industryId == this.$route.query.industryId) {
-                this.industry_summit.industryStatus = item.industryStatus;
-                this.industry_summit.industryNameEn = item.industryNameEn;
-                this.industry_summit.industryNameCh = item.industryNameCh;
-                this.industry_summit.industrySort = item.industrySort;
-              }
-            });
+
+            this.Integral_refreshtime = (res.data.data.rankingSystem.optTime+'000')*1;
+            console.log(this.Integral_refreshtime)
+            // this.tableData.forEach((item) => {
+            //   if (item.industryId == this.$route.query.industryId) {
+            //     this.industry_summit.industryStatus = item.industryStatus;
+            //     this.industry_summit.industryNameEn = item.industryNameEn;
+            //     this.industry_summit.industryNameCh = item.industryNameCh;
+            //     this.industry_summit.industrySort = item.industrySort;
+            //   }
+            // });
           }
         });
     },

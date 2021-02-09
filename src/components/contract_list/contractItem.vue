@@ -7,7 +7,8 @@
           type="primary"
           icon="el-icon-circle-plus-outline"
           class="addbtn block"
-        >{{$t('Contract.addContract')}}</el-button>
+          >{{ $t("Contract.addContract") }}</el-button
+        >
         <section>
           <el-input
             :placeholder="$t('project.ProjectName')"
@@ -19,8 +20,9 @@
             type="primary"
             icon="el-icon-search"
             class="block"
-            @click="search(value,value1, 1, pagesize)"
-          >{{$t('project.Search')}}</el-button>
+            @click="search(value, value1, 1, pagesize)"
+            >{{ $t("project.Search") }}</el-button
+          >
         </section>
       </header>
       <el-table :data="tableData" border>
@@ -41,20 +43,29 @@
           :label="$t('Contract.ContractType')"
           align="center"
         >
-          <template slot-scope="scope">{{contractType[scope.row.contractType]}}</template>
+          <template slot-scope="scope">{{
+            contractType[scope.row.contractType]
+          }}</template>
         </el-table-column>
-        <el-table-column fixed="right" :label="$t('project.Operation')" width="200" align="center">
+        <el-table-column
+          fixed="right"
+          :label="$t('project.Operation')"
+          width="200"
+          align="center"
+        >
           <template slot-scope="scope">
             <el-button
               @click="handleClick(scope.row)"
               type="text"
               size="small"
-            >{{$t('project.View')}}</el-button>
-            <el-button
-              @click="deleterow(scope.row)"
-              type="text"
-              size="small"
-            >{{$t('project.Delete')}}</el-button>
+              >{{ $t("project.View") }}</el-button
+            >
+            <el-button @click="EditClick(scope.row)" type="text" size="small">{{
+              $t("project.Edit")
+            }}</el-button>
+            <el-button @click="deleterow(scope.row)" type="text" size="small">{{
+              $t("project.Delete")
+            }}</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -86,12 +97,12 @@ export default {
       pagesize: 8,
       contractType: [
         this.$t("Contract.ProjectownerAndIntermediary"),
-        this.$t("Contract.IntermediaryAndIntermediary")
+        this.$t("Contract.IntermediaryAndIntermediary"),
       ],
       pagetotal: null,
       tableData: [],
       deleteType: 0,
-      industryId: ""
+      industryId: "",
     };
   },
   created() {},
@@ -119,7 +130,7 @@ export default {
           cancelButtonText: self.$t("project.No"),
           type: "warning",
           center: true,
-          showCancelButton: true
+          showCancelButton: true,
         }
       )
         .then(() => {
@@ -128,20 +139,20 @@ export default {
             .get_encapsulation(
               `${this.$axios.defaults.baseURL}/bsl_admin_web/contract/deteleContractTemplate`,
               {
-                fileId: row.id
+                fileId: row.id,
               }
             )
-            .then(res => {
+            .then((res) => {
               if (res.data.resultCode == 10000) {
                 this.$message({
                   message: res.data.resultDesc,
-                  type: "success"
+                  type: "success",
                 });
                 this.search();
               } else {
                 this.$message({
                   message: res.data.resultDesc,
-                  type: "warn"
+                  type: "warn",
                 });
               }
             });
@@ -154,8 +165,18 @@ export default {
         name: "contract_alter",
         query: {
           Id: row.id,
-          type: row.fileType
-        }
+          type: row.fileType,
+        },
+      });
+    },
+    EditClick(row) {
+      console.log(row);
+      this.$router.push({
+        name: "contractClause",
+        query: {
+          filed: row.id,
+          type: row.fileType,
+        },
       });
     },
     fromchildren1(data) {
@@ -176,14 +197,14 @@ export default {
           {
             pageIndex: this.currentpage,
             pageSize: this.pagesize,
-            fileName: this.searchkey
+            fileName: this.searchkey,
           }
         )
-        .then(res => {
+        .then((res) => {
           console.log(res);
           if (res.data.resultCode == 10000) {
             this.tableData = res.data.data.lists;
-            res.data.data.lists.forEach(item => {
+            res.data.data.lists.forEach((item) => {
               // console.log(item.fileType);
               item.createTime = this.$global.stamptodate(item.createTime);
               // item.fileType = this.contractType[item.fileType];
@@ -193,8 +214,8 @@ export default {
 
           // console.log(this.tableData.length);
         });
-    }
-  }
+    },
+  },
 };
 </script>
 

@@ -71,7 +71,7 @@ export default {
       currentpage: null,
       bookmark: null,
       pagesize: 8,
-      pagetotal: null,
+      // pagetotal: null,
       tableData: [],
       keywords: "",
       pageArr: [null],
@@ -79,10 +79,10 @@ export default {
       projectStatus: 0
     };
   },
-  created() {},
-  activated() {
+  created() {
     this.search(this.currentpage, this.pagesize);
   },
+  activated() {},
   methods: {
     search(currentpage, pagesize) {
       let self = this;
@@ -104,12 +104,12 @@ export default {
             if (a) {
               this.pageArr.push(res.data.data.bookmark);
             }
-            // console.log( );
-            this.bookmark = res.data.data.lastBookmark;
-            this.currentpage = this.pageArr.indexOf(res.data.data.lastBookmark);
-            this.pagetotal =
-              (this.pageArr.length - 1) * this.pagesize +
-              res.data.data.data.length;
+            console.log(this.pageArr);
+            this.bookmark = res.data.data.bookmark;
+            // this.currentpage = this.pageArr.indexOf(res.data.data.lastBookmark);
+            // this.pagetotal =
+            //   (this.pageArr.length - 1) * this.pagesize +
+            //   res.data.data.data.length;
             this.tableData = res.data.data.data.map(item => {
               let userType;
               if (item.record.userType) {
@@ -144,11 +144,13 @@ export default {
       if (num === "previous") {
         if (this.currentpageSerial > 0) {
           this.currentpageSerial--;
+          // this.currentpage = this.bookmark;
           this.search(this.pageArr[this.currentpageSerial], this.pagesize);
         }
       } else if (num === "next") {
         if (this.currentpageSerial < this.pageArr.length - 1) {
           this.currentpageSerial++;
+          // this.currentpage = this.bookmark;
           this.search(this.pageArr[this.currentpageSerial], this.pagesize);
         }
       }

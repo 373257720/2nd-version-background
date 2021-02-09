@@ -39,10 +39,14 @@
         border
       >
        
-        <el-table-column prop="industryNameEn" show-overflow-tooltip label="申请时间" align="center"></el-table-column>
-        <el-table-column prop="industryNameEn" show-overflow-tooltip label="积分使用类型" align="center"></el-table-column>
-        <el-table-column prop="industryNameEn" show-overflow-tooltip label="积分明细" align="center"></el-table-column>
-        <el-table-column prop="industryNameEn" show-overflow-tooltip label="兑换礼品" align="center"></el-table-column>
+        <el-table-column prop="createTime" show-overflow-tooltip label="申请时间" align="center"></el-table-column>
+        <el-table-column prop="exchangeIntegralType" show-overflow-tooltip label="积分使用类型" align="center">
+            <template slot-scope="scope">
+           {{scope.row.exchangeIntegralType==0?'礼品兑换':''}}
+          </template>
+        </el-table-column>
+        <el-table-column prop="exchangeIntegral" show-overflow-tooltip label="积分明细" align="center"></el-table-column>
+        <el-table-column prop="giftName" show-overflow-tooltip label="兑换礼品" align="center"></el-table-column>
         
       </el-table>
       <el-pagination
@@ -62,7 +66,7 @@
 // import '@/components/eventBus'
 // import login from "../login";
 export default {
-  name: "membershipList",
+  name: "exchangeDetails",
   data() {
     return {
       centerDialogVisible: false,
@@ -78,7 +82,24 @@ export default {
       industryId: ""
     };
   },
-  created() {},
+  created() {
+ var userId = this.$route.query.userId;
+ this.$global.get_encapsulation(`${this.$axios.defaults.baseURL}/bsl_admin_web/member/getBslPointsExchangeList
+`,{
+     id:userId
+      })
+    .then(res=>{
+      if (res.data.resultCode == 10000){
+         this.tableData = [...res.data.data.lists];
+         console.log(this.tableData )
+      }else{
+
+      }
+    })
+
+
+
+  },
   activated() {
     // console.log(123);
 

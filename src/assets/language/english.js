@@ -1,8 +1,10 @@
 export default {
   project: {
+    p1:"File name can not contain chinese",
+    Between1and300charactersinlength: "Between 1 and 300 characters in length",
+    optionalreadyexist:"option already exists",
     English:"English",
     Chinese:"Chinese",
-    projectName:"projectName",
     PotentialInvestors:"Potential investors",
     Pleasetagtheitem: "Please tag the item",
     cannotbenull:"Can not be null",
@@ -15,6 +17,7 @@ export default {
     contractTerms: "Contract terms",
     Nameofinvestmentbank: "Name of investment bank",
     MyProjectInformation: "My project information",
+    FundingRange: "Funding demand (currency)",
     FundingRangeBewteen: "Funding Range Bewteen",
     keyword: "Please entekey word",
     Amountneedstobegreaterthan: "Amount needs to be greater than 0",
@@ -24,7 +27,7 @@ export default {
     Start: "Start",
     End: "End",
     PleaseSelect: "Please Select",
-    ProjectName: "Project Name",
+    ProjectName: "Project name",
     Search: "Search",
     Addproject: "Add project",
     CreationDate: "Creation Date",

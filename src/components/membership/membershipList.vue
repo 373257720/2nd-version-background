@@ -3,8 +3,13 @@
     <el-main>
       <header class="tosignup_header">
         <nav>
-          <el-button @click="$routerto('customPoints')" type="primary" class="addbtn block">{{$t('Membership.Pointscustomization')}}</el-button>
-          <el-button @click="$routerto('industry_alter')" type="primary" class="addbtn block">{{$t('Membership.PointsCleared')}}</el-button>
+          <el-button
+            @click="$routerto('customPoints')"
+            type="primary"
+            class="addbtn block"
+            >{{ $t("Membership.Pointscustomization") }}</el-button
+          >
+          <!-- <el-button @click="$routerto('industry_alter')" type="primary" class="addbtn block">{{$t('Membership.PointsCleared')}}</el-button> -->
         </nav>
         <section>
           <el-input
@@ -17,27 +22,45 @@
             type="primary"
             icon="el-icon-search"
             class="block"
-            @click="search(value,value1, 1, pagesize)"
-          >{{$t('project.Search')}}</el-button>
+            @click="search(value, value1, 1, pagesize)"
+            >{{ $t("project.Search") }}</el-button
+          >
         </section>
       </header>
       <el-table
-        :data="tableData.slice((currentpage - 1) * pagesize, currentpage * pagesize)"
+        :data="
+          tableData.slice((currentpage - 1) * pagesize, currentpage * pagesize)
+        "
         border
       >
-        <el-table-column width="200" prop="idx" :label="$t('Member.Account')" align="center"></el-table-column>
         <el-table-column
-          prop="industryNameCh"
-          show-overflow-tooltip
-          :label="$t('Member.DateofRegister')"
+          width="200"
+          prop="bslEmail"
+          :label="$t('Member.Account')"
           align="center"
         ></el-table-column>
         <el-table-column
+          prop="createTime"
+          show-overflow-tooltip
+          :label="$t('Member.DateofRegister')"
+          align="center"
+        >
+          <template slot-scope="scope">
+            <el-date-picker
+              v-model="scope.row.membershipValidity"
+              type="date"
+              placeholder="选择日期"
+              readonly=""
+            >
+            </el-date-picker>
+          </template>
+        </el-table-column>
+        <!-- <el-table-column
           prop="industryNameEn"
           show-overflow-tooltip
           :label="$t('Member.MembershipLevel')"
           align="center"
-        ></el-table-column>
+        ></el-table-column> -->
         <el-table-column
           prop="industryNameEn"
           show-overflow-tooltip
@@ -46,46 +69,70 @@
           align="center"
         >
           <!-- <input type="text" @input="CheckInputIntFloat" v-model="input" /> -->
-          <el-input v-model="input" oninput="CheckInputIntFloat" placeholder></el-input>
+          <template slot-scope="scope">
+            <el-input
+              v-model="scope.row.memberIntegral"
+              oninput="CheckInputIntFloat"
+              placeholder
+              @blur="ChangesIntegral(scope.row)"
+            ></el-input>
+          </template>
         </el-table-column>
-        <el-table-column
-          prop="industryNameEn"
+        <!-- <el-table-column
+          prop="memberIntegral"
           show-overflow-tooltip
           :label="$t('Member.MembershipPoints')"
           align="center"
-        ></el-table-column>
+        ></el-table-column> -->
         <el-table-column
-          prop="industryNameEn"
+          prop="middlemanNumber"
           show-overflow-tooltip
           :label="$t('Membership.RecommendedMiddleman')"
           align="center"
         ></el-table-column>
         <el-table-column
-          prop="industryNameEn"
+          prop="investorNumber"
           show-overflow-tooltip
           :label="$t('Membership.ReferInvestors')"
           align="center"
         ></el-table-column>
         <el-table-column
-          prop="industryNameEn"
+          prop="investmentAmountTotal"
           show-overflow-tooltip
           :label="$t('Member.projectFunding')"
           align="center"
         ></el-table-column>
         <el-table-column
-          prop="industryNameEn"
+          prop="membershipValidity"
           show-overflow-tooltip
           :label="$t('Member.ExpiredDateofMembership')"
           align="center"
-        ></el-table-column>
-        <el-table-column fixed="right" :label="$t('project.Operation')" width="200" align="center">
+        >
+          <template slot-scope="scope">
+            <el-date-picker
+              v-model="scope.row.membershipValidity"
+              type="date"
+              placeholder="选择日期"
+              @blur="ChangeValidity(scope.row)"
+              value-format="timestamp"
+            >
+            </el-date-picker>
+          </template>
+        </el-table-column>
+        <el-table-column
+          fixed="right"
+          :label="$t('project.Operation')"
+          width="200"
+          align="center"
+        >
           <template slot-scope="scope">
             <el-button
-              v-if="scope.row.industryStatus!==0"
-              disabled
+              v-if="scope.row.industryStatus !== 0"
+              @click="handleClick(scope.row)"
               type="text"
               size="small"
-            >{{$t('project.View')}}</el-button>
+              >{{ $t("project.View") }}</el-button
+            >
           </template>
         </el-table-column>
       </el-table>
@@ -119,7 +166,7 @@ export default {
       pagetotal: null,
       tableData: [],
       deleteType: 0,
-      industryId: ""
+      industryId: "",
     };
   },
   created() {},
@@ -161,7 +208,7 @@ export default {
           cancelButtonText: self.$t("project.No"),
           type: "warning",
           center: true,
-          showCancelButton: true
+          showCancelButton: true,
         }
       )
         .then(() => {
@@ -170,30 +217,79 @@ export default {
               `${this.$axios.defaults.baseURL}/bsl_admin_web/industry/deleteIndustry`,
               { industryId: row.industryId }
             )
-            .then(res => {
+            .then((res) => {
               if (res.data.resultCode == 10000) {
                 this.$message({
                   message: res.data.resultDesc,
-                  type: "success"
+                  type: "success",
                 });
                 this.search();
               } else {
                 this.$message({
                   message: res.data.resultDesc,
-                  type: "warn"
+                  type: "warn",
                 });
               }
             });
         })
         .catch(() => {});
     },
-
+    // 更改会员有效期
+    ChangeValidity(row) {
+      console.log(row);
+      this.$global
+        .get_encapsulation(
+          `${this.$axios.defaults.baseURL}/bsl_admin_web/member/updateBslMemberMembershipValidity`,
+          {
+            memberId: row.memberId,
+            membershipValidity: row.membershipValidity / 1000,
+          }
+        )
+        .then((res) => {
+          if (res.data.resultCode == 10000) {
+            this.$message({
+              message: res.data.resultDesc,
+              type: "success",
+            });
+            this.search();
+          } else {
+            this.$message({
+              message: res.data.resultDesc,
+              type: "warn",
+            });
+          }
+        });
+    },
+    // 更改会员积分
+    ChangesIntegral(row) {
+      console.log(row);
+      this.$global
+        .get_encapsulation(
+          `${this.$axios.defaults.baseURL}/bsl_admin_web/member/updateBslMemberPoints`,
+          { memberId: row.memberId, integral: row.memberIntegral }
+        )
+        .then((res) => {
+          if (res.data.resultCode == 10000) {
+            this.$message({
+              message: res.data.resultDesc,
+              type: "success",
+            });
+            this.search();
+          } else {
+            this.$message({
+              message: res.data.resultDesc,
+              type: "warn",
+            });
+          }
+        });
+    },
     handleClick(row) {
+      console.log(row);
       this.$router.push({
-        name: "industry_alter",
+        name: "viewRecommendedProjectStatus",
         query: {
-          industryId: row.industryId
-        }
+          userId: row.memberId,
+        },
       });
     },
     fromchildren1(data) {
@@ -210,15 +306,17 @@ export default {
     search() {
       this.$global
         .get_encapsulation(
-          `${this.$axios.defaults.baseURL}/bsl_admin_web/industry/getAllIndustry`,
-          { searchKey: "" }
+          `${this.$axios.defaults.baseURL}/bsl_admin_web/member/getBslMemberList`
         )
-        .then(res => {
+        .then((res) => {
           if (res.data.resultCode == 10000) {
-            this.tableData = [...res.data.data];
+            this.tableData = [...res.data.data.lists];
             console.log(this.tableData);
             this.tableData.forEach((item, idx) => {
               item.idx = idx + 1;
+              item.membershipValidity = (item.membershipValidity + "000") * 1;
+              item.createTime = (item.createTime + "000") * 1;
+
               // if(item.industryStatus==-1){
               //   item.industry_Status='已删除'
               // }else if(item.industryStatus==0){
@@ -227,8 +325,8 @@ export default {
             });
           }
         });
-    }
-  }
+    },
+  },
 };
 </script>
 

@@ -16,45 +16,45 @@
       >
         <el-table-column
           width="200"
-          prop="idx"
+          prop="memberLevel"
           :label="$t('Member.MembershipLevel')"
           align="center"
         ></el-table-column>
         <el-table-column
-          prop="industryNameCh"
+          prop="memberLevelIntegral"
           show-overflow-tooltip
           :label="$t('Member.MembershipPoints')"
           align="center"
         ></el-table-column>
         <el-table-column
-          prop="industryNameEn"
+          prop="memberColour"
           show-overflow-tooltip
           :label="$t('Membership.Colour')"
           align="center"
         ></el-table-column>
         <el-table-column
-          prop="industryNameEn"
+          prop="memberRecommendCount"
           show-overflow-tooltip
           :label="$t('Membership.Totalrecommendedtimes')"
           align="center"
         ></el-table-column>
         <el-table-column
-          prop="industryNameEn"
+          prop="recommendMiddlemanTime"
           show-overflow-tooltip
           :label="$t('Membership.PriorityRecommendationOfIntermediaryTime')"
           align="center"
         ></el-table-column>
         <el-table-column
-          prop="industryNameEn"
+          prop="recommendInvestorTime"
           show-overflow-tooltip
            :label="$t('Membership.PriorityTToRecommendInvestorTime')"
           align="center"
         ></el-table-column>
         <el-table-column fixed="right" :label="$t('project.Operation')" width="200" align="center">
-          <!-- <template slot-scope="scope">
-            <el-button  type="text" size="small">{{$t('project.Edit')}}</el-button>
-            <el-button  type="text" size="small">{{$t('project.Delete')}}</el-button>
-          </template>-->
+          <template slot-scope="scope">
+            <el-button @click="handleClick(scope.row)"  type="text" size="small">{{$t('project.View')}}</el-button>
+            <el-button  @click="deleterow(scope.row)"  type="text" size="small">{{$t('project.Delete')}}</el-button>
+          </template>
         </el-table-column>
       </el-table>
       <el-pagination
@@ -89,9 +89,12 @@ export default {
       industryId: ""
     };
   },
-  created() {},
-  activated() {
+  created() {
     this.search();
+
+  },
+  activated() {
+    // this.search();
   },
   methods: {
     handleCurrentChange(cpage) {
@@ -103,7 +106,7 @@ export default {
     deleterow(row) {
       console.log(row);
       let self = this;
-      this.industryId = row.industryId;
+      this.id = row.id;
       this.centerDialogVisible = true;
       this.$confirm(
         self.$t("project.Confirmdelect"),
@@ -118,9 +121,9 @@ export default {
       )
         .then(() => {
           this.$global
-            .get_encapsulation(
-              `${this.$axios.defaults.baseURL}/bsl_admin_web/industry/deleteIndustry`,
-              { industryId: row.industryId }
+            .post_encapsulation(
+              `${this.$axios.defaults.baseURL}/bsl_admin_web/member/delBslMemberSystem`,
+              { id: row.id }
             )
             .then(res => {
               if (res.data.resultCode == 10000) {
@@ -142,9 +145,9 @@ export default {
 
     handleClick(row) {
       this.$router.push({
-        name: "industry_alter",
+        name: "membershipDetails",
         query: {
-          industryId: row.industryId
+          Id: row.id
         }
       });
     },
@@ -162,13 +165,13 @@ export default {
     search() {
       this.$global
         .get_encapsulation(
-          `${this.$axios.defaults.baseURL}/bsl_admin_web/industry/getAllIndustry`,
+          `${this.$axios.defaults.baseURL}/bsl_admin_web/member/getBslMemberSystemList`,
           { searchKey: "" }
         )
         .then(res => {
           if (res.data.resultCode == 10000) {
-            this.tableData = [...res.data.data];
-            // console.log(this.tableData)
+            this.tableData = [...res.data.data.lists];
+            console.log(this.tableData)
             this.tableData.forEach((item, idx) => {
               item.idx = idx + 1;
               // if(item.industryStatus==-1){

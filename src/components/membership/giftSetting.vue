@@ -3,23 +3,37 @@
     <el-main>
       <header class="tosignup_header">
         <nav>
-          <el-button @click="$routerto('addGift')" type="primary" class="addbtn">新增</el-button>
+          <el-button @click="$routerto('addGift')" type="primary" class="addbtn"
+            >新增</el-button
+          >
         </nav>
       </header>
       <el-table
-        :data="tableData.slice((currentpage - 1) * pagesize, currentpage * pagesize)"
+        :data="
+          tableData.slice((currentpage - 1) * pagesize, currentpage * pagesize)
+        "
         border
       >
-        <el-table-column width="200" prop="idx" label="礼品名称" align="center"></el-table-column>
         <el-table-column
-          prop="industryNameCh"
+          width="200"
+          prop="giftName"
+          label="礼品名称"
+          align="center"
+        ></el-table-column>
+        <el-table-column
+          prop="giftNumber"
           show-overflow-tooltip
           label="数量"
           align="center"
         ></el-table-column>
         <el-table-column fixed="right" label="操作" width="200" align="center">
           <template slot-scope="scope">
-            <el-button disabled type="text" size="small">兑换</el-button>
+            <el-button
+              @click="handleClick(scope.row)"
+              type="text"
+              size="small"
+              >{{ scope.row.giftStatus == 0 ? "上架" : "下架" }}</el-button
+            >
           </template>
         </el-table-column>
       </el-table>
@@ -53,7 +67,7 @@ export default {
       pagetotal: null,
       tableData: [],
       deleteType: 0,
-      industryId: ""
+      industryId: "",
     };
   },
   created() {},
@@ -95,7 +109,7 @@ export default {
           cancelButtonText: self.$t("project.No"),
           type: "warning",
           center: true,
-          showCancelButton: true
+          showCancelButton: true,
         }
       )
         .then(() => {
@@ -104,17 +118,17 @@ export default {
               `${this.$axios.defaults.baseURL}/bsl_admin_web/industry/deleteIndustry`,
               { industryId: row.industryId }
             )
-            .then(res => {
+            .then((res) => {
               if (res.data.resultCode == 10000) {
                 this.$message({
                   message: res.data.resultDesc,
-                  type: "success"
+                  type: "success",
                 });
                 this.search();
               } else {
                 this.$message({
                   message: res.data.resultDesc,
-                  type: "warn"
+                  type: "warn",
                 });
               }
             });
@@ -123,12 +137,31 @@ export default {
     },
 
     handleClick(row) {
-      this.$router.push({
-        name: "industry_alter",
-        query: {
-          industryId: row.industryId
-        }
-      });
+      console.log(row);
+      this.$global
+        .post_encapsulation(
+          `${this.$axios.defaults.baseURL}/bsl_admin_web/member/saveModifyBslExchangeGift`,
+          {
+            giftName: row.giftName,
+            giftNameEn: row.giftNameEn,
+            id: row.id,
+            giftStatus: row.giftStatus == 0 ? 1 : 0,
+          }
+        )
+        .then((res) => {
+          if (res.data.resultCode == 10000) {
+            this.$message({
+                  message: res.data.resultDesc,
+                  type: "success"
+                });
+            this.search();
+          }else{
+             this.$message({
+                  message: res.data.resultDesc,
+                  type: "warn"
+                });
+          }
+        });
     },
     fromchildren1(data) {
       this.currentpage = data.currentpage;
@@ -144,25 +177,20 @@ export default {
     search() {
       this.$global
         .get_encapsulation(
-          `${this.$axios.defaults.baseURL}/bsl_admin_web/industry/getAllIndustry`,
+          `${this.$axios.defaults.baseURL}/bsl_admin_web/member/getBslExchangeGiftList`,
           { searchKey: "" }
         )
-        .then(res => {
+        .then((res) => {
           if (res.data.resultCode == 10000) {
-            this.tableData = [...res.data.data];
+            this.tableData = [...res.data.data.lists];
             console.log(this.tableData);
             this.tableData.forEach((item, idx) => {
               item.idx = idx + 1;
-              // if(item.industryStatus==-1){
-              //   item.industry_Status='已删除'
-              // }else if(item.industryStatus==0){
-              //   item.industry_Status='正常'
-              // }
             });
           }
         });
-    }
-  }
+    },
+  },
 };
 </script>
 

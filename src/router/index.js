@@ -194,6 +194,11 @@ const membership = () =>
     /* webpackChunkName: "project_owner" */
     "@/components/membership/membership"
   );
+  const membershipDetails = () =>
+  import(
+    /* webpackChunkName: "project_owner" */
+    "@/components/membership/membershipDetails"
+  );
 const giftSetting = () =>
   import(
     /* webpackChunkName: "project_owner" */
@@ -224,7 +229,16 @@ const membershipList = () =>
     /* webpackChunkName: "project_owner" */
     "@/components/membership/membershipList"
   );
-
+  const ProjectStatusCustomization = () =>
+  import(
+    /* webpackChunkName: "project_owner" */
+    "@/components/membership/ProjectStatusCustomization"
+  );
+  const viewRecommendedProjectStatus = () =>
+  import(
+    /* webpackChunkName: "project_owner" */
+    "@/components/membership/viewRecommendedProjectStatus"
+  );
 // coin_category
 const coin_category_lists = () =>
   import(
@@ -552,6 +566,11 @@ const routes = [
             },
           },
           {
+            path: "membershipDetails",
+            name: "membershipDetails",
+            component: membershipDetails
+          },
+          {
             path: "exchangeHistory",
             name: "exchangeHistory",
             component: exchangeHistory
@@ -565,6 +584,16 @@ const routes = [
             path: "pointsSettingHistory",
             name: "pointsSettingHistory",
             component: pointsSettingHistory
+          },
+          {
+            path: "viewRecommendedProjectStatus",
+            name: "viewRecommendedProjectStatus",
+            component: viewRecommendedProjectStatus
+          },
+          {
+            path: "ProjectStatusCustomization",
+            name: "ProjectStatusCustomization",
+            component: ProjectStatusCustomization
           },
           {
             path: "rankingList",

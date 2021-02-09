@@ -1,25 +1,16 @@
 <template>
-  <div class="contractItem">
+  <div class="membershipList">
     <el-main>
       <header class="tosignup_header">
         <nav>
-          <!-- <el-button
-            @click="$routerto('giftSetting')"
-            type="primary"
-            class="addbtn"
-          >礼品设置</el-button>
           <el-button
-            @click="$routerto('pointsSetting')"
+            @click="$routerto('customPoints')"
             type="primary"
-            class="addbtn"
-          >积分兑换设置</el-button>
-          <el-button
-            @click="$routerto('exchangeHistory')"
-            type="primary"
-            class="addbtn"
-          >兑换历史</el-button> -->
+            class="addbtn block"
+            >{{ $t("Membership.Pointscustomization") }}</el-button
+          >
+          <!-- <el-button @click="$routerto('industry_alter')" type="primary" class="addbtn block">{{$t('Membership.PointsCleared')}}</el-button> -->
         </nav>
-
         <section>
           <el-input
             :placeholder="$t('project.ProjectName')"
@@ -30,8 +21,15 @@
           <el-button
             type="primary"
             icon="el-icon-search"
+            class="block"
             @click="search(value, value1, 1, pagesize)"
             >{{ $t("project.Search") }}</el-button
+          >
+          <el-button
+            type="primary"
+            class="block"
+            @click="$routerto('ProjectStatusCustomization')"
+            >{{ "链接项目状态自定义" }}</el-button
           >
         </section>
       </header>
@@ -43,58 +41,98 @@
       >
         <el-table-column
           width="200"
-          prop="optTime"
-          label="设置时间"
+          prop="createTime"
+          label="时间"
           align="center"
         ></el-table-column>
         <el-table-column
-          prop="integralExchangeName"
+          prop="bslName"
           show-overflow-tooltip
-          label="规则名称"
+          label="会员"
+          align="center"
+        >
+        </el-table-column>
+        <!-- <el-table-column
+          prop="industryNameEn"
+          show-overflow-tooltip
+          :label="$t('Member.MembershipLevel')"
+          align="center"
+        ></el-table-column> -->
+        <el-table-column
+          prop="projectNameEn"
+          show-overflow-tooltip
+          width="150"
+          label="项目"
+          align="center"
+        >
+          <!-- <input type="text" @input="CheckInputIntFloat" v-model="input" /> -->
+        </el-table-column>
+
+        <el-table-column
+          prop="middlemanName"
+          show-overflow-tooltip
+          :label="$t('Membership.RecommendedMiddleman')"
           align="center"
         ></el-table-column>
         <el-table-column
-          prop="integralAmount"
+          prop="investorName"
           show-overflow-tooltip
-          label="兑换积分"
+          :label="$t('Membership.ReferInvestors')"
           align="center"
         ></el-table-column>
         <el-table-column
-          prop="exchangeGiftId"
+          prop="memberIntegral"
           show-overflow-tooltip
-          label="兑换礼品"
-          align="center"
-        ></el-table-column>
-        <el-table-column
-          prop="exchangeDetails"
-          show-overflow-tooltip
-          label="宣传内容"
-          align="center"
-        ></el-table-column>
-        <el-table-column
-          prop="exchangeEndTime"
-          show-overflow-tooltip
-          label="时限"
-          align="center"
-        ></el-table-column>
-        <el-table-column
-          prop="exchangeStatus"
-          show-overflow-tooltip
-          label="是否公开"
+          label="链接项目状态"
           align="center"
         >
           <template slot-scope="scope">
-            {{ scope.row.exchangeStatus == false ? "否" : "是" }}
+            <el-select
+              @change="changeintegral(scope.row)"
+              v-model="value"
+              placeholder="请选择"
+            >
+              <el-option
+                v-for="item in scope.row.bslProjectLinkStatusList"
+                :key="item.id"
+                :label="item.statusRanking"
+                :value="item.statusRanking"
+              >
+              </el-option>
+            </el-select>
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="操作" width="200" align="center">
+        <el-table-column
+          prop="investmentAmountTotal"
+          show-overflow-tooltip
+          :label="$t('Member.projectFunding')"
+          align="center"
+        >
           <template slot-scope="scope">
-            <el-button type="text" size="small" disabled @click="$routerto('')"
-              >编辑</el-button
-            >
-            <el-button type="text" size="small" @click="delseting(scope.row)"
-              >删除</el-button
-            >
+            <el-input
+              v-if="scope.row.completeStatus"
+              v-model="input"
+              @blur="addprojectfund(scope.row)"
+              placeholder="请输入内容"
+              type="number"
+              min="0"
+            ></el-input>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="bslProjectLinkStatusList.list"
+          show-overflow-tooltip
+          label="获取积分"
+          align="center"
+        >
+          <template slot-scope="scope">
+           <el-input
+             
+              v-model="integral"
+             readonly=""
+              placeholder=""
+             
+            ></el-input>
           </template>
         </el-table-column>
       </el-table>
@@ -118,6 +156,7 @@ export default {
   name: "membershipList",
   data() {
     return {
+      integral: "",
       centerDialogVisible: false,
       value1: [], //日期选择
       value: "", //项目状态
@@ -131,11 +170,73 @@ export default {
       industryId: "",
     };
   },
-  created() {},
+  created() {
+    // this.$global
+    //   .get_encapsulation(
+    //     `${this.$axios.defaults.baseURL}/bsl_admin_web/member/getBslProjectLinkList`,
+    //     {
+    //       userId: this.$route.query.userId,
+    //     }
+    //   )
+    //   .then((res) => {
+    //     if (res.data.resultCode == 10000) {
+    //       this.tableData = [...res.data.data.lists];
+    //       console.log(this.tableData);
+    //       this.tableData.forEach((item, idx) => {
+    //         item.createTime = this.$global.stamptodate(item.createTime);
+    //         // if(item.industryStatus==-1){
+    //         //   item.industry_Status='已删除'
+    //         // }else if(item.industryStatus==0){
+    //         //   item.industry_Status='正常'
+    //         // }
+    //       });
+    //       this.$message({
+    //         message: res.data.resultDesc,
+    //         type: "success",
+    //       });
+    //       // this.search();
+    //     } else {
+    //       this.$message({
+    //         message: res.data.resultDesc,
+    //         type: "warn",
+    //       });
+    //     }
+    //   });
+  },
   activated() {
     // console.log(123);
-
-    this.search();
+    // this.search();
+    this.$global
+      .get_encapsulation(
+        `${this.$axios.defaults.baseURL}/bsl_admin_web/member/getBslProjectLinkList`,
+        {
+          userId: this.$route.query.userId,
+        }
+      )
+      .then((res) => {
+        if (res.data.resultCode == 10000) {
+          this.tableData = [...res.data.data.lists];
+          console.log(this.tableData);
+          this.tableData.forEach((item, idx) => {
+            item.createTime = this.$global.stamptodate(item.createTime);
+            // if(item.industryStatus==-1){
+            //   item.industry_Status='已删除'
+            // }else if(item.industryStatus==0){
+            //   item.industry_Status='正常'
+            // }
+          });
+          this.$message({
+            message: res.data.resultDesc,
+            type: "success",
+          });
+          // this.search();
+        } else {
+          this.$message({
+            message: res.data.resultDesc,
+            type: "warn",
+          });
+        }
+      });
   },
   methods: {
     CheckInputIntFloat(value) {
@@ -145,7 +246,6 @@ export default {
       // console.log(gg.replace(regexp, ""));
       if ("" != gg.replace(regexp, "")) {
         console.log(gg.replace(regexp));
-
         // e.target.value=gg.replace(regexp)
         value = gg.match(regexp) === null ? "" : gg.match(regexp);
       }
@@ -198,12 +298,13 @@ export default {
     },
 
     handleClick(row) {
-      this.$router.push({
-        name: "industry_alter",
-        query: {
-          industryId: row.industryId,
-        },
-      });
+      console.log(row);
+      // this.$router.push({
+      //   name: "industry_alter",
+      //   query: {
+      //     industryId: row.industryId,
+      //   },
+      // });
     },
     fromchildren1(data) {
       this.currentpage = data.currentpage;
@@ -216,24 +317,30 @@ export default {
         this.pagesize
       );
     },
-    delseting(row) {
-      console.log(row);
-      var date1 = new Date( row.exchangeEndTime);//获取当前时间
-      var  time = date1.getTime()/1000;
+    changeintegral(row) {
+      console.log(this.value);
+      console.log(row)
+      // console.log( this.tableData);
+      this.tableData.forEach((item, idx) => {
+        if(row.projectsId==item.projectsId){
+          item.bslProjectLinkStatusList.forEach((i,t)=>{
+            console.log(i)
+            if(this.value==i.bslProjectLinkId){
+              //  console.log(i.projectIntegral)
+               this.integral=i.projectIntegral
+            }
+          })
+        }
+      });
+    },
+    // 项目资金
+    addprojectfund(row) {
       this.$global
         .post_encapsulation(
-          `${this.$axios.defaults.baseURL}/bsl_admin_web/member/saveModifyBslExchangeIntegral`,
+          `${this.$axios.defaults.baseURL}/bsl_admin_web/member/saveBslProjectLinkAmountCompleted`,
           {
-            integralExchangeName: row.integralExchangeName,
-            integralAmount: row.integralAmount,
-            exchangeGiftId: row.exchangeGiftId,
-            exchangeDetails: row.exchangeDetails,
-            exchangeStartTime: row.exchangeStartTime,
-            exchangeEndTime:time,
-            exchangeOpen: row.exchangeOpen,
-            exchangeStatus:true,
+            amountCompleted: this.input,
             id: row.id,
-            exchangeOpen: row.exchangeOpen,
           }
         )
         .then((res) => {
@@ -244,6 +351,7 @@ export default {
             });
             this.search();
           } else {
+            console.log(res.data.resultDesc);
             this.$message({
               message: res.data.resultDesc,
               type: "warn",
@@ -254,19 +362,17 @@ export default {
     search() {
       this.$global
         .get_encapsulation(
-          `${this.$axios.defaults.baseURL}/bsl_admin_web/member/getBslExchangeIntegralList`,
-          { searchKey: "" }
+          `${this.$axios.defaults.baseURL}/bsl_admin_web/member/getBslMemberList`
         )
         .then((res) => {
           if (res.data.resultCode == 10000) {
             this.tableData = [...res.data.data.lists];
-            // console.log(this.tableData);
+            console.log(this.tableData);
             this.tableData.forEach((item, idx) => {
-              item.optTime = this.$global.stamptodate(item.optTime);
-              item.exchangeEndTime = this.$global.stamptodate(
-                item.exchangeEndTime
-              );
               item.idx = idx + 1;
+              item.membershipValidity = (item.membershipValidity + "000") * 1;
+              item.createTime = (item.createTime + "000") * 1;
+
               // if(item.industryStatus==-1){
               //   item.industry_Status='已删除'
               // }else if(item.industryStatus==0){
@@ -281,22 +387,23 @@ export default {
 </script>
 
 <style lang='scss'>
-.contractItem {
+.membershipList {
   //   padding: 20px 0 0 0;
   .el-main {
     /*min-height: 580px;*/
     width: 80%;
   }
   .tosignup_header {
-    height: 40px;
+    // height: 40px;
     // width: 80%;
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
-    margin-bottom: 20px;
+    // margin-bottom: 20px;
     padding: 0 0 0 20px;
     box-sizing: border-box;
     .block {
-      margin-right: 20px;
+      margin-bottom: 20px;
     }
     .el-input--suffix {
       width: 200px;

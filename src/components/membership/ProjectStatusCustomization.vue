@@ -1,38 +1,14 @@
 <template>
-  <div class="contractItem">
+  <div class="membershipList">
     <el-main>
       <header class="tosignup_header">
         <nav>
-          <!-- <el-button
-            @click="$routerto('giftSetting')"
-            type="primary"
-            class="addbtn"
-          >礼品设置</el-button>
-          <el-button
-            @click="$routerto('pointsSetting')"
-            type="primary"
-            class="addbtn"
-          >积分兑换设置</el-button>
-          <el-button
-            @click="$routerto('exchangeHistory')"
-            type="primary"
-            class="addbtn"
-          >兑换历史</el-button> -->
+          <div>链接项目状态自定义</div>
+          <!-- <el-button @click="$routerto('industry_alter')" type="primary" class="addbtn block">{{$t('Membership.PointsCleared')}}</el-button> -->
         </nav>
-
         <section>
-          <el-input
-            :placeholder="$t('project.ProjectName')"
-            v-model="searchkey"
-            class="block"
-            clearable
-          ></el-input>
-          <el-button
-            type="primary"
-            icon="el-icon-search"
-            @click="search(value, value1, 1, pagesize)"
-            >{{ $t("project.Search") }}</el-button
-          >
+          <el-button type="primary" class="block">{{ "上传icon" }}</el-button>
+          <el-button type="primary" class="block">{{ "新增" }}</el-button>
         </section>
       </header>
       <el-table
@@ -43,58 +19,58 @@
       >
         <el-table-column
           width="200"
-          prop="optTime"
-          label="设置时间"
+          prop="ranking"
+          label="序号"
           align="center"
         ></el-table-column>
         <el-table-column
-          prop="integralExchangeName"
+          prop="bslName"
           show-overflow-tooltip
-          label="规则名称"
-          align="center"
-        ></el-table-column>
-        <el-table-column
-          prop="integralAmount"
-          show-overflow-tooltip
-          label="兑换积分"
-          align="center"
-        ></el-table-column>
-        <el-table-column
-          prop="exchangeGiftId"
-          show-overflow-tooltip
-          label="兑换礼品"
-          align="center"
-        ></el-table-column>
-        <el-table-column
-          prop="exchangeDetails"
-          show-overflow-tooltip
-          label="宣传内容"
-          align="center"
-        ></el-table-column>
-        <el-table-column
-          prop="exchangeEndTime"
-          show-overflow-tooltip
-          label="时限"
-          align="center"
-        ></el-table-column>
-        <el-table-column
-          prop="exchangeStatus"
-          show-overflow-tooltip
-          label="是否公开"
+          label="icon"
           align="center"
         >
           <template slot-scope="scope">
-            {{ scope.row.exchangeStatus == false ? "否" : "是" }}
+            <img
+              style="width:50px,height:50px"
+              :src="$axios.defaults.baseURL + scope.row.bslIconUrl"
+              alt="icon"
+            />
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="操作" width="200" align="center">
+
+        <!-- <el-table-column
+          prop="industryNameEn"
+          show-overflow-tooltip
+          :label="$t('Member.MembershipLevel')"
+          align="center"
+        ></el-table-column> -->
+        <el-table-column
+          prop="stateName"
+          show-overflow-tooltip
+          width="150"
+          label="状态名称"
+          align="center"
+        >
+          <!-- <input type="text" @input="CheckInputIntFloat" v-model="input" /> -->
+        </el-table-column>
+
+        <el-table-column
+          prop="integral"
+          show-overflow-tooltip
+          label="积分"
+          align="center"
+        ></el-table-column>
+        <el-table-column
+          prop="bslProjectLinkStatusList.projectIntegral"
+          show-overflow-tooltip
+          label="操作"
+          align="center"
+        >
           <template slot-scope="scope">
-            <el-button type="text" size="small" disabled @click="$routerto('')"
-              >编辑</el-button
-            >
-            <el-button type="text" size="small" @click="delseting(scope.row)"
-              >删除</el-button
-            >
+            <el-button type="text" size="small">{{ "编辑" }}</el-button>
+            <el-button @click="delset(scope.row)" type="text" size="small">{{
+              "删除"
+            }}</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -115,7 +91,7 @@
 // import '@/components/eventBus'
 // import login from "../login";
 export default {
-  name: "membershipList",
+  name: "ProjectStatusCustomization",
   data() {
     return {
       centerDialogVisible: false,
@@ -131,11 +107,34 @@ export default {
       industryId: "",
     };
   },
-  created() {},
+  created() {
+  this.search();
+  },
   activated() {
     // console.log(123);
-
-    this.search();
+    // this.search();
+    // this.$global
+    //   .get_encapsulation(
+    //     `${this.$axios.defaults.baseURL}/bsl_admin_web/member/getProjectStatusConfigureList`
+    //   )
+    //   .then((res) => {
+    //     if (res.data.resultCode == 10000) {
+    //       this.tableData = [...res.data.data.lists];
+    //       console.log(this.tableData);
+    //       this.tableData.forEach((item, idx) => {
+    //         item.createTime = this.$global.stamptodate(item.createTime);
+    //       });
+    //       this.$message({
+    //         message: res.data.resultDesc,
+    //         type: "success",
+    //       });
+    //     } else {
+    //       this.$message({
+    //         message: res.data.resultDesc,
+    //         type: "warn",
+    //       });
+    //     }
+    //   });
   },
   methods: {
     CheckInputIntFloat(value) {
@@ -198,12 +197,13 @@ export default {
     },
 
     handleClick(row) {
-      this.$router.push({
-        name: "industry_alter",
-        query: {
-          industryId: row.industryId,
-        },
-      });
+      console.log(row);
+      // this.$router.push({
+      //   name: "industry_alter",
+      //   query: {
+      //     industryId: row.industryId,
+      //   },
+      // });
     },
     fromchildren1(data) {
       this.currentpage = data.currentpage;
@@ -216,24 +216,12 @@ export default {
         this.pagesize
       );
     },
-    delseting(row) {
-      console.log(row);
-      var date1 = new Date( row.exchangeEndTime);//获取当前时间
-      var  time = date1.getTime()/1000;
+    delset(row) {
       this.$global
-        .post_encapsulation(
-          `${this.$axios.defaults.baseURL}/bsl_admin_web/member/saveModifyBslExchangeIntegral`,
+        .get_encapsulation(
+          `${this.$axios.defaults.baseURL}/bsl_admin_web/member/delProjectStatusConfigure`,
           {
-            integralExchangeName: row.integralExchangeName,
-            integralAmount: row.integralAmount,
-            exchangeGiftId: row.exchangeGiftId,
-            exchangeDetails: row.exchangeDetails,
-            exchangeStartTime: row.exchangeStartTime,
-            exchangeEndTime:time,
-            exchangeOpen: row.exchangeOpen,
-            exchangeStatus:true,
             id: row.id,
-            exchangeOpen: row.exchangeOpen,
           }
         )
         .then((res) => {
@@ -242,7 +230,7 @@ export default {
               message: res.data.resultDesc,
               type: "success",
             });
-            this.search();
+            // this.search();
           } else {
             this.$message({
               message: res.data.resultDesc,
@@ -252,51 +240,51 @@ export default {
         });
     },
     search() {
-      this.$global
-        .get_encapsulation(
-          `${this.$axios.defaults.baseURL}/bsl_admin_web/member/getBslExchangeIntegralList`,
-          { searchKey: "" }
-        )
-        .then((res) => {
-          if (res.data.resultCode == 10000) {
-            this.tableData = [...res.data.data.lists];
-            // console.log(this.tableData);
-            this.tableData.forEach((item, idx) => {
-              item.optTime = this.$global.stamptodate(item.optTime);
-              item.exchangeEndTime = this.$global.stamptodate(
-                item.exchangeEndTime
-              );
-              item.idx = idx + 1;
-              // if(item.industryStatus==-1){
-              //   item.industry_Status='已删除'
-              // }else if(item.industryStatus==0){
-              //   item.industry_Status='正常'
-              // }
-            });
-          }
-        });
+     this.$global
+      .get_encapsulation(
+        `${this.$axios.defaults.baseURL}/bsl_admin_web/member/getProjectStatusConfigureList`
+      )
+      .then((res) => {
+        if (res.data.resultCode == 10000) {
+          this.tableData = [...res.data.data.lists];
+          console.log(this.tableData);
+          this.tableData.forEach((item, idx) => {
+            item.createTime = this.$global.stamptodate(item.createTime);
+          });
+          this.$message({
+            message: res.data.resultDesc,
+            type: "success",
+          });
+        } else {
+          this.$message({
+            message: res.data.resultDesc,
+            type: "warn",
+          });
+        }
+      });
     },
   },
 };
 </script>
 
 <style lang='scss'>
-.contractItem {
+.membershipList {
   //   padding: 20px 0 0 0;
   .el-main {
     /*min-height: 580px;*/
     width: 80%;
   }
   .tosignup_header {
-    height: 40px;
+    // height: 40px;
     // width: 80%;
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
-    margin-bottom: 20px;
+    // margin-bottom: 20px;
     padding: 0 0 0 20px;
     box-sizing: border-box;
     .block {
-      margin-right: 20px;
+      margin-bottom: 20px;
     }
     .el-input--suffix {
       width: 200px;

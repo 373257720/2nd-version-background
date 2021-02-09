@@ -102,7 +102,7 @@ export default {
         this.industry_summit.industryNameEn = value;
         callback();
       } else {
-        callback(new Error("Please Input English"));
+        callback(new Error("请输入大于0的整数"));
       }
     };
     return {
@@ -164,6 +164,7 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
+
           this.add_industry();
         } else {
           return false;
@@ -205,7 +206,7 @@ export default {
             showCancelButton: false
           }).then(() => {
             if (result.data.resultCode == 10000) {
-              this.$routerto("industry_lists");
+              this.$routerto("MembershipSystemArrangment");
             }
           });
         });

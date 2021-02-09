@@ -38,16 +38,16 @@
         :data="tableData.slice((currentpage - 1) * pagesize, currentpage * pagesize)"
         border
       >
-        <el-table-column width="200" prop="idx" label="会员账号" align="center"></el-table-column>
-        <el-table-column prop="industryNameEn" show-overflow-tooltip label="申请时间" align="center"></el-table-column>
-        <el-table-column prop="industryNameEn" show-overflow-tooltip label="可用会员积分" align="center"></el-table-column>
-        <el-table-column prop="industryNameEn" show-overflow-tooltip label="累积消耗积分" align="center"></el-table-column>
-        <el-table-column prop="industryNameEn" show-overflow-tooltip label="累积会员积分" align="center"></el-table-column>
-        <el-table-column prop="industryNameEn" show-overflow-tooltip label="兑换礼品次数" align="center"></el-table-column>
+        <el-table-column width="200" prop="bslEmail" label="会员账号" align="center"></el-table-column>
+        <el-table-column prop="createTime" show-overflow-tooltip label="申请时间" align="center"></el-table-column>
+        <el-table-column prop="exchangeIntegral" show-overflow-tooltip label="可用会员积分" align="center"></el-table-column>
+        <el-table-column prop="memberIntegral" show-overflow-tooltip label="累积消耗积分" align="center"></el-table-column>
+        <el-table-column prop="sumExchangeIntegral" show-overflow-tooltip label="累积会员积分" align="center"></el-table-column>
+        <el-table-column prop="exchangeCount" show-overflow-tooltip label="兑换礼品次数" align="center"></el-table-column>
 
         <el-table-column fixed="right" label="操作" width="200" align="center">
           <template slot-scope="scope">
-            <el-button  type="text" size="small"    @click="$routerto('exchangeDetails')">查看</el-button>
+            <el-button  type="text" size="small"    @click="handleClick(scope.row)">查看</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -84,7 +84,9 @@ export default {
       industryId: ""
     };
   },
-  created() {},
+  created() {
+
+  },
   activated() {
     // console.log(123);
 
@@ -152,9 +154,9 @@ export default {
 
     handleClick(row) {
       this.$router.push({
-        name: "industry_alter",
+        name: "exchangeDetails",
         query: {
-          industryId: row.industryId
+          userId: row.userId
         }
       });
     },
@@ -172,15 +174,15 @@ export default {
     search() {
       this.$global
         .get_encapsulation(
-          `${this.$axios.defaults.baseURL}/bsl_admin_web/industry/getAllIndustry`,
+          `${this.$axios.defaults.baseURL}/bsl_admin_web/member/getPointsExchangeHistoryList`,
           { searchKey: "" }
         )
         .then(res => {
           if (res.data.resultCode == 10000) {
-            this.tableData = [...res.data.data];
+            this.tableData = [...res.data.data.lists];
             console.log(this.tableData);
             this.tableData.forEach((item, idx) => {
-              item.idx = idx + 1;
+              item.createTime = this.$global.stamptodate(item.createTime);
               // if(item.industryStatus==-1){
               //   item.industry_Status='已删除'
               // }else if(item.industryStatus==0){

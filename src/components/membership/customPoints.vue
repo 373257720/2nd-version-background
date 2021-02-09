@@ -1,6 +1,6 @@
 <template>
   <div class="industry_alter">
-    <header class="industry_alter_header">{{title}}</header>
+    <!-- <header class="industry_alter_header">{{title}}</header> -->
     <el-main>
       <el-form
         ref="ruleForm"
@@ -9,22 +9,24 @@
         label-width="120px"
         label-position="top"
       >
-        <el-form-item label="推荐中间人成功积分:" prop="industryNameCh">
+        <el-form-item label="推荐中间人成功积分:" prop="industryNameEn">
           <el-input
-            placeholder="中文名称"
-            show-word-limit
-            maxlength="50"
-            clearable
-            v-model="industry_summit.industryNameCh"
-          ></el-input>
-        </el-form-item>
-        <el-form-item label="推荐投资人积分:" prop="industryNameEn">
-          <el-input
-            placeholder="会员积分"
+            placeholder="请输入大于0的整数"
             show-word-limit
             maxlength="50"
             clearable
             v-model="industry_summit.industryNameEn"
+            
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="推荐投资人积分:" prop="industryNameEn">
+          <el-input
+            placeholder="请输入大于0的整数"
+            show-word-limit
+            maxlength="50"
+            clearable
+            v-model="industry_summit.industryNameCh"
+            
           ></el-input>
         </el-form-item>
 
@@ -74,6 +76,8 @@ export default {
       }
     };
     return {
+      middle_integral:null,//中间人积分
+      investor_integration:null,//投资人积分
       dialogFormVisible_industry: false,
       tableData: [],
       title: "",
@@ -102,13 +106,14 @@ export default {
     };
   },
   created() {
-    if (this.$route.query.industryId) {
-      this.title = this.$t("industry.Pleaseenterindustrytobeedited");
-      this.industry_summit.industryId = this.$route.query.industryId;
-      this.search();
-    } else {
-      this.title = this.$t("industry.Pleaseentertheindustrytobeadded");
-    }
+    this.search();
+    // if (this.$route.query.industryId) {
+    //   this.title = this.$t("industry.Pleaseenterindustrytobeedited");
+    //   this.industry_summit.industryId = this.$route.query.industryId;
+    //   this.search();
+    // } else {
+    //   this.title = this.$t("industry.Pleaseentertheindustrytobeadded");
+    // }
   },
   // watch:{
   //   industry_summit: {
@@ -141,42 +146,59 @@ export default {
     search() {
       this.$global
         .get_encapsulation(
-          `${this.$axios.defaults.baseURL}/bsl_admin_web/industry/getAllIndustry`,
-          { searchKey: "" }
+          `${this.$axios.defaults.baseURL}/bsl_admin_web/member/getBslCustomIntegral`,
         )
         .then(res => {
           if (res.data.resultCode == 10000) {
-            this.tableData = [...res.data.data];
-            this.tableData.forEach(item => {
-              if (item.industryId == this.$route.query.industryId) {
-                this.industry_summit.industryStatus = item.industryStatus;
-                this.industry_summit.industryNameEn = item.industryNameEn;
-                this.industry_summit.industryNameCh = item.industryNameCh;
-                this.industry_summit.industrySort = item.industrySort;
-              }
-            });
+            console.log(res)
+            this.industry_summit.industryNameCh=res.data.data.investorIntegral;
+            this.industry_summit.industryNameEn=res.data.data.middlemanIntegral;
+   
+            // this.tableData = [...res.data.data];
+            // this.tableData.forEach(item => {
+            //   if (item.industryId == this.$route.query.industryId) {
+            //     this.industry_summit.industryStatus = item.industryStatus;
+            //     this.industry_summit.industryNameEn = item.industryNameEn;
+            //     this.industry_summit.industryNameCh = item.industryNameCh;
+            //     this.industry_summit.industrySort = item.industrySort;
+            //   }
+            // });
           }
         });
     },
     add_industry() {
       // console.log(this.industry_summit)
-      let self = this;
+      // let self = this;
       this.$global
-        .post_encapsulation(
-          `${this.$axios.defaults.baseURL}/bsl_admin_web/industry/saveIndustry`,
-          self.industry_summit
+        .get_encapsulation(
+          `${this.$axios.defaults.baseURL}/bsl_admin_web/member/saveModifyBslCustomIntegral`,
+          {middlemanIntegral:this.industry_summit.industryNameEn,investorIntegral:this.industry_summit.industryNameCh,optType:0}
         )
-        .then(result => {
-          this.$confirm(result.data.resultDesc, self.$t("project.Reminder"), {
-            confirmButtonText: self.$t("project.Yes"),
-            center: true,
-            showCancelButton: false
-          }).then(() => {
-            if (result.data.resultCode == 10000) {
-              this.$routerto("industry_lists");
-            }
-          });
+        .then(res => {
+          if (res.data.resultCode == 10000){
+             this.$message({
+                  message: res.data.resultDesc,
+                  type: "success"
+                });
+
+          }else{
+             this.$message({
+                  message: res.data.resultDesc,
+                  type: "warn"
+                });
+          }
+
         });
+    },
+    get_integration(){
+       this.$global
+        .get_encapsulation(
+          `${this.$axios.defaults.baseURL}/bsl_admin_web/member/saveModifyBslCustomIntegral`,
+          { middlemanIntegral:this.middle_integral,investorIntegral:this.investor_integration }
+        )
+        .then((res)=>{
+          
+        })
     }
   }
 };
