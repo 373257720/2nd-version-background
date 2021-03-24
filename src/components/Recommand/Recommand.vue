@@ -1,5 +1,5 @@
 <template>
-    <keep-alive include='membershipList'>
+    <keep-alive>
       <router-view></router-view>
     </keep-alive>
 </template>

@@ -1,6 +1,6 @@
 <template>
   <div class="coin_category_alter">
-    <header class="coin_category_alter_header">{{title}}</header>
+    <header class="coin_category_alter_header">{{ title }}</header>
     <el-main>
       <el-form
         ref="ruleForm"
@@ -18,7 +18,10 @@
             v-model="coin_category_summit.currencyType"
           ></el-input>
         </el-form-item>
-        <el-form-item :label="$t('CategoryOfCoin.Description')" prop="currencyName">
+        <el-form-item
+          :label="$t('CategoryOfCoin.Description')"
+          prop="currencyName"
+        >
           <el-input
             :placeholder="$t('CategoryOfCoin.forexamplegangbi')"
             show-word-limit
@@ -33,14 +36,23 @@
             show-word-limit
             maxlength="9"
             clearable
-            oninput="value=value.replace(/[^\d.]/g,'')"
             v-model="coin_category_summit.currencySort"
+            @input="
+              (value) =>
+                (coin_category_summit.currencySort = $global.inputModel(
+                  value,
+                  0,
+                  false
+                ))
+            "
           ></el-input>
         </el-form-item>
       </el-form>
       <p class="dialog-footer">
-        <button @click="$router.go(-1)">{{$t('project.Cancel')}}</button>
-        <button @click="submitForm('ruleForm')">{{$t('project.Confirm')}}</button>
+        <button @click="$router.go(-1)">{{ $t("project.Cancel") }}</button>
+        <button @click="submitForm('ruleForm')">
+          {{ $t("project.Confirm") }}
+        </button>
       </p>
     </el-main>
   </div>
@@ -78,23 +90,23 @@ export default {
         currencyId: -1,
         currencySort: null,
         currencyType: "",
-        currencyName: ""
+        currencyName: "",
       },
       rules: {
         currencySort: [
           {
             required: true,
             message: this.$t("industry.Pleaseenterthanzero"),
-            trigger: "blur"
-          }
+            trigger: "blur",
+          },
         ],
         currencyType: [
-          { required: true, validator: valid_currencytype, trigger: "blur" }
+          { required: true, validator: valid_currencytype, trigger: "blur" },
         ],
         currencyName: [
-          { required: true, validator: valid_currencyName, trigger: "blur" }
-        ]
-      }
+          { required: true, validator: valid_currencyName, trigger: "blur" },
+        ],
+      },
     };
   },
   created() {
@@ -112,7 +124,7 @@ export default {
   },
   methods: {
     submitForm(formName) {
-      this.$refs[formName].validate(valid => {
+      this.$refs[formName].validate((valid) => {
         if (valid) {
           this.add_coin();
         } else {
@@ -125,10 +137,10 @@ export default {
         .get_encapsulation(
           `${this.$axios.defaults.baseURL}/bsl_admin_web/currency/getAllCurrency`
         )
-        .then(res => {
+        .then((res) => {
           if (res.data.resultCode == 10000) {
             this.tableData = [...res.data.data];
-            this.tableData.forEach(item => {
+            this.tableData.forEach((item) => {
               if (item.currencyId == this.$route.query.currencyId) {
                 this.coin_category_summit.currencySort = item.currencySort;
                 this.coin_category_summit.currencyType = item.currencyType;
@@ -146,20 +158,20 @@ export default {
           `${this.$axios.defaults.baseURL}/bsl_admin_web/currency/saveOrUpdateCurrency`,
           self.coin_category_summit
         )
-        .then(result => {
+        .then((result) => {
           console.log(result);
           this.$confirm(result.data.resultDesc, self.$t("project.Reminder"), {
             confirmButtonText: self.$t("project.Confirm"),
             center: true,
-            showCancelButton: false
+            showCancelButton: false,
           }).then(() => {
             if (result.data.resultCode == 10000) {
               this.$routerto("coin_category_lists");
             }
           });
         });
-    }
-  }
+    },
+  },
 };
 </script>
 

@@ -4,16 +4,25 @@
       <header class="tosignup_header">
         <nav>
           <el-button
-            @click="$routerto('addLevel')"
+            @click="$routerto('editLevel')"
             type="primary"
             class="addbtn"
-          >{{$t('Membership.NewMembershiplevel')}}</el-button>
+            >{{ $t("Membership.NewMembershiplevel") }}</el-button
+          >
         </nav>
       </header>
       <el-table
-        :data="tableData.slice((currentpage - 1) * pagesize, currentpage * pagesize)"
+        :data="
+          tableData.slice((currentpage - 1) * pagesize, currentpage * pagesize)
+        "
         border
       >
+        <el-table-column
+          width="200"
+          prop="levelName"
+          label="会员名称"
+          align="center"
+        ></el-table-column>
         <el-table-column
           width="200"
           prop="memberLevel"
@@ -31,29 +40,70 @@
           show-overflow-tooltip
           :label="$t('Membership.Colour')"
           align="center"
-        ></el-table-column>
+        >
+          <template slot-scope="scope">
+            <span
+              :style="{
+                display:'inline-block',
+                backgroundColor: scope.row.memberColour,
+                width: '30px',
+                height: '30px',
+              }"
+            ></span>
+          </template>
+        </el-table-column>
         <el-table-column
           prop="memberRecommendCount"
           show-overflow-tooltip
           :label="$t('Membership.Totalrecommendedtimes')"
           align="center"
         ></el-table-column>
-        <el-table-column
+        <!-- <el-table-column
           prop="recommendMiddlemanTime"
           show-overflow-tooltip
           :label="$t('Membership.PriorityRecommendationOfIntermediaryTime')"
           align="center"
-        ></el-table-column>
+        ></el-table-column> -->
         <el-table-column
           prop="recommendInvestorTime"
           show-overflow-tooltip
-           :label="$t('Membership.PriorityTToRecommendInvestorTime')"
+          :label="$t('Membership.PriorityTToRecommendInvestorTime')"
           align="center"
         ></el-table-column>
-        <el-table-column fixed="right" :label="$t('project.Operation')" width="200" align="center">
+        <el-table-column
+          prop="memberTime"
+          width="200"
+          show-overflow-tooltip
+          label="会员有效期"
+          align="center"
+        >
           <template slot-scope="scope">
-            <el-button @click="handleClick(scope.row)"  type="text" size="small">{{$t('project.View')}}</el-button>
-            <el-button  @click="deleterow(scope.row)"  type="text" size="small">{{$t('project.Delete')}}</el-button>
+            <span>{{ $global.stamptodate(scope.row.memberTime) }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="relegationIntegralValue"
+          show-overflow-tooltip
+          label="保级积分值"
+          align="center"
+        >
+        </el-table-column>
+        <el-table-column
+          fixed="right"
+          :label="$t('project.Operation')"
+          width="200"
+          align="center"
+        >
+          <template slot-scope="scope">
+            <el-button
+              @click="handleClick(scope.row)"
+              type="text"
+              size="small"
+              >{{ $t("project.Edit") }}</el-button
+            >
+            <el-button @click="deleterow(scope.row)" type="text" size="small">{{
+              $t("project.Delete")
+            }}</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -72,49 +122,48 @@
 
 <script>
 // import '@/components/eventBus'
-import login from "../login";
+// import login from "../login";
 export default {
-  name: "contractItem",
-  data() {
+  name: 'contractItem',
+  data () {
     return {
       centerDialogVisible: false,
-      value1: [], //日期选择
-      value: "", //项目状态
-      searchkey: "",
+      value1: [],
+      value: String,
+      searchkey: String,
       currentpage: 1,
       pagesize: 8,
       pagetotal: null,
       tableData: [],
       deleteType: 0,
-      industryId: ""
-    };
+      industryId: String
+    }
   },
-  created() {
-    this.search();
-
+  created () {
+    this.search()
   },
-  activated() {
+  activated () {
     // this.search();
   },
   methods: {
-    handleCurrentChange(cpage) {
-      this.currentpage = cpage;
+    handleCurrentChange (cpage) {
+      this.currentpage = cpage
     },
-    handleSizeChange(psize) {
-      this.pagesize = psize;
+    handleSizeChange (psize) {
+      this.pagesize = psize
     },
-    deleterow(row) {
-      console.log(row);
-      let self = this;
-      this.id = row.id;
-      this.centerDialogVisible = true;
+    deleterow (row) {
+      console.log(row)
+      let self = this
+      this.id = row.id
+      this.centerDialogVisible = true
       this.$confirm(
-        self.$t("project.Confirmdelect"),
-        self.$t("project.Reminder"),
+        self.$t('project.Confirmdelect'),
+        self.$t('project.Reminder'),
         {
-          confirmButtonText: self.$t("project.Yes"),
-          cancelButtonText: self.$t("project.No"),
-          type: "warning",
+          confirmButtonText: self.$t('project.Yes'),
+          cancelButtonText: self.$t('project.No'),
+          type: 'warning',
           center: true,
           showCancelButton: true
         }
@@ -125,66 +174,71 @@ export default {
               `${this.$axios.defaults.baseURL}/bsl_admin_web/member/delBslMemberSystem`,
               { id: row.id }
             )
-            .then(res => {
+            .then((res) => {
               if (res.data.resultCode == 10000) {
                 this.$message({
                   message: res.data.resultDesc,
-                  type: "success"
-                });
-                this.search();
+                  type: 'success'
+                })
+                this.search()
               } else {
                 this.$message({
                   message: res.data.resultDesc,
-                  type: "warn"
-                });
+                  type: 'warn'
+                })
               }
-            });
+            })
         })
-        .catch(() => {});
+        .catch(() => {})
     },
 
-    handleClick(row) {
+    handleClick (row) {
       this.$router.push({
-        name: "membershipDetails",
+        name: 'editLevel',
         query: {
           Id: row.id
         }
-      });
+      })
     },
-    fromchildren1(data) {
-      this.currentpage = data.currentpage;
-      this.pagesize = data.pagesize;
+    fromchildren1 (data) {
+      this.currentpage = data.currentpage
+      this.pagesize = data.pagesize
       this.search(
         this.value,
         this.value1[0] / 1000,
         this.value1[1] / 1000,
         this.currentpage,
         this.pagesize
-      );
+      )
     },
-    search() {
+    search () {
       this.$global
         .get_encapsulation(
           `${this.$axios.defaults.baseURL}/bsl_admin_web/member/getBslMemberSystemList`,
-          { searchKey: "" }
+          { searchKey: '' }
         )
-        .then(res => {
-          if (res.data.resultCode == 10000) {
-            this.tableData = [...res.data.data.lists];
+        .then((res) => {
+          if (res.data.resultCode === 10000) {
+            this.tableData = [...res.data.data.lists]
             console.log(this.tableData)
             this.tableData.forEach((item, idx) => {
-              item.idx = idx + 1;
+              item.idx = idx + 1
+              this.$set(
+                item,
+                'levelName',
+                item['memberLevelName' + this.$global.lan()]
+              )
               // if(item.industryStatus==-1){
               //   item.industry_Status='已删除'
               // }else if(item.industryStatus==0){
               //   item.industry_Status='正常'
               // }
-            });
+            })
           }
-        });
+        })
     }
   }
-};
+}
 </script>
 
 <style lang='scss'>

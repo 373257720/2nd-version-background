@@ -30,85 +30,95 @@
 </template>
 
 <script>
-  export default {
-    data() {
-      let self=this;
-      var validatePass = (rule, value, callback) => {
-        if (value === '') {
-          callback(new Error(self.$t('UserManagement.PleaseEnterNewPassword')));
+export default {
+  data () {
+    let self = this
+    var checkData1 = (rule, value, callback) => {
+      if (value) {
+        if (/[\u4E00-\u9FA5]/g.test(value)) {
+          callback(new Error(self.$i18n.locale === 'en_US' ? 'Password cannot enter Chinese characters' : '密码不能输入汉字!'))
         } else {
-          // if (this.changepassword_summit.password !== '') {
-          //   this.$refs.ruleForm.validateField('password');
-          // }
-          callback();
+          callback()
         }
-      };
-      var validatePass2 = (rule, value, callback) => {
-        if (value === '') {
-          callback(new Error(self.$t('UserManagement.PleaseEnterNewPasswordagain')));
-        } else if (value !== this.changepassword_summit.password) {
-          callback(new Error(self.$t('UserManagement.PasswordsEnteredTwiceAreInconsistent')));
-        } else {
-          callback();
-        }
-      };
-      return {
-        dialogFormVisible_industry:false,
-        title:this.$t('UserManagement.changePassword'),
-        userId:'',
-        bslEmail:'',
-        changepassword_summit:{
-          password:'',
-          password2:'',
-        },
-        rules: {
-          password: [
-            { validator: validatePass, trigger: 'blur' }
-          ],
-          password2: [
-            { validator: validatePass2, trigger: 'blur' }
-          ],
-        }
-      };
-    },
-    created() {
-      console.log(this.$route.query)
-        this.bslEmail=this.$route.query.bslEmail?this.$route.query.bslEmail:'';
-    },
-    methods: {
-      submitForm(formName) {
-        this.$refs[formName].validate(valid => {
-          if (valid) {
-            this.confirm();
-          } else {
-            return false;
-          }
-        });
-      },
-       confirm(){
-        let self=this;
-          this.userId=this.$route.query.userId?this.$route.query.userId:null;
-                  this.$global.post_encapsulation(`${this.$axios.defaults.baseURL}/bsl_admin_web/user/updateAdminUserPwd`,{
-                    userId:this.userId,newPwd:this.changepassword_summit.password
-                  }).then(res=>{
-                      this.$confirm(res.data.resultDesc, self.$t('project.Reminder'), {
-                        confirmButtonText: self.$t('project.Confirm'),
-                        center: true,
-                        showCancelButton: false
-                      }).then((res)=> {
-                        this.password2='';
-                        this.password='';
-                        this.$router.go(-1)
-                        // if(res.data.resultCode==10000){
-                        //   // this.$routerto('coin_category_lists')
-                        // }
-                      });
-                  })
-
-
-       }
+      }
+      callback()
     }
-  };
+    var validatePass = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error(self.$t('UserManagement.PleaseEnterNewPassword')))
+      } else {
+        // if (this.changepassword_summit.password !== '') {
+        //   this.$refs.ruleForm.validateField('password');
+        // }
+        callback()
+      }
+    }
+    var validatePass2 = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error(self.$t('UserManagement.PleaseEnterNewPasswordagain')))
+      } else if (value !== this.changepassword_summit.password) {
+        callback(new Error(self.$t('UserManagement.PasswordsEnteredTwiceAreInconsistent')))
+      } else {
+        callback()
+      }
+    }
+    return {
+      dialogFormVisible_industry: false,
+      title: this.$t('UserManagement.changePassword'),
+      userId: '',
+      bslEmail: '',
+      changepassword_summit: {
+        password: '',
+        password2: ''
+      },
+      rules: {
+        password: [
+          { validator: checkData1, trigger: 'blur' },
+          { validator: validatePass, trigger: 'blur' }
+        ],
+        password2: [
+               { validator: checkData1, trigger: 'blur' },
+          { validator: validatePass2, trigger: 'blur' }
+        ]
+      }
+    }
+  },
+  created () {
+    console.log(this.$route.query)
+    this.bslEmail = this.$route.query.bslEmail ? this.$route.query.bslEmail : ''
+  },
+  methods: {
+    submitForm (formName) {
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          this.confirm()
+        } else {
+          return false
+        }
+      })
+    },
+    confirm () {
+      let self = this
+      this.userId = this.$route.query.userId ? this.$route.query.userId : null
+      this.$global.post_encapsulation(`${this.$axios.defaults.baseURL}/bsl_admin_web/user/updateAdminUserPwd`, {
+        userId: this.userId, newPwd: this.changepassword_summit.password
+      }).then(res => {
+        this.$confirm(res.data.resultDesc, self.$t('project.Reminder'), {
+          confirmButtonText: self.$t('project.Confirm'),
+          center: true,
+          showCancelButton: false
+        }).then((res) => {
+          this.password2 = ''
+          this.password = ''
+          this.$router.go(-1)
+          // if(res.data.resultCode==10000){
+          //   // this.$routerto('coin_category_lists')
+          // }
+        })
+      })
+    }
+  }
+}
 </script>
 
 <style lang='scss'>

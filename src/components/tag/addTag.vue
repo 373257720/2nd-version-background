@@ -34,12 +34,22 @@
             clearable
             oninput="value=value.replace(/[^\d.]/g,'')"
             v-model="coin_category_summit.tagsSort"
+            @input="
+              (value) =>
+                (coin_category_summit.tagsSort = $global.inputModel(
+                  value,
+                  0,
+                  false
+                ))
+            "
           ></el-input>
         </el-form-item>
       </el-form>
       <p class="dialog-footer">
-        <button @click="$router.go(-1)">{{$t('project.Cancel')}}</button>
-        <button @click="submitForm('ruleForm')">{{$t('project.Confirm')}}</button>
+        <button @click="$router.go(-1)">{{ $t("project.Cancel") }}</button>
+        <button @click="submitForm('ruleForm')">
+          {{ $t("project.Confirm") }}
+        </button>
       </p>
     </el-main>
   </div>
@@ -77,23 +87,23 @@ export default {
         currencyId: -1,
         tagsSort: null,
         tagsNameEn: "",
-        tagsName: ""
+        tagsName: "",
       },
       rules: {
         tagsSort: [
           {
             required: true,
             message: this.$t("industry.Pleaseenterthanzero"),
-            trigger: "blur"
-          }
+            trigger: "blur",
+          },
         ],
         tagsNameEn: [
-          { required: true, validator: valid_currencytype, trigger: "blur" }
+          { required: true, validator: valid_currencytype, trigger: "blur" },
         ],
         tagsName: [
-          { required: true, validator: valid_currencyName, trigger: "blur" }
-        ]
-      }
+          { required: true, validator: valid_currencyName, trigger: "blur" },
+        ],
+      },
     };
   },
   created() {
@@ -111,7 +121,7 @@ export default {
   },
   methods: {
     submitForm(formName) {
-      this.$refs[formName].validate(valid => {
+      this.$refs[formName].validate((valid) => {
         if (valid) {
           this.add_tag();
         } else {
@@ -128,12 +138,12 @@ export default {
           `${this.$axios.defaults.baseURL}/bsl_admin_web/project/addProjectTags`,
           self.coin_category_summit
         )
-        .then(result => {
+        .then((result) => {
           console.log(result);
           this.$confirm(result.data.resultDesc, self.$t("project.Reminder"), {
             confirmButtonText: self.$t("project.Confirm"),
             center: true,
-            showCancelButton: false
+            showCancelButton: false,
           }).then(() => {
             if (result.data.resultCode == 10000) {
               self.coin_category_summit.tagsSort = null;
@@ -143,8 +153,8 @@ export default {
             }
           });
         });
-    }
-  }
+    },
+  },
 };
 </script>
 

@@ -521,218 +521,218 @@
 
 <script>
 export default {
-  data() {
+  data () {
     var valid_currencytype = (rule, value, callback) => {
-      console.log(value);
+      console.log(value)
       // var str = value.replace(/(^\s*)|(\s*$)/g, "");
       // let a = /^[A-Za-z][A-Za-z\s]*[A-Za-z]$/.test(str);
       if (value) {
-        this.coin_category_summit.currencyType = value;
+        this.coin_category_summit.currencyType = value
         // console.log(this.coin_category_summit.currencyType)
-        callback();
+        callback()
       } else {
-        callback(new Error("Please Input English"));
+        callback(new Error('Please Input English'))
       }
-    };
+    }
     var valid_currencyName = (rule, value, callback) => {
       // var str = value.replace(/(^\s*)|(\s*$)/g, "");
       // let a = /^[\u4E00-\u9FA5][\u4E00-\u9FA5\s]*[\u4E00-\u9FA5]$/.test(str);
       if (value) {
-        this.coin_category_summit.currencyName = value;
-        callback();
+        this.coin_category_summit.currencyName = value
+        callback()
       } else {
-        callback(new Error("请输入中文"));
+        callback(new Error('请输入中文'))
       }
-    };
+    }
     var valid_industryNameCh = (rule, value, callback) => {
       // var str = value.replace(/(^\s*)|(\s*$)/g, "");
       // let a = /^[\u4E00-\u9FA5][\u4E00-\u9FA5\s]*[\u4E00-\u9FA5]$/.test(str);
       if (value) {
-        this.industry_summit.industryNameCh = value;
-        callback();
+        this.industry_summit.industryNameCh = value
+        callback()
       } else {
-        callback(new Error("请输入中文"));
+        callback(new Error('请输入中文'))
       }
-    };
+    }
     var valid_industryNameEn = (rule, value, callback) => {
       // var str = value.replace(/(^\s*)|(\s*$)/g, "");
       // let a = /^[A-Za-z][A-Za-z\s]*[A-Za-z]$/.test(str);
       if (value) {
-        this.industry_summit.industryNameEn = value;
-        callback();
+        this.industry_summit.industryNameEn = value
+        callback()
       } else {
-        callback(new Error("Please Input English"));
+        callback(new Error('Please Input English'))
       }
-    };
+    }
     var validatePass2 = (rule, value, callback) => {
-      let min = this.form.collectMoneyMin.replace(/,/g, "") * 1;
-      let max = value.replace(/,/g, "") * 1;
-      if (max == "") {
-        callback(new Error(this.$t("UserManagement.PleaseEnter")));
+      let min = this.form.collectMoneyMin.replace(/,/g, '') * 1
+      let max = value.replace(/,/g, '') * 1
+      if (max == '') {
+        callback(new Error(this.$t('UserManagement.PleaseEnter')))
       } else if (max <= min) {
         callback(
-          new Error(this.$t("project.Amountneedstobegreaterthantheminimum"))
-        );
+          new Error(this.$t('project.Amountneedstobegreaterthantheminimum'))
+        )
       } else {
-        callback();
+        callback()
       }
-    };
+    }
     var validatePass = (rule, value, callback) => {
-      let min = value.replace(/,/g, "") * 1;
-      if (min === "") {
-        callback(new Error(this.$t("UserManagement.PleaseEnter")));
+      let min = value.replace(/,/g, '') * 1
+      if (min === '') {
+        callback(new Error(this.$t('UserManagement.PleaseEnter')))
       } else if (min <= 0) {
-        callback(new Error(this.$t("project.Amountneedstobegreaterthan")));
+        callback(new Error(this.$t('project.Amountneedstobegreaterthan')))
       } else {
-        callback();
+        callback()
       }
-    };
+    }
     return {
-      labelposition: "top",
+      labelposition: 'top',
       loading: false,
       dialogFormVisible_coin_add: false,
       dialogFormVisible_industry: false,
       restaurants: [],
       getcoins: [],
       industrylist: [],
-      formLabelWidth: "100px",
+      formLabelWidth: '100px',
       regionlist: {},
       ProjectTags: [],
       industryId: [],
       SelectedProjectTags: [],
       industry_summit: {
         industryId: -1,
-        industryNameEn: "",
-        industryNameCh: "",
-        industrySort: null,
+        industryNameEn: '',
+        industryNameCh: '',
+        industrySort: null
       },
       coin_category_summit: {
         currencyId: -1,
         currencySort: null,
-        currencyType: "",
-        currencyName: "",
+        currencyType: '',
+        currencyName: ''
       },
       form: {
         potentialInvestorarr: [
           {
-            potentialInvestorsTagsEn: "",
-            potentialInvestorsTags: "",
-          },
+            potentialInvestorsTagsEn: '',
+            potentialInvestorsTags: ''
+          }
         ],
         sharingMechanism: null,
         saveOrUpdate: this.$route.query.type,
-        projectId: "",
+        projectId: '',
         IsSign: true,
-        projectUserId: "",
-        projectName: "",
-        projectNameEn: "",
-        projectDescribe: "",
-        projectDescribeEn: "",
-        projectCompany: "",
-        projectCompanyEn: "",
+        projectUserId: '',
+        projectName: '',
+        projectNameEn: '',
+        projectDescribe: '',
+        projectDescribeEn: '',
+        projectCompany: '',
+        projectCompanyEn: '',
         projectIndustry: [],
         projectIndustryEn: [],
         bslAreaCode: [],
         projectArea: [],
         projectAreaEn: [],
-        collectMoneyMin: "",
-        collectMoneyMax: "",
-        currencyType: "",
-        projectMobile: "",
-        projectEmail: "",
-        projectDetail: "",
-        projectDetailEn: "",
+        collectMoneyMin: '',
+        collectMoneyMax: '',
+        currencyType: '',
+        projectMobile: '',
+        projectEmail: '',
+        projectDetail: '',
+        projectDetailEn: '',
         projectStatus: null,
         projectLifeCycle: null,
-        financingStage: "",
+        financingStage: '',
         interestProjectCount: null,
         committedCount: null,
-        potentialInvestorsTags: "",
-        potentialInvestorsTagsEn: "",
-        projectTags: "",
-        projectTagsEn: "",
-        sharingMechanism: 1,
+        potentialInvestorsTags: '',
+        potentialInvestorsTagsEn: '',
+        projectTags: '',
+        projectTagsEn: '',
+        sharingMechanism: 1
       },
       coin_rules: {
         currencySort: [
           {
             required: true,
-            message: this.$t("industry.Pleaseenterthanzero"),
-            trigger: "blur",
-          },
+            message: this.$t('industry.Pleaseenterthanzero'),
+            trigger: 'blur'
+          }
         ],
         currencyType: [
           {
             required: true,
             validator: valid_currencytype,
-            trigger: "blur",
-          },
+            trigger: 'blur'
+          }
         ],
         currencyName: [
           {
             required: true,
             validator: valid_currencyName,
-            trigger: "blur",
-          },
-        ],
+            trigger: 'blur'
+          }
+        ]
       },
       industry_rules: {
         industrySort: [
           {
             required: true,
-            message: this.$t("industry.Pleaseenterthanzero"),
-            trigger: "blur",
-          },
+            message: this.$t('industry.Pleaseenterthanzero'),
+            trigger: 'blur'
+          }
         ],
         industryNameCh: [
           {
             required: true,
             validator: valid_industryNameCh,
-            trigger: "blur",
-          },
+            trigger: 'blur'
+          }
         ],
         industryNameEn: [
           {
             required: true,
             validator: valid_industryNameEn,
-            trigger: "blur",
-          },
-        ],
+            trigger: 'blur'
+          }
+        ]
       },
       rules: {
         potentialInvestorsTagsEn: [
           {
             required: true,
-            message: this.$t("UserManagement.PleaseEnter"),
-            trigger: "blur",
-          },
+            message: this.$t('UserManagement.PleaseEnter'),
+            trigger: 'blur'
+          }
         ],
         potentialInvestorsTags: [
           {
             required: true,
-            message: this.$t("UserManagement.PleaseEnter"),
-            trigger: "blur",
-          },
+            message: this.$t('UserManagement.PleaseEnter'),
+            trigger: 'blur'
+          }
         ],
         projectNameEn: [
           {
             required: true,
-            message: this.$t("UserManagement.PleaseEnter"),
-            trigger: "blur",
+            message: this.$t('UserManagement.PleaseEnter'),
+            trigger: 'blur'
           },
           {
             min: 1,
             max: 500,
-            message: this.$t("project.Between1and300charactersinlength"),
-            trigger: "blur",
-          },
+            message: this.$t('project.Between1and300charactersinlength'),
+            trigger: 'blur'
+          }
         ],
         projectDescribeEn: [
           {
             required: true,
-            message: this.$t("UserManagement.PleaseEnter"),
-            trigger: "blur",
-          },
+            message: this.$t('UserManagement.PleaseEnter'),
+            trigger: 'blur'
+          }
           // {
           //   min: 1,
           //   max: 1500,
@@ -743,180 +743,180 @@ export default {
         projectDetailEn: [
           {
             required: true,
-            message: this.$t("UserManagement.PleaseEnter"),
-            trigger: "blur",
+            message: this.$t('UserManagement.PleaseEnter'),
+            trigger: 'blur'
           },
           {
             min: 1,
-            trigger: "blur",
-          },
+            trigger: 'blur'
+          }
         ],
         collectMoneyMax: [
           {
             required: true,
             validator: validatePass2,
-            trigger: "blur",
-          },
+            trigger: 'blur'
+          }
         ],
         collectMoneyMin: [
           {
             required: true,
             validator: validatePass,
-            trigger: "blur",
-          },
+            trigger: 'blur'
+          }
         ],
         currencyType: [
           {
             required: true,
-            message: this.$t("project.PleaseSelect"),
-            trigger: "change",
-          },
+            message: this.$t('project.PleaseSelect'),
+            trigger: 'change'
+          }
         ],
         projectCompany: [
           {
             required: true,
-            message: this.$t("UserManagement.PleaseEnter"),
-            trigger: "change",
-          },
+            message: this.$t('UserManagement.PleaseEnter'),
+            trigger: 'change'
+          }
         ],
         bslAreaCode: [
           {
             required: true,
-            message: this.$t("project.PleaseSelect"),
-            trigger: "change",
-          },
+            message: this.$t('project.PleaseSelect'),
+            trigger: 'change'
+          }
         ],
         projectIndustry: [
           {
             required: true,
-            message: this.$t("project.PleaseSelect"),
-            trigger: "change",
-          },
+            message: this.$t('project.PleaseSelect'),
+            trigger: 'change'
+          }
         ],
         projectDescribe: [
           {
             required: true,
-            message: this.$t("UserManagement.PleaseEnter"),
-            trigger: "blur",
+            message: this.$t('UserManagement.PleaseEnter'),
+            trigger: 'blur'
           },
           {
             min: 1,
             max: 300,
-            message: this.$t("UserManagement.PleaseEnter"),
-            trigger: "blur",
-          },
+            message: this.$t('UserManagement.PleaseEnter'),
+            trigger: 'blur'
+          }
         ],
         projectName: [
           {
             required: true,
-            message: this.$t("project.Between1and300charactersinlength"),
-            trigger: "blur",
+            message: this.$t('project.Between1and300charactersinlength'),
+            trigger: 'blur'
           },
           {
             min: 1,
             max: 300,
-            message: this.$t("project.Between1and300charactersinlength"),
-            trigger: "blur",
-          },
+            message: this.$t('project.Between1and300charactersinlength'),
+            trigger: 'blur'
+          }
         ],
         projectDetail: [
           {
             required: true,
-            message: this.$t("UserManagement.PleaseEnter"),
-            trigger: "blur",
+            message: this.$t('UserManagement.PleaseEnter'),
+            trigger: 'blur'
           },
           {
             min: 1,
-            trigger: "blur",
-          },
+            trigger: 'blur'
+          }
         ],
         financingStage: [
           {
             required: true,
-            message: this.$t("project.PleaseSelect"),
-            trigger: "change",
-          },
+            message: this.$t('project.PleaseSelect'),
+            trigger: 'change'
+          }
         ],
         projectMobile: [
           {
             required: true,
-            message: this.$t("UserManagement.PleaseEnter"),
-            trigger: "blur",
-          },
+            message: this.$t('UserManagement.PleaseEnter'),
+            trigger: 'blur'
+          }
         ],
         projectEmail: [
           {
             required: true,
-            message: this.$t("UserManagement.PleaseEnterEmail"),
-            trigger: "blur",
+            message: this.$t('UserManagement.PleaseEnterEmail'),
+            trigger: 'blur'
           },
           {
-            type: "email",
-            message: this.$t("UserManagement.EmailFormatIsIncorrect"),
-            trigger: ["blur"],
-          },
+            type: 'email',
+            message: this.$t('UserManagement.EmailFormatIsIncorrect'),
+            trigger: ['blur']
+          }
         ],
         projectTags: [
           {
             required: true,
-            message: this.$t("project.PleaseSelect"),
-            trigger: "change",
-          },
-        ],
+            message: this.$t('project.PleaseSelect'),
+            trigger: 'change'
+          }
+        ]
       },
-      //融资阶段
+      // 融资阶段
       financingStageOption: [
         {
           value: 0,
-          label: this.$t("project.AngelWheel"),
+          label: this.$t('project.AngelWheel')
         },
         {
           value: 1,
-          label: this.$t("project.ARound"),
+          label: this.$t('project.ARound')
         },
         {
           value: 2,
-          label: this.$t("project.BRound"),
+          label: this.$t('project.BRound')
         },
         {
           value: 3,
-          label: this.$t("project.CRound"),
+          label: this.$t('project.CRound')
         },
         {
           value: 4,
-          label: this.$t("project.PreIPO"),
+          label: this.$t('project.PreIPO')
         },
         {
           value: 5,
-          label: this.$t("project.DebtFinancing"),
-        },
-      ],
-    };
+          label: this.$t('project.DebtFinancing')
+        }
+      ]
+    }
   },
   watch: {
-    "form.collectMoneyMin": {
-      handler(newvalue, oldvalue) {
+    'form.collectMoneyMin': {
+      handler (newvalue, oldvalue) {
         // let newvalue_=(newvalue.indexOf('.00')>0)?newvalue.replace('.00' ,''):newvalue; //禁止ie8,9自动添加.00的小数点
-        let newvalue_ = newvalue;
-        if (isNaN(parseFloat(newvalue_.replace(/,/gi, "")))) {
-          //如果当前输入的不是数字就停止执行
-          this.form.collectMoneyMin = ""; //防止不是数字是input出现NaN提示
-          return false;
+        let newvalue_ = newvalue
+        if (isNaN(parseFloat(newvalue_.replace(/,/gi, '')))) {
+          // 如果当前输入的不是数字就停止执行
+          this.form.collectMoneyMin = '' // 防止不是数字是input出现NaN提示
+          return false
         }
-        if (parseFloat(newvalue_.replace(/,/gi, "")) > 1000000000000) {
-          this.form.collectMoneyMin = oldvalue;
-          return;
+        if (parseFloat(newvalue_.replace(/,/gi, '')) > 1000000000000) {
+          this.form.collectMoneyMin = oldvalue
+          return
         }
         if (/\./i.test(newvalue_)) {
-          //判断处理含有.的情况下
-          if (newvalue_.split(".").length - 1 > 1) {
-            this.form.collectMoneyMin = oldvalue;
-            return;
+          // 判断处理含有.的情况下
+          if (newvalue_.split('.').length - 1 > 1) {
+            this.form.collectMoneyMin = oldvalue
+            return
           }
           if (/\.\d\d\d$/.test(newvalue_)) {
-            this.form.collectMoneyMin = oldvalue; //限制只能输入2位小数点
+            this.form.collectMoneyMin = oldvalue // 限制只能输入2位小数点
           } else {
-            this.form.collectMoneyMin = newvalue_.replace(/[^\d\.\,]/gi, ""); //开始输入小数点之后，只能输入数字
+            this.form.collectMoneyMin = newvalue_.replace(/[^\d\.\,]/gi, '') // 开始输入小数点之后，只能输入数字
           }
         }
         // else{
@@ -925,46 +925,46 @@ export default {
         // }
       },
       deep: true,
-      immediate: true,
+      immediate: true
     },
-    "form.collectMoneyMax": {
-      handler(newvalue, oldvalue) {
-        let newvalue_ = newvalue;
-        console.log(newvalue_);
+    'form.collectMoneyMax': {
+      handler (newvalue, oldvalue) {
+        let newvalue_ = newvalue
+        console.log(newvalue_)
         // let newvalue_=(newvalue.indexOf('.00')>0)?newvalue.replace('.00' ,''):newvalue; //禁止ie8,9自动添加.00的小数点
-        if (isNaN(parseFloat(newvalue_.replace(/,/gi, "")))) {
-          //如果当前输入的不是数字就停止执行
-          this.form.collectMoneyMax = ""; //防止不是数字是input出现NaN提示
-          return false;
+        if (isNaN(parseFloat(newvalue_.replace(/,/gi, '')))) {
+          // 如果当前输入的不是数字就停止执行
+          this.form.collectMoneyMax = '' // 防止不是数字是input出现NaN提示
+          return false
         }
-        if (parseFloat(newvalue_.replace(/,/gi, "")) > 1000000000000) {
-          this.form.collectMoneyMax = oldvalue;
-          return;
+        if (parseFloat(newvalue_.replace(/,/gi, '')) > 1000000000000) {
+          this.form.collectMoneyMax = oldvalue
+          return
         }
         if (/\./i.test(newvalue_)) {
-          //判断处理含有.的情况下
-          if (newvalue_.split(".").length - 1 > 1) {
-            this.form.collectMoneyMax = oldvalue;
-            return;
+          // 判断处理含有.的情况下
+          if (newvalue_.split('.').length - 1 > 1) {
+            this.form.collectMoneyMax = oldvalue
+            return
           }
           if (/\.\d\d\d$/.test(newvalue_)) {
-            this.form.collectMoneyMax = oldvalue; //限制只能输入2位小数点
+            this.form.collectMoneyMax = oldvalue // 限制只能输入2位小数点
           } else {
-            this.form.collectMoneyMax = newvalue_.replace(/[^\d\.\,]/gi, ""); //开始输入小数点之后，只能输入数字
+            this.form.collectMoneyMax = newvalue_.replace(/[^\d\.\,]/gi, '') // 开始输入小数点之后，只能输入数字
           }
         } else {
           // this.form.collectMoneyMax=((parseFloat(newvalue_.replace(/,/ig,'')).toLocaleString()).toString()).replace('.00' ,'');
         }
       },
       deep: true,
-      immediate: true,
-    },
+      immediate: true
+    }
   },
-  created() {
-    this.form.projectId = this.$route.query.projectId || null;
-    this.get_coin();
+  created () {
+    this.form.projectId = this.$route.query.projectId || null
+    this.get_coin()
     // this.getAllProjectTags();
-    this.getRelationCompany();
+    this.getRelationCompany()
     // this.region_remoteMethod();
     let axiosList = [
       // this.$axios.get(`${this.$axios.defaults.baseURL}/bsl_admin_web/base/countryList?searchKey=`),
@@ -972,59 +972,58 @@ export default {
       this.$global.get_encapsulation(
         `${this.$axios.defaults.baseURL}/bsl_admin_web/base/countryList`,
         {
-          searchKey: "",
+          searchKey: ''
         }
       ),
-
       this.$global.get_encapsulation(
         `${this.$axios.defaults.baseURL}/bsl_admin_web/industry/getAllIndustry`,
         {
-          searchKey: "",
+          searchKey: ''
         }
       ),
       this.$global.get_encapsulation(
         `${this.$axios.defaults.baseURL}/bsl_admin_web/project/getAllProjectTags`
-      ),
-    ];
+      )
+    ]
     this.$axios.all(axiosList).then(
       this.$axios.spread((res1, res2, res3) => {
         if (res1) {
           for (let i = 0; i < res1.data.data.length; i++) {
-            this.regionlist[res1.data.data[i].countryCode] = res1.data.data[i];
+            this.regionlist[res1.data.data[i].countryCode] = res1.data.data[i]
           }
         }
         if (res2) {
           res2.data.data.forEach((item) => {
             if (item.industryStatus === false) {
-              this.industrylist.push(item);
+              this.industrylist.push(item)
             }
-          });
+          })
         }
         if (res3) {
           // if (res.data.resultCode === 10000) {
-          this.ProjectTags = res3.data.data.projectTagsList;
+          this.ProjectTags = res3.data.data.projectTagsList
           // }
         }
         if (this.$route.query.type == 0) {
         } else if (this.$route.query.type == 1) {
-          this.get_formdata();
+          this.get_formdata()
         }
       })
-    );
+    )
     // 0 is add ,1 is edit
   },
   computed: {},
-  mounted() {},
+  mounted () {},
   methods: {
-    testFun() {
+    testFun () {
       let result = {
         bslAreaCode: '["BEN"]',
         collectMoneyMax: 2,
         collectMoneyMin: 1,
         committedCount: 0,
         createTime: 1612171432,
-        currencyType: "USD",
-        docType: "bsl_project",
+        currencyType: 'USD',
+        docType: 'bsl_project',
         financingStage: 0,
         interestProjectCount: 0,
         isSign: 1,
@@ -1033,8 +1032,8 @@ export default {
         potentialInvestorsTagsEn: '["理想的投资人(英语) "]',
         projectArea: '["贝宁"]',
         projectAreaEn: '["Benin"]',
-        projectCompany: "测试公司",
-        projectCompanyEn: "测试公司",
+        projectCompany: '测试公司',
+        projectCompanyEn: '测试公司',
         projectDescribe: `Golden Moon（“公司”）是一家专注于癌症诊断的公司，现正致力于研发检测及鉴定实体瘤（包括前列腺癌，膀胱癌及胰腺癌）的新一代技术和实现其商品化。
         公司开发了一种用于发现早期前列腺癌的创新体外诊断检测技术（“产品X”）。产品X已在美国完成临床测试并准备商品化，预计在2021年初开始创收。中国的衔接测试及CE标志注册亦在进行中。
         公司计划在一至两年内根据第18A章在香港联合交易所上市。`,
@@ -1225,307 +1224,313 @@ latest financial year reached US$639 million; latest market cap over US$1.1 bill
 test for therapy selection; recurrence detection and early detection tests in development; revenue at
 listing was approximately US$42 million and reached approximately US$214 million in 2019; latest
 market cap over US$10.4 billion.`,
-        projectEmail: "123@qq.com",
+        projectEmail: '123@qq.com',
         projectIndustry: '["产业升级"]',
         projectIndustryEn: '["产业升级"]',
         projectLifeCycle: 0,
-        projectMobile: "10086",
-        projectName: "金月项目14",
-        projectNameEn: "项目名称(英语)",
+        projectMobile: '10086',
+        projectName: '金月项目14',
+        projectNameEn: '项目名称(英语)',
         projectStatus: 0,
         projectTags: '["区块链"]',
         projectTagsEn: '["Blockchain"]',
-        projectUserId: "138178048",
-        sharingMechanism: 50,
-      };
+        projectUserId: '138178048',
+        sharingMechanism: 50
+      }
       for (let i in result) {
         for (let j in this.form) {
-          console.log(j);
+          console.log(j)
           if (j == i) {
-            console.log(i);
-            this.form[j] = result[i];
+            console.log(i)
+            this.form[j] = result[i]
             if (
-              j == "bslAreaCode" ||
-              j == "projectArea" ||
-              j == "projectAreaEn" ||
-              j == "projectIndustry" ||
-              j == "projectIndustryEn" ||
-              j == "projectTags" ||
-              j == "projectTagsEn" ||
-              j == "potentialInvestorsTags" ||
-              j == "potentialInvestorsTagsEn"
+              j == 'bslAreaCode' ||
+              j == 'projectArea' ||
+              j == 'projectAreaEn' ||
+              j == 'projectIndustry' ||
+              j == 'projectIndustryEn' ||
+              j == 'projectTags' ||
+              j == 'projectTagsEn' ||
+              j == 'potentialInvestorsTags' ||
+              j == 'potentialInvestorsTagsEn'
             ) {
-              this.form[j] = eval("(" + this.form[j] + ")");
+              this.form[j] = eval('(' + this.form[j] + ')')
             }
-            if (j == "collectMoneyMin" || j == "collectMoneyMax") {
-              this.form[j] = this.form[j].toLocaleString();
+            if (j == 'collectMoneyMin' || j == 'collectMoneyMax') {
+              this.form[j] = this.form[j].toLocaleString()
               if (/\./i.test(this.form[j])) {
-                //判断处理含有.的情况下
-                if (this.form[j].split(".").length > 1) {
-                  if (this.form[j].split(".")[1].length < 2) {
-                    this.form[j] = this.form[j] + "0";
+                // 判断处理含有.的情况下
+                if (this.form[j].split('.').length > 1) {
+                  if (this.form[j].split('.')[1].length < 2) {
+                    this.form[j] = this.form[j] + '0'
                   }
                 }
               } else {
-                this.form[j] = this.form[j] + ".00";
+                this.form[j] = this.form[j] + '.00'
               }
             }
           }
         }
       }
-      this.form.potentialInvestorarr = [];
-      console.log(this.form);
+      this.form.potentialInvestorarr = []
+      console.log(this.form)
       this.form.potentialInvestorsTags.forEach((item) => {
         this.form.potentialInvestorarr.push({
-          potentialInvestorsTagsEn: "",
-          potentialInvestorsTags: item,
-        });
-      });
+          potentialInvestorsTagsEn: '',
+          potentialInvestorsTags: item
+        })
+      })
       this.form.potentialInvestorsTagsEn.forEach((item, index) => {
-        this.form.potentialInvestorarr[index].potentialInvestorsTagsEn = item;
-      });
+        this.form.potentialInvestorarr[index].potentialInvestorsTagsEn = item
+      })
 
       this.form.projectIndustryEn.forEach((item) => {
         this.industrylist.forEach((self) => {
           if (self.industryNameEn == item) {
-            this.industryId.push(self.industryId);
+            this.industryId.push(self.industryId)
           }
-        });
-      });
+        })
+      })
       this.form.projectTagsEn.forEach((item) => {
         this.ProjectTags.forEach((self) => {
           if (self.tagsNameEn == item) {
-            this.SelectedProjectTags.push(self.id);
+            this.SelectedProjectTags.push(self.id)
           }
-        });
-      });
+        })
+      })
     },
-    getAllProjectTags() {
+    getAllProjectTags () {
       this.$global
         .get_encapsulation(
           `${this.$axios.defaults.baseURL}/bsl_admin_web/project/getAllProjectTags`
         )
         .then((res) => {
-          console.log(res);
+          console.log(res)
           if (res.data.resultCode === 10000) {
-            this.ProjectTags = res.data.data.projectTagsList;
+            this.ProjectTags = res.data.data.projectTagsList
           }
-        });
+        })
     },
-    deleteitem(index) {
+    deleteitem (index) {
       // console.log(index);
-      this.form.potentialInvestorarr.splice(index, 1);
+      this.form.potentialInvestorarr.splice(index, 1)
     },
 
-    potentialInvestorarrFn() {
+    potentialInvestorarrFn () {
       this.form.potentialInvestorarr.push({
-        potentialInvestorsTagsEn: "",
-        potentialInvestorsTags: "",
-      });
+        potentialInvestorsTagsEn: '',
+        potentialInvestorsTags: ''
+      })
     },
-    add_xiaoshudian(newvalue, num) {
-      var value = parseFloat(newvalue.replace(/,/gi, ""));
-      value = Math.round(value * 100) / 100;
-      var s = value.toString().split(".");
+    add_xiaoshudian (newvalue, num) {
+      var value = parseFloat(newvalue.replace(/,/gi, ''))
+      value = Math.round(value * 100) / 100
+      var s = value.toString().split('.')
       if (num == 1) {
         if (s.length == 1) {
-          this.form.collectMoneyMin = value.toLocaleString().toString() + ".00";
+          this.form.collectMoneyMin = value.toLocaleString().toString() + '.00'
         }
         if (s.length > 1) {
           if (s[1].length < 2) {
-            this.form.collectMoneyMin = value.toLocaleString().toString() + "0";
+            this.form.collectMoneyMin = value.toLocaleString().toString() + '0'
           }
         }
       } else if (num == 2) {
         if (s.length == 1) {
-          this.form.collectMoneyMax = value.toLocaleString().toString() + ".00";
+          this.form.collectMoneyMax = value.toLocaleString().toString() + '.00'
         }
         if (s.length > 1) {
           if (s[1].length < 2) {
-            this.form.collectMoneyMax = value.toLocaleString().toString() + "0";
+            this.form.collectMoneyMax = value.toLocaleString().toString() + '0'
           }
         }
       }
     },
-    add_coin() {
-      let self = this;
+    add_coin () {
+      let self = this
       this.$global
         .post_encapsulation(
           `${this.$axios.defaults.baseURL}/bsl_admin_web/currency/saveOrUpdateCurrency`,
           this.coin_category_summit
         )
         .then((result) => {
-          console.log(result);
-          this.$confirm(result.data.resultDesc, self.$t("project.Reminder"), {
-            confirmButtonText: self.$t("project.Confirm"),
+          console.log(result)
+          this.$confirm(result.data.resultDesc, self.$t('project.Reminder'), {
+            confirmButtonText: self.$t('project.Confirm'),
             center: true,
-            showCancelButton: false,
+            showCancelButton: false
           }).then(() => {
             if (result.data.resultCode == 10000) {
-              this.dialogFormVisible_coin_add = false;
-              this.get_coin();
-              this.coin_category_summit.currencySort = null;
-              this.coin_category_summit.currencyType = "";
-              this.coin_category_summit.currencyName = "";
+              this.dialogFormVisible_coin_add = false
+              this.get_coin()
+              this.coin_category_summit.currencySort = null
+              this.coin_category_summit.currencyType = ''
+              this.coin_category_summit.currencyName = ''
             }
-          });
-        });
+          })
+        })
     },
-    get_formdata() {
+    get_formdata () {
       // this.region_remoteMethod();
       // this.getRelationCompany();
-      let {
-        projectId: projectId,
-        signStatus: signStatus,
-        signId: signId,
-      } = this.$route.query;
+      let { projectId, signStatus, signId } = this.$route.query
       let get_form = {
-        projectId: projectId,
-      };
+        projectId: projectId
+      }
       this.$global
         .get_encapsulation(
           `${this.$axios.defaults.baseURL}/bsl_admin_web/project/getProjectDetails`,
           get_form
         )
         .then((res) => {
-          let result = res.data.data.bslProjectVO.data;
+          let result = res.data.data.bslProjectVO.data
           for (let i in result) {
             for (let j in this.form) {
               if (j == i) {
-                this.form[j] = result[i];
+                this.form[j] = result[i]
                 if (
-                  j == "bslAreaCode" ||
-                  j == "projectArea" ||
-                  j == "projectAreaEn" ||
-                  j == "projectIndustry" ||
-                  j == "projectIndustryEn" ||
-                  j == "projectTags" ||
-                  j == "projectTagsEn" ||
-                  j == "potentialInvestorsTags" ||
-                  j == "potentialInvestorsTagsEn"
+                  j == 'bslAreaCode' ||
+                  j == 'projectArea' ||
+                  j == 'projectAreaEn' ||
+                  j == 'projectIndustry' ||
+                  j == 'projectIndustryEn' ||
+                  j == 'projectTags' ||
+                  j == 'projectTagsEn' ||
+                  j == 'potentialInvestorsTags' ||
+                  j == 'potentialInvestorsTagsEn'
                 ) {
                   // this.form[j] = JSON.parse(this.form[j]);
-                  this.form[j] = eval("(" + this.form[j] + ")");
+                  this.form[j] = eval('(' + this.form[j] + ')')
                 }
-                if (j == "collectMoneyMin" || j == "collectMoneyMax") {
-                  this.form[j] = this.form[j].toLocaleString();
+                if (j == 'collectMoneyMin' || j == 'collectMoneyMax') {
+                  this.form[j] = this.form[j].toLocaleString()
                   if (/\./i.test(this.form[j])) {
-                    //判断处理含有.的情况下
-                    if (this.form[j].split(".").length > 1) {
-                      if (this.form[j].split(".")[1].length < 2) {
-                        this.form[j] = this.form[j] + "0";
+                    // 判断处理含有.的情况下
+                    if (this.form[j].split('.').length > 1) {
+                      if (this.form[j].split('.')[1].length < 2) {
+                        this.form[j] = this.form[j] + '0'
                       }
                     }
                   } else {
-                    this.form[j] = this.form[j] + ".00";
+                    this.form[j] = this.form[j] + '.00'
                   }
                 }
               }
             }
           }
-          this.form.potentialInvestorarr = [];
-          console.log(this.form);
+          this.form.potentialInvestorarr = []
+          console.log(this.form)
           this.form.potentialInvestorsTags.forEach((item) => {
             this.form.potentialInvestorarr.push({
-              potentialInvestorsTagsEn: "",
-              potentialInvestorsTags: item,
-            });
-          });
+              potentialInvestorsTagsEn: '',
+              potentialInvestorsTags: item
+            })
+          })
           this.form.potentialInvestorsTagsEn.forEach((item, index) => {
             this.form.potentialInvestorarr[
               index
-            ].potentialInvestorsTagsEn = item;
-          });
+            ].potentialInvestorsTagsEn = item
+          })
 
           this.form.projectIndustryEn.forEach((item) => {
             this.industrylist.forEach((self) => {
               if (self.industryNameEn == item) {
-                this.industryId.push(self.industryId);
+                this.industryId.push(self.industryId)
               }
-            });
-          });
+            })
+          })
           this.form.projectTagsEn.forEach((item) => {
             this.ProjectTags.forEach((self) => {
               if (self.tagsNameEn == item) {
-                this.SelectedProjectTags.push(self.id);
+                this.SelectedProjectTags.push(self.id)
               }
-            });
-          });
-        });
+            })
+          })
+        })
     },
-    get_coin() {
+    get_coin () {
       this.$global
         .get_encapsulation(
           `${this.$axios.defaults.baseURL}/bsl_admin_web/currency/getAllCurrency`
         )
         .then((res) => {
-          if (res.data.resultCode == 10000) {
-            this.getcoins = res.data.data;
+          if (res.data.resultCode === 10000) {
+            this.getcoins = res.data.data
           }
-        });
+        })
     },
-    industry_lists() {
-      this.industrylist = [];
+    industry_lists () {
+      this.industrylist = []
       this.$global
         .get_encapsulation(
           `${this.$axios.defaults.baseURL}/bsl_admin_web/industry/getAllIndustry`
         )
         .then((res) => {
-          if (res.data.resultCode == 10000) {
+          if (res.data.resultCode === 10000) {
             res.data.data.forEach((item) => {
-              if (item.industryStatus === 0) {
-                this.industrylist.push(item);
+              if (item.industryStatus === false) {
+                this.industrylist.push(item)
               }
-            });
+            })
           }
-        });
+        })
     },
-    region_remoteMethod(query) {
-      let searchKey = query ? query : "";
-      this.regionlist = {};
+    region_remoteMethod (query) {
+      let searchKey = query || ''
+      this.regionlist = {}
       this.$global
         .get_encapsulation(
           `${this.$axios.defaults.baseURL}/bsl_admin_web/base/countryList`,
           {
-            searchKey: searchKey,
+            searchKey: searchKey
           }
         )
         .then((res) => {
           if (res.data.resultCode == 10000) {
             for (let i = 0; i < res.data.data.length; i++) {
-              this.regionlist[res.data.data[i].countryCode] = res.data.data[i];
+              this.regionlist[res.data.data[i].countryCode] = res.data.data[i]
             }
-            this.regionlist = Object.assign({}, this.regionlist);
+            this.regionlist = Object.assign({}, this.regionlist)
           }
-        });
+        })
       // } else {
       //   this.regionlist = [];
       // }
     },
-    add_industry() {
-      console.log(this.industry_summit);
+    add_industry () {
+      console.log(this.industry_summit)
       let self = this;
       this.$global
         .post_encapsulation(
-          `${this.$axios.defaults.baseURL}/bsl_admin_web/base/countryList`,
+          `${this.$axios.defaults.baseURL}/bsl_admin_web/industry/saveIndustry`,
           this.industry_summit
         )
         .then((res) => {
-          this.$confirm(res.data.resultDesc, self.$t("project.Reminder"), {
-            confirmButtonText: self.$t("project.Confirm"),
-            type: "warning",
-            center: true,
-            showCancelButton: false,
-          }).then(() => {
-            if (res.data.resultCode == 10000) {
-              this.dialogFormVisible_industry = false;
-              this.industry_lists();
-              this.industry_summit.industryNameCh = "";
-              this.industry_summit.industryNameEn = "";
-              this.industry_summit.industrySort = null;
-            }
-          });
-        });
+          if (res.data.resultCode === 10000) {
+            this.$message({
+              message: res.data.resultDesc,
+              type: 'success'
+            })
+            this.dialogFormVisible_industry = false
+            this.industry_lists()
+            this.industry_summit.industryNameCh = ''
+            this.industry_summit.industryNameEn = ''
+            this.industry_summit.industrySort = null
+          } else {
+            this.$message({
+              message: res.data.resultDesc,
+              type: 'warning'
+            })
+          }
+          // this.$confirm(res.data.resultDesc, self.$t('project.Reminder'), {
+          //   confirmButtonText: self.$t('project.Confirm'),
+          //   type: 'warning',
+          //   center: true,
+          //   showCancelButton: false
+          // }).then(() => {
+
+          // })
+        })
     },
     // resetForm(formName) {
     //   this.$refs[formName].resetFields();
@@ -1533,27 +1538,27 @@ market cap over US$10.4 billion.`,
     // back() {
     //   this.$routerto('tosignup',{pagenum:this.$route.query.pagenum});
     // },
-    selectOne(item) {
+    selectOne (item) {
       // console.log(item);
       this.restaurants.forEach((self) => {
         if (self.userId === item) {
-          this.form.projectUserId = self.userId;
-          this.form.projectCompany = self.userCompanyCh;
-          this.form.projectCompanyEn = self.userCompanyEn;
+          this.form.projectUserId = self.userId
+          this.form.projectCompany = self.userCompanyCh
+          this.form.projectCompanyEn = self.userCompanyEn
         }
-      });
+      })
     },
-    selectregion(val) {
-      this.form.projectArea = [];
-      this.form.projectAreaEn = [];
+    selectregion (val) {
+      this.form.projectArea = []
+      this.form.projectAreaEn = []
       val.forEach((item) => {
         for (let key in this.regionlist) {
           if (key === item) {
-            this.form.projectArea.push(this.regionlist[key].countryZhname);
-            this.form.projectAreaEn.push(this.regionlist[key].countryEnname);
+            this.form.projectArea.push(this.regionlist[key].countryZhname)
+            this.form.projectAreaEn.push(this.regionlist[key].countryEnname)
           }
         }
-      });
+      })
 
       // val.forEach(item => {
       //   this.regionlist.forEach(it => {
@@ -1569,21 +1574,21 @@ market cap over US$10.4 billion.`,
       // this.form.projectArea = val.countryZhname;
       // this.form.projectAreaEn = val.countryEnname;
     },
-    selectindustry(val) {
-      console.log(val);
-      this.industryId = val;
+    selectindustry (val) {
+      console.log(val)
+      this.industryId = val
       // console.log(this.industrylist);
-      this.form.projectIndustry = [];
-      this.form.projectIndustryEn = [];
+      this.form.projectIndustry = []
+      this.form.projectIndustryEn = []
 
       val.forEach((i) => {
         this.industrylist.forEach((item) => {
           if (item.industryId === i) {
-            this.form.projectIndustry.push(item.industryNameCh);
-            this.form.projectIndustryEn.push(item.industryNameEn);
+            this.form.projectIndustry.push(item.industryNameCh)
+            this.form.projectIndustryEn.push(item.industryNameEn)
           }
-        });
-      });
+        })
+      })
 
       // console.log();
 
@@ -1591,65 +1596,65 @@ market cap over US$10.4 billion.`,
       // this.form.projectIndustry = val.industryNameCh;
       // this.form.projectIndustryEn =val.industryNameEn;
     },
-    selectTags(val) {
-      this.form.projectTags = [];
-      this.form.projectTagsEn = [];
+    selectTags (val) {
+      this.form.projectTags = []
+      this.form.projectTagsEn = []
       val.forEach((i) => {
         this.ProjectTags.forEach((item) => {
           if (item.id === i) {
-            this.form.projectTags.push(item.tagsName);
-            this.form.projectTagsEn.push(item.tagsNameEn);
+            this.form.projectTags.push(item.tagsName)
+            this.form.projectTagsEn.push(item.tagsNameEn)
           }
-        });
+        })
         // for (let key in this.regionlist) {
         //   if (key === item) {
         //     this.form.projectTagsEn.push(this.regionlist[key].countryEnname);
         //   }
         // }
-      });
-      console.log(this.form.projectTags, this.form.projectTagsEn);
+      })
+      console.log(this.form.projectTags, this.form.projectTagsEn)
     },
-    select_coin(val) {
-      this.form.currencyType = val;
+    select_coin (val) {
+      this.form.currencyType = val
     },
-    getRelationCompany(query) {
-      let type = typeof query;
-      if (type == "string") {
-        this.loading = true;
+    getRelationCompany (query) {
+      let type = typeof query
+      if (type == 'string') {
+        this.loading = true
         this.$global
           .get_encapsulation(
             `${this.$axios.defaults.baseURL}/bsl_admin_web/project/getRelationCompany`,
             {
-              searchKey: query,
+              searchKey: query
             }
           )
           .then((res) => {
-            this.loading = false;
-            this.restaurants = res.data.data;
+            this.loading = false
+            this.restaurants = res.data.data
             if (this.restaurants.length <= 0) {
-              this.form.projectCompany = "";
+              this.form.projectCompany = ''
             }
           })
           .catch((err) => {
-            console.log(err);
-          });
+            console.log(err)
+          })
       } else {
-        this.loading = true;
+        this.loading = true
         this.$global
           .get_encapsulation(
             `${this.$axios.defaults.baseURL}/bsl_admin_web/project/getRelationCompany`
           )
           .then((res) => {
-            this.loading = false;
-            this.restaurants = res.data.data;
-            console.log(this.restaurants);
+            this.loading = false
+            this.restaurants = res.data.data
+            console.log(this.restaurants)
             if (this.restaurants.length <= 0) {
-              this.form.projectCompany = "";
+              this.form.projectCompany = ''
             }
           })
           .catch((err) => {
-            console.log(err);
-          });
+            console.log(err)
+          })
       }
     },
     // deepClone(source) {
@@ -1669,57 +1674,57 @@ market cap over US$10.4 billion.`,
     //   }
     //   return targetObj;
     // },
-    industy_submitForm(formName) {
+    industy_submitForm (formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          this.add_industry();
+          this.add_industry()
         } else {
-          return false;
+          return false
         }
-      });
+      })
     },
-    coin_submitForm(formName) {
+    coin_submitForm (formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          this.add_coin();
+          this.add_coin()
         } else {
-          return false;
+          return false
         }
-      });
+      })
     },
-    submitForm(formName) {
+    submitForm (formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          this.commit();
+          this.commit()
         } else {
-          return false;
+          return false
         }
-      });
+      })
     },
-    commit() {
-      let cloneObj = this.$global.deepCopy(this.form);
-      cloneObj.collectMoneyMax = cloneObj.collectMoneyMax.replace(/,/g, "") * 1;
-      cloneObj.collectMoneyMin = cloneObj.collectMoneyMin.replace(/,/g, "") * 1;
+    commit () {
+      let cloneObj = this.$global.deepCopy(this.form)
+      cloneObj.collectMoneyMax = cloneObj.collectMoneyMax.replace(/,/g, '') * 1
+      cloneObj.collectMoneyMin = cloneObj.collectMoneyMin.replace(/,/g, '') * 1
       cloneObj.potentialInvestorsTags = JSON.stringify(
         cloneObj.potentialInvestorarr.map((item) => {
-          return item.potentialInvestorsTags;
+          return item.potentialInvestorsTags
         })
-      );
+      )
       cloneObj.potentialInvestorsTagsEn = JSON.stringify(
         cloneObj.potentialInvestorarr.map((item) => {
-          return item.potentialInvestorsTagsEn;
+          return item.potentialInvestorsTagsEn
         })
-      );
+      )
       // cloneObj.industryId = cloneObj.industryId[0];
-      cloneObj.projectTags = JSON.stringify(cloneObj.projectTags);
-      cloneObj.projectTagsEn = JSON.stringify(cloneObj.projectTagsEn);
-      cloneObj.projectIndustry = JSON.stringify(cloneObj.projectIndustry);
-      cloneObj.projectIndustryEn = JSON.stringify(cloneObj.projectIndustryEn);
-      cloneObj.bslAreaCode = JSON.stringify(cloneObj.bslAreaCode);
-      cloneObj.projectArea = JSON.stringify(cloneObj.projectArea);
-      cloneObj.projectAreaEn = JSON.stringify(cloneObj.projectAreaEn);
-      delete cloneObj.potentialInvestorarr;
-      console.log(cloneObj);
+      cloneObj.projectTags = JSON.stringify(cloneObj.projectTags)
+      cloneObj.projectTagsEn = JSON.stringify(cloneObj.projectTagsEn)
+      cloneObj.projectIndustry = JSON.stringify(cloneObj.projectIndustry)
+      cloneObj.projectIndustryEn = JSON.stringify(cloneObj.projectIndustryEn)
+      cloneObj.bslAreaCode = JSON.stringify(cloneObj.bslAreaCode)
+      cloneObj.projectArea = JSON.stringify(cloneObj.projectArea)
+      cloneObj.projectAreaEn = JSON.stringify(cloneObj.projectAreaEn)
+      delete cloneObj.potentialInvestorarr
+      console.log(cloneObj)
 
       this.$global
         .post_encapsulation(
@@ -1738,24 +1743,24 @@ market cap over US$10.4 billion.`,
           // if (res.data.resultCode == 10000) {
           //   this.$store.dispatch("submit_formdata_action", res.data.data);
           // }
-          this.warning(res.data.resultCode, res.data.resultDesc);
-        });
+          this.warning(res.data.resultCode, res.data.resultDesc)
+        })
     },
-    warning(resultCode, reminder) {
-      let self = this;
-      this.$confirm(reminder, self.$t("project.Reminder"), {
-        confirmButtonText: self.$t("project.Confirm"),
-        type: "warning",
+    warning (resultCode, reminder) {
+      let self = this
+      this.$confirm(reminder, self.$t('project.Reminder'), {
+        confirmButtonText: self.$t('project.Confirm'),
+        type: 'warning',
         center: true,
-        showCancelButton: false,
+        showCancelButton: false
       }).then(() => {
         if (resultCode === 10000) {
-          this.$routerto("tosignuproot");
+          this.$routerto('tosignuproot')
         }
-      });
-    },
-  },
-};
+      })
+    }
+  }
+}
 </script>
 
 <style lang='scss'>

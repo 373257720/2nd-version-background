@@ -12,10 +12,15 @@
           type="primary"
           icon="el-icon-search"
           class="block"
-          @click="search"
-        >{{$t('project.Search')}}</el-button>
+          @click="
+            () => {
+              search(null,pagesize);
+            }
+          "
+          >{{ $t("project.Search") }}</el-button
+        >
       </header>
-      <el-table :data="tableData" border style="width:100%;">
+      <el-table :data="tableData" border style="width: 100%">
         <el-table-column
           fixed
           prop="registrationTime"
@@ -23,7 +28,11 @@
           :label="$t('project.registerTime')"
           align="center"
         ></el-table-column>
-        <el-table-column prop="userType" :label="$t('project.Type')" align="center"></el-table-column>
+        <el-table-column
+          prop="userType"
+          :label="$t('project.Type')"
+          align="center"
+        ></el-table-column>
         <el-table-column
           prop="bslEmail"
           show-overflow-tooltip
@@ -37,13 +46,18 @@
           :label="$t('project.Submissiontime')"
           align="center"
         ></el-table-column>
-        <el-table-column fixed="right" :label="$t('project.Operation')" align="center">
+        <el-table-column
+          fixed="right"
+          :label="$t('project.Operation')"
+          align="center"
+        >
           <template slot-scope="scope">
             <el-button
               @click="handleClick(scope.row)"
               type="text"
               size="small"
-            >{{$t('project.View')}}</el-button>
+              >{{ $t("project.View") }}</el-button
+            >
             <!-- <el-button type="text" size="small">删除</el-button> -->
           </template>
         </el-table-column>
@@ -55,8 +69,12 @@
         v-on:fromchildren="fromchildren1"
       ></pagevue>-->
       <el-pagination :page-size="pagesize" layout="slot">
-        <span class="finger" @click="changePage('previous')">{{$t('project.Previous')}}</span>
-        <span class="finger" @click="changePage('next')">{{$t('project.Next')}}</span>
+        <span class="finger" @click="changePage('previous')">{{
+          $t("project.Previous")
+        }}</span>
+        <span class="finger" @click="changePage('next')">{{
+          $t("project.Next")
+        }}</span>
       </el-pagination>
     </el-main>
   </div>
@@ -64,8 +82,8 @@
 
 <script>
 export default {
-  name: "check_pendingroot",
-  data() {
+  name: 'check_pendingroot',
+  data () {
     return {
       ischeck: false,
       currentpage: null,
@@ -73,19 +91,19 @@ export default {
       pagesize: 8,
       // pagetotal: null,
       tableData: [],
-      keywords: "",
+      keywords: '',
       pageArr: [null],
       currentpageSerial: 0,
       projectStatus: 0
-    };
+    }
   },
-  created() {
-    this.search(this.currentpage, this.pagesize);
+  created () {
+    this.search(this.pageArr[this.currentpageSerial], this.pagesize)
   },
-  activated() {},
+  activated () {},
   methods: {
-    search(currentpage, pagesize) {
-      let self = this;
+    search (currentpage, pagesize) {
+      let self = this
       this.$global
         .get_encapsulation(
           `${this.$axios.defaults.baseURL}/bsl_admin_web/user/getUserAuthList`,
@@ -96,29 +114,29 @@ export default {
             pageSize: pagesize
           }
         )
-        .then(res => {
+        .then((res) => {
           if (res.status === 200) {
-            let a = this.pageArr.every(item => {
-              return item !== res.data.data.bookmark;
-            });
+            let a = this.pageArr.every((item) => {
+              return item !== res.data.data.bookmark
+            })
             if (a) {
-              this.pageArr.push(res.data.data.bookmark);
+              this.pageArr.push(res.data.data.bookmark)
             }
-            console.log(this.pageArr);
-            this.bookmark = res.data.data.bookmark;
+            console.log(this.pageArr)
+            this.bookmark = res.data.data.bookmark
             // this.currentpage = this.pageArr.indexOf(res.data.data.lastBookmark);
             // this.pagetotal =
             //   (this.pageArr.length - 1) * this.pagesize +
             //   res.data.data.data.length;
-            this.tableData = res.data.data.data.map(item => {
-              let userType;
+            this.tableData = res.data.data.data.map((item) => {
+              let userType
               if (item.record.userType) {
                 if (item.record.userType === 1) {
-                  userType = self.$t("project.ProjectParty");
+                  userType = self.$t('project.ProjectParty')
                 } else if (item.record.userType === 4) {
-                  userType = self.$t("project.Middleman");
+                  userType = self.$t('project.Middleman')
                 } else if (item.record.userType === 3) {
-                  userType = self.$t("project.Investor");
+                  userType = self.$t('project.Investor')
                 }
               }
               return {
@@ -126,63 +144,63 @@ export default {
                 userIdentityType: item.record.userIdentityType,
                 registrationTime: item.record.registrationTime
                   ? this.$global.timestampToTime(item.record.registrationTime)
-                  : "",
+                  : '',
                 userType: userType,
                 bslEmail: item.record.bslEmail,
                 submitTime: item.record.submitTime
                   ? this.$global.timestampToTime(item.record.submitTime)
-                  : ""
-              };
-            });
+                  : ''
+              }
+            })
 
             // this.pagetotal = res.data.data.pageTotal;
           }
-        });
+        })
     },
 
-    changePage(num) {
-      if (num === "previous") {
+    changePage (num) {
+      if (num === 'previous') {
         if (this.currentpageSerial > 0) {
-          this.currentpageSerial--;
+          this.currentpageSerial--
           // this.currentpage = this.bookmark;
-          this.search(this.pageArr[this.currentpageSerial], this.pagesize);
+          this.search(this.pageArr[this.currentpageSerial], this.pagesize)
         }
-      } else if (num === "next") {
+      } else if (num === 'next') {
         if (this.currentpageSerial < this.pageArr.length - 1) {
-          this.currentpageSerial++;
+          this.currentpageSerial++
           // this.currentpage = this.bookmark;
-          this.search(this.pageArr[this.currentpageSerial], this.pagesize);
+          this.search(this.pageArr[this.currentpageSerial], this.pagesize)
         }
       }
     },
 
-    handleClick(row) {
+    handleClick (row) {
       this.$router.push({
-        name: "check",
+        name: 'check',
         query: {
           idx: row.userId,
           userIdentityType: row.userIdentityType
           // pagenum: this.currentpage
         }
-      });
+      })
     },
-    fromchildren1(data) {
-      console.log(data);
+    fromchildren1 (data) {
+      console.log(data)
 
-      this.currentpage = data.currentpage;
-      this.changepage(data.currentpage, data.pagesize);
+      this.currentpage = data.currentpage
+      this.changepage(data.currentpage, data.pagesize)
     }
   },
   watch: {
-    $route(to, from) {
-      if (to.name == "check") {
-        this.ischeck = !this.ischeck;
+    $route (to, from) {
+      if (to.name == 'check') {
+        this.ischeck = !this.ischeck
       } else {
-        this.ischeck = false;
+        this.ischeck = false
       }
     }
   }
-};
+}
 </script>
 
 <style lang='scss'>

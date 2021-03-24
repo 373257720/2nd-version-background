@@ -7,8 +7,18 @@
           <!-- <el-button @click="$routerto('industry_alter')" type="primary" class="addbtn block">{{$t('Membership.PointsCleared')}}</el-button> -->
         </nav>
         <section>
-          <el-button type="primary" class="block">{{ "上传icon" }}</el-button>
-          <el-button type="primary" class="block">{{ "新增" }}</el-button>
+          <el-button
+            @click="$routerto('upLoadIcon')"
+            type="primary"
+            class="block"
+            >{{ "上传icon" }}</el-button
+          >
+          <el-button
+            @click="$routerto('addIcon')"
+            type="primary"
+            class="block"
+            >{{ "新增" }}</el-button
+          >
         </section>
       </header>
       <el-table
@@ -30,11 +40,7 @@
           align="center"
         >
           <template slot-scope="scope">
-            <img
-              style="width:50px,height:50px"
-              :src="$axios.defaults.baseURL + scope.row.bslIconUrl"
-              alt="icon"
-            />
+            <img class="iconImg" :src="scope.row.bslIconUrl" alt="icon" />
           </template>
         </el-table-column>
 
@@ -67,7 +73,12 @@
           align="center"
         >
           <template slot-scope="scope">
-            <el-button type="text" size="small">{{ "编辑" }}</el-button>
+            <el-button
+              @click="$routerto('addIcon', { id: scope.row.id })"
+              type="text"
+              size="small"
+              >{{ "编辑" }}</el-button
+            >
             <el-button @click="delset(scope.row)" type="text" size="small">{{
               "删除"
             }}</el-button>
@@ -91,26 +102,26 @@
 // import '@/components/eventBus'
 // import login from "../login";
 export default {
-  name: "ProjectStatusCustomization",
-  data() {
+  name: 'ProjectStatusCustomization',
+  data () {
     return {
       centerDialogVisible: false,
-      value1: [], //日期选择
-      value: "", //项目状态
-      searchkey: "",
-      input: "",
+      value1: [], // 日期选择
+      value: '', // 项目状态
+      searchkey: '',
+      input: '',
       currentpage: 1,
       pagesize: 8,
       pagetotal: null,
       tableData: [],
       deleteType: 0,
-      industryId: "",
-    };
+      industryId: ''
+    }
   },
-  created() {
-  this.search();
+  created () {
+    this.search()
   },
-  activated() {
+  activated () {
     // console.log(123);
     // this.search();
     // this.$global
@@ -137,39 +148,39 @@ export default {
     //   });
   },
   methods: {
-    CheckInputIntFloat(value) {
-      var regexp = /^[1-9]\d*$/;
-      let gg = value;
-      let a;
+    CheckInputIntFloat (value) {
+      var regexp = /^[1-9]\d*$/
+      let gg = value
+      let a
       // console.log(gg.replace(regexp, ""));
-      if ("" != gg.replace(regexp, "")) {
-        console.log(gg.replace(regexp));
+      if (gg.replace(regexp, '') != '') {
+        console.log(gg.replace(regexp))
 
         // e.target.value=gg.replace(regexp)
-        value = gg.match(regexp) === null ? "" : gg.match(regexp);
+        value = gg.match(regexp) === null ? '' : gg.match(regexp)
       }
-      console.log(value);
+      console.log(value)
     },
-    handleCurrentChange(cpage) {
-      this.currentpage = cpage;
+    handleCurrentChange (cpage) {
+      this.currentpage = cpage
     },
-    handleSizeChange(psize) {
-      this.pagesize = psize;
+    handleSizeChange (psize) {
+      this.pagesize = psize
     },
-    deleterow(row) {
-      console.log(row);
-      let self = this;
-      this.industryId = row.industryId;
-      this.centerDialogVisible = true;
+    deleterow (row) {
+      console.log(row)
+      let self = this
+      this.industryId = row.industryId
+      this.centerDialogVisible = true
       this.$confirm(
-        self.$t("project.Confirmdelect"),
-        self.$t("project.Reminder"),
+        self.$t('project.Confirmdelect'),
+        self.$t('project.Reminder'),
         {
-          confirmButtonText: self.$t("project.Yes"),
-          cancelButtonText: self.$t("project.No"),
-          type: "warning",
+          confirmButtonText: self.$t('project.Yes'),
+          cancelButtonText: self.$t('project.No'),
+          type: 'warning',
           center: true,
-          showCancelButton: true,
+          showCancelButton: true
         }
       )
         .then(() => {
@@ -182,22 +193,22 @@ export default {
               if (res.data.resultCode == 10000) {
                 this.$message({
                   message: res.data.resultDesc,
-                  type: "success",
-                });
-                this.search();
+                  type: 'success'
+                })
+                this.search()
               } else {
                 this.$message({
                   message: res.data.resultDesc,
-                  type: "warn",
-                });
+                  type: 'warn'
+                })
               }
-            });
+            })
         })
-        .catch(() => {});
+        .catch(() => {})
     },
 
-    handleClick(row) {
-      console.log(row);
+    handleClick (row) {
+      console.log(row)
       // this.$router.push({
       //   name: "industry_alter",
       //   query: {
@@ -205,66 +216,71 @@ export default {
       //   },
       // });
     },
-    fromchildren1(data) {
-      this.currentpage = data.currentpage;
-      this.pagesize = data.pagesize;
+    fromchildren1 (data) {
+      this.currentpage = data.currentpage
+      this.pagesize = data.pagesize
       this.search(
         this.value,
         this.value1[0] / 1000,
         this.value1[1] / 1000,
         this.currentpage,
         this.pagesize
-      );
+      )
     },
-    delset(row) {
+    delset (row) {
+      let self = this
+      this.$confirm(
+        self.$t('project.Confirmdelect'),
+        self.$t('project.Reminder'),
+        {
+          confirmButtonText: self.$t('project.Yes'),
+          type: 'warning',
+          center: true,
+          showCancelButton: false
+        }
+      )
+        .then(() => {
+          this.$global
+            .get_encapsulation(
+              `${this.$axios.defaults.baseURL}/bsl_admin_web/member/delProjectStatusConfigure`,
+              {
+                id: row.id
+              }
+            )
+            .then((res) => {
+              if (res.data.resultCode == 10000) {
+                this.$message({
+                  message: res.data.resultDesc,
+                  type: 'success'
+                })
+                this.search()
+              } else {
+                this.$message({
+                  message: res.data.resultDesc,
+                  type: 'warn'
+                })
+              }
+            })
+        })
+        .catch((err) => {})
+    },
+    search () {
       this.$global
         .get_encapsulation(
-          `${this.$axios.defaults.baseURL}/bsl_admin_web/member/delProjectStatusConfigure`,
-          {
-            id: row.id,
-          }
+          `${this.$axios.defaults.baseURL}/bsl_admin_web/member/getProjectStatusConfigureList`
         )
         .then((res) => {
           if (res.data.resultCode == 10000) {
-            this.$message({
-              message: res.data.resultDesc,
-              type: "success",
-            });
-            // this.search();
-          } else {
-            this.$message({
-              message: res.data.resultDesc,
-              type: "warn",
-            });
+            this.tableData = [...res.data.data.lists]
+            console.log(this.tableData)
+            this.tableData.forEach((item, idx) => {
+              item.createTime = this.$global.stamptodate(item.createTime)
+            })
           }
-        });
-    },
-    search() {
-     this.$global
-      .get_encapsulation(
-        `${this.$axios.defaults.baseURL}/bsl_admin_web/member/getProjectStatusConfigureList`
-      )
-      .then((res) => {
-        if (res.data.resultCode == 10000) {
-          this.tableData = [...res.data.data.lists];
-          console.log(this.tableData);
-          this.tableData.forEach((item, idx) => {
-            item.createTime = this.$global.stamptodate(item.createTime);
-          });
-          this.$message({
-            message: res.data.resultDesc,
-            type: "success",
-          });
-        } else {
-          this.$message({
-            message: res.data.resultDesc,
-            type: "warn",
-          });
-        }
-      });
-    },
-  },
-};
+        })
+    }
+  }
+}
 </script>
 
 <style lang='scss'>
@@ -273,6 +289,10 @@ export default {
   .el-main {
     /*min-height: 580px;*/
     width: 80%;
+  }
+  .iconImg {
+    width: 50px;
+    height: 50px;
   }
   .tosignup_header {
     // height: 40px;

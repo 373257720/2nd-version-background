@@ -39,7 +39,11 @@
         border
       >
         <el-table-column width="200" prop="bslEmail" label="会员账号" align="center"></el-table-column>
-        <el-table-column prop="createTime" show-overflow-tooltip label="申请时间" align="center"></el-table-column>
+        <el-table-column prop="createTime"   width="200" show-overflow-tooltip label="申请时间" align="center">
+           <template slot-scope="scope">
+            <span>{{ $global.stamptodate(scope.row.createTime) }}</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="exchangeIntegral" show-overflow-tooltip label="可用会员积分" align="center"></el-table-column>
         <el-table-column prop="memberIntegral" show-overflow-tooltip label="累积消耗积分" align="center"></el-table-column>
         <el-table-column prop="sumExchangeIntegral" show-overflow-tooltip label="累积会员积分" align="center"></el-table-column>
@@ -182,7 +186,7 @@ export default {
             this.tableData = [...res.data.data.lists];
             console.log(this.tableData);
             this.tableData.forEach((item, idx) => {
-              item.createTime = this.$global.stamptodate(item.createTime);
+              // item.createTime = this.$global.stamptodate(item.createTime);
               // if(item.industryStatus==-1){
               //   item.industry_Status='已删除'
               // }else if(item.industryStatus==0){

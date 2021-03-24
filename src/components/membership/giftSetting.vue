@@ -3,8 +3,11 @@
     <el-main>
       <header class="tosignup_header">
         <nav>
-          <el-button @click="$routerto('addGift')" type="primary" class="addbtn"
-            >新增</el-button
+          <el-button
+            @click="$routerto('addGift')"
+            type="primary"
+            class="addbtn"
+            >{{ $t("Member.Add") }}</el-button
           >
         </nav>
       </header>
@@ -17,22 +20,36 @@
         <el-table-column
           width="200"
           prop="giftName"
-          label="礼品名称"
+          :label="$t('Member.PresentName')"
           align="center"
-        ></el-table-column>
+        >
+          <template slot-scope="scope">
+            <span>{{ scope.row["giftName" + $global.lan()] }}</span>
+          </template></el-table-column
+        >
         <el-table-column
           prop="giftNumber"
           show-overflow-tooltip
-          label="数量"
+          :label="$t('Member.quantity')"
           align="center"
-        ></el-table-column>
-        <el-table-column fixed="right" label="操作" width="200" align="center">
+        >
+        </el-table-column>
+        <el-table-column
+          fixed="right"
+          :label="$t('project.Operation')"
+          width="200"
+          align="center"
+        >
           <template slot-scope="scope">
             <el-button
               @click="handleClick(scope.row)"
               type="text"
               size="small"
-              >{{ scope.row.giftStatus == 0 ? "上架" : "下架" }}</el-button
+              >{{
+                scope.row.giftStatus == 0
+                  ? $t("Membership.PutOnshelves")
+                  : $t("Membership.PutOffshelves")
+              }}</el-button
             >
           </template>
         </el-table-column>
@@ -58,8 +75,8 @@ export default {
   data() {
     return {
       centerDialogVisible: false,
-      value1: [], //日期选择
-      value: "", //项目状态
+      value1: [], // 日期选择
+      value: "", // 项目状态
       searchkey: "",
       input: "",
       currentpage: 1,
@@ -82,7 +99,7 @@ export default {
       let gg = value;
       let a;
       // console.log(gg.replace(regexp, ""));
-      if ("" != gg.replace(regexp, "")) {
+      if (gg.replace(regexp, "") != "") {
         console.log(gg.replace(regexp));
 
         // e.target.value=gg.replace(regexp)
@@ -139,27 +156,28 @@ export default {
     handleClick(row) {
       console.log(row);
       this.$global
-        .post_encapsulation(
+        .postJson_encapsulation(
           `${this.$axios.defaults.baseURL}/bsl_admin_web/member/saveModifyBslExchangeGift`,
           {
             giftName: row.giftName,
             giftNameEn: row.giftNameEn,
-            id: row.id,
-            giftStatus: row.giftStatus == 0 ? 1 : 0,
+            id: row.id * 1,
+            giftNumber: row.giftNumber,
+            giftStatus: row.giftStatus === 0 ? 1 : 0,
           }
         )
         .then((res) => {
-          if (res.data.resultCode == 10000) {
+          if (res.data.resultCode === 10000) {
             this.$message({
-                  message: res.data.resultDesc,
-                  type: "success"
-                });
+              message: res.data.resultDesc,
+              type: "success",
+            });
             this.search();
-          }else{
-             this.$message({
-                  message: res.data.resultDesc,
-                  type: "warn"
-                });
+          } else {
+            this.$message({
+              message: res.data.resultDesc,
+              type: "warn",
+            });
           }
         });
     },
@@ -181,7 +199,7 @@ export default {
           { searchKey: "" }
         )
         .then((res) => {
-          if (res.data.resultCode == 10000) {
+          if (res.data.resultCode === 10000) {
             this.tableData = [...res.data.data.lists];
             console.log(this.tableData);
             this.tableData.forEach((item, idx) => {

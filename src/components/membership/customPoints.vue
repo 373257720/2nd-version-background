@@ -12,28 +12,45 @@
         <el-form-item label="推荐中间人成功积分:" prop="industryNameEn">
           <el-input
             placeholder="请输入大于0的整数"
+            maxlength="4"
             show-word-limit
-            maxlength="50"
             clearable
-            v-model="industry_summit.industryNameEn"
-            
+            v-model.number="industry_summit.industryNameEn"
+            @input="
+              (value) =>
+                (industry_summit.industryNameEn = $global.inputModel(
+                  value,
+                  0,
+                  false
+                ))
+            "
           ></el-input>
         </el-form-item>
         <el-form-item label="推荐投资人积分:" prop="industryNameEn">
           <el-input
             placeholder="请输入大于0的整数"
             show-word-limit
-            maxlength="50"
+            maxlength="4"
             clearable
-            v-model="industry_summit.industryNameCh"
-            
+            v-model.number="industry_summit.industryNameCh"
+            @input="
+              (value) =>
+                (industry_summit.industryNameCh = $global.inputModel(
+                  value,
+                  0,
+                  false
+                ))
+            "
           ></el-input>
         </el-form-item>
-
       </el-form>
       <p class="dialog-footer">
-        <button @click="$routerto('membershipList')">{{$t('project.Cancel')}}</button>
-        <button @click="submitForm('ruleForm')">{{$t('project.Confirm')}}</button>
+        <button @click="$routerto('membershipList')">
+          {{ $t("project.Cancel") }}
+        </button>
+        <button @click="submitForm('ruleForm')">
+          {{ $t("project.Confirm") }}
+        </button>
       </p>
     </el-main>
   </div>
@@ -76,8 +93,8 @@ export default {
       }
     };
     return {
-      middle_integral:null,//中间人积分
-      investor_integration:null,//投资人积分
+      middle_integral: null, //中间人积分
+      investor_integration: null, //投资人积分
       dialogFormVisible_industry: false,
       tableData: [],
       title: "",
@@ -86,23 +103,23 @@ export default {
         industryNameEn: "",
         industryNameCh: "",
         industryStatus: 0,
-        industrySort: null
+        industrySort: null,
       },
       rules: {
         industrySort: [
           {
             required: true,
             message: this.$t("industry.Pleaseenterthanzero"),
-            trigger: "blur"
-          }
+            trigger: "blur",
+          },
         ],
         industryNameCh: [
-          { required: true, validator: valid_industryNameCh, trigger: "blur" }
+          { required: true, validator: valid_industryNameCh, trigger: "blur" },
         ],
         industryNameEn: [
-          { required: true, validator: valid_industryNameEn, trigger: "blur" }
-        ]
-      }
+          { required: true, validator: valid_industryNameEn, trigger: "blur" },
+        ],
+      },
     };
   },
   created() {
@@ -135,7 +152,7 @@ export default {
   // },
   methods: {
     submitForm(formName) {
-      this.$refs[formName].validate(valid => {
+      this.$refs[formName].validate((valid) => {
         if (valid) {
           this.add_industry();
         } else {
@@ -146,14 +163,16 @@ export default {
     search() {
       this.$global
         .get_encapsulation(
-          `${this.$axios.defaults.baseURL}/bsl_admin_web/member/getBslCustomIntegral`,
+          `${this.$axios.defaults.baseURL}/bsl_admin_web/member/getBslCustomIntegral`
         )
-        .then(res => {
+        .then((res) => {
           if (res.data.resultCode == 10000) {
-            console.log(res)
-            this.industry_summit.industryNameCh=res.data.data.investorIntegral;
-            this.industry_summit.industryNameEn=res.data.data.middlemanIntegral;
-   
+            console.log(res);
+            this.industry_summit.industryNameCh =
+              res.data.data.investorIntegral;
+            this.industry_summit.industryNameEn =
+              res.data.data.middlemanIntegral;
+
             // this.tableData = [...res.data.data];
             // this.tableData.forEach(item => {
             //   if (item.industryId == this.$route.query.industryId) {
@@ -167,40 +186,33 @@ export default {
         });
     },
     add_industry() {
-      // console.log(this.industry_summit)
+      console.log(this.industry_summit);
       // let self = this;
       this.$global
         .get_encapsulation(
           `${this.$axios.defaults.baseURL}/bsl_admin_web/member/saveModifyBslCustomIntegral`,
-          {middlemanIntegral:this.industry_summit.industryNameEn,investorIntegral:this.industry_summit.industryNameCh,optType:0}
-        )
-        .then(res => {
-          if (res.data.resultCode == 10000){
-             this.$message({
-                  message: res.data.resultDesc,
-                  type: "success"
-                });
-
-          }else{
-             this.$message({
-                  message: res.data.resultDesc,
-                  type: "warn"
-                });
+          {
+            middlemanIntegral: this.industry_summit.industryNameEn * 1,
+            investorIntegral: this.industry_summit.industryNameCh * 1,
+            optType: false,
           }
-
+        )
+        .then((res) => {
+          if (res.data.resultCode == 10000) {
+            this.$message({
+              message: res.data.resultDesc,
+              type: "success",
+            });
+          } else {
+            this.$message({
+              message: res.data.resultDesc,
+              type: "warn",
+            });
+          }
         });
     },
-    get_integration(){
-       this.$global
-        .get_encapsulation(
-          `${this.$axios.defaults.baseURL}/bsl_admin_web/member/saveModifyBslCustomIntegral`,
-          { middlemanIntegral:this.middle_integral,investorIntegral:this.investor_integration }
-        )
-        .then((res)=>{
-          
-        })
-    }
-  }
+
+  },
 };
 </script>
 

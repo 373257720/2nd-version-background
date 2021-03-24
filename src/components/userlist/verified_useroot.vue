@@ -2,7 +2,11 @@
   <div class="userroot">
     <el-main>
       <header class="tosignup_header">
-        <el-select v-model="issuccessful" :placeholder="$t('project.PleaseSelect')" class="block">
+        <el-select
+          v-model="issuccessful"
+          :placeholder="$t('project.PleaseSelect')"
+          class="block"
+        >
           <el-option
             v-for="item in options"
             :key="item.value"
@@ -11,7 +15,7 @@
           ></el-option>
         </el-select>
         <el-input
-          :placeholder="$t('project.ProjectName')"
+          :placeholder="$t('project.Email')"
           v-model="keywords"
           class="block"
           clearable
@@ -20,10 +24,15 @@
           type="primary"
           icon="el-icon-search"
           class="block"
-          @click="search"
-        >{{$t('project.Search')}}</el-button>
+          @click="
+            () => {
+              search(null,pagesize);
+            }
+          "
+          >{{ $t("project.Search") }}</el-button
+        >
       </header>
-      <el-table :data="tableData" border style="width:100%;">
+      <el-table :data="tableData" border style="width: 100%">
         <el-table-column
           prop="optTime"
           :label="$t('project.Verificationtime')"
@@ -36,7 +45,11 @@
           show-overflow-tooltip
           align="center"
         ></el-table-column>
-        <el-table-column prop="userCountry" :label="$t('project.Nationality')" align="center"></el-table-column>
+        <el-table-column
+          prop="userCountry"
+          :label="$t('project.Nationality')"
+          align="center"
+        ></el-table-column>
         <el-table-column
           prop="newname"
           :label="$t('project.PersonalName')"
@@ -50,17 +63,32 @@
           width="180"
           align="center"
         ></el-table-column>
-        <el-table-column prop="optStatus" :label="$t('project.Verifystatus')" align="center"></el-table-column>
-        <el-table-column fixed="right" :label="$t('project.Operation')" align="center">
+        <el-table-column
+          prop="optStatus"
+          :label="$t('project.Verifystatus')"
+          align="center"
+        ></el-table-column>
+        <el-table-column
+          fixed="right"
+          :label="$t('project.Operation')"
+          align="center"
+        >
           <template slot-scope="scope">
             <el-button
               @click="handleClick(scope.row)"
               type="text"
               size="small"
-            >{{$t('project.View')}}</el-button>
+              >{{ $t("project.View") }}</el-button
+            >
 
             <el-button @click="Frozen(scope.row)" type="text" size="small">
-              {{scope.row.userStatus===1?$t('project.Recover'):scope.row.userStatus===0?$t('project.Frozen'):""}}
+              {{
+                scope.row.userStatus === 1
+                  ? $t("project.Recover")
+                  : scope.row.userStatus === 0
+                  ? $t("project.Frozen")
+                  : ""
+              }}
               <!-- {{$t('project.Frozen')}} -->
             </el-button>
           </template>
@@ -73,8 +101,12 @@
         v-on:fromchildren="fromchildren1"
       ></pagevue>-->
       <el-pagination :page-size="pagesize" layout="slot">
-        <span class="finger" @click="changePage('previous')">{{$t('project.Previous')}}</span>
-        <span class="finger" @click="changePage('next')">{{$t('project.Next')}}</span>
+        <span class="finger" @click="changePage('previous')">{{
+          $t("project.Previous")
+        }}</span>
+        <span class="finger" @click="changePage('next')">{{
+          $t("project.Next")
+        }}</span>
       </el-pagination>
     </el-main>
     <el-dialog
@@ -84,10 +116,14 @@
       center
       :before-close="handleClose"
     >
-      <span>{{$t('project.PleaseComfirm')}}</span>
+      <span>{{ $t("project.PleaseComfirm") }}</span>
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="dialogVisible= false">{{$t('project.Cancel')}}</el-button>
-        <el-button type="primary" @click="frozenFun(1)">{{$t('project.Confirm')}}</el-button>
+        <el-button type="primary" @click="dialogVisible = false">{{
+          $t("project.Cancel")
+        }}</el-button>
+        <el-button type="primary" @click="frozenFun(1)">{{
+          $t("project.Confirm")
+        }}</el-button>
       </span>
     </el-dialog>
   </div>
@@ -95,15 +131,15 @@
 
 <script>
 export default {
-  name: "verified_userroot",
-  data() {
+  name: 'verified_userroot',
+  data () {
     return {
       dialogVisible: false,
       ischeck: false,
       // currentpage: 1,
       pagesize: 8,
       issuccessful: null,
-      keywords: "",
+      keywords: '',
       pageArr: [null],
       pagetotal: null,
       currentpageSerial: 0,
@@ -113,41 +149,38 @@ export default {
       options: [
         {
           value: null,
-          label: "全部"
+          label: '全部'
         },
         {
           value: 1,
-          label: "通过"
+          label: '通过'
         },
         {
           value: 2,
-          label: "不通过"
+          label: '不通过'
         }
       ]
-    };
+    }
   },
-  created() {
-    this.search(this.currentpage, this.pagesize);
+  created () {
+    this.search(this.pageArr[this.currentpageSerial], this.pagesize)
   },
   methods: {
-    changePage(num) {
-      if (num === "previous") {
+    changePage (num) {
+      if (num === 'previous') {
         if (this.currentpageSerial > 0) {
-          this.currentpageSerial--;
-          this.search(this.pageArr[this.currentpageSerial], this.pagesize);
+          this.currentpageSerial--
+          this.search(this.pageArr[this.currentpageSerial], this.pagesize)
         }
-      } else if (num === "next") {
+      } else if (num === 'next') {
         if (this.currentpageSerial < this.pageArr.length - 1) {
-          this.currentpageSerial++;
-          this.search(this.pageArr[this.currentpageSerial], this.pagesize);
+          this.currentpageSerial++
+          this.search(this.pageArr[this.currentpageSerial], this.pagesize)
         }
-        // if (this.currentpageSerial <= this.pageArr.length - 1) {
-        //   this.search(this.pageArr[this.currentpageSerial + 1], this.pagesize);
-        // }
       }
     },
-    search(currentpage, pagesize) {
-      let self = this;
+    search (currentpage, pagesize) {
+      let self = this
       this.$global
         .get_encapsulation(
           `${this.$axios.defaults.baseURL}/bsl_admin_web/user/getUserAuthList`,
@@ -158,73 +191,71 @@ export default {
             pageSize: pagesize
           }
         )
-        .then(res => {
-          if (res.data.resultCode == 10000) {
-            console.log(res);
-
-            let a = this.pageArr.every(item => {
-              return item !== res.data.data.bookmark;
-            });
-
+        .then((res) => {
+          if (res.data.resultCode === 10000) {
+            console.log(res)
+            let a = this.pageArr.every((item) => {
+              return item !== res.data.data.bookmark
+            })
             if (a) {
               if (res.data.data.data.length > 0) {
-                this.pageArr.push(res.data.data.bookmark);
+                this.pageArr.push(res.data.data.bookmark)
               }
             }
-            this.tableData = res.data.data.data.map(item => {
-              let newname;
-              let optStatus;
+            this.tableData = res.data.data.data.map((item) => {
+              let newname
+              let optStatus
               if (item.record.optStatus === 1) {
-                optStatus = self.$t("project.Approve");
+                optStatus = self.$t('project.Approve')
               } else if (item.record.optStatus === 2) {
-                optStatus = self.$t("project.Disapprove");
+                optStatus = self.$t('project.Disapprove')
               }
               if (item.record.userIdentityType == 1) {
-                newname = item.record.userName;
+                newname = item.record.userName
               } else if (item.record.userIdentityType == 2) {
                 newname =
-                  this.$i18n.locale == "zh_CN"
+                  this.$i18n.locale == 'zh_CN'
                     ? item.record.userCompanyCh
-                    : item.record.userCompanyEn;
+                    : item.record.userCompanyEn
               } else {
-                newname = item.record.userName;
+                newname = item.record.userName
               }
               return {
                 userId: item.id,
                 userIdentityType: item.record.userIdentityType,
                 registrationTime: item.record.registrationTime
                   ? this.$global.timestampToTime(item.record.registrationTime)
-                  : "",
+                  : '',
                 newname: newname,
                 userCountry:
-                  this.$i18n.locale == "zh_CN"
+                  this.$i18n.locale == 'zh_CN'
                     ? item.record.userCountryCh
                     : item.record.userCountryEn,
                 optTime: item.record.registrationTime
                   ? this.$global.timestampToTime(item.record.optTime)
-                  : "",
+                  : '',
                 optStatus: optStatus,
                 userStatus: item.record.userStatus,
                 // userType: userType,
                 bslEmail: item.record.bslEmail,
                 submitTime: item.record.submitTime
                   ? this.$global.timestampToTime(item.record.submitTime)
-                  : ""
-              };
-            });
+                  : ''
+              }
+            })
           }
-        });
+        })
     },
-    handleClose(done) {
-      done();
+    handleClose (done) {
+      done()
     },
 
-    frozenFun(data) {
-      let userStatus;
+    frozenFun (data) {
+      let userStatus
       if (this.scopedRow.userStatus === 1) {
-        userStatus = 0;
+        userStatus = 0
       } else if (this.scopedRow.userStatus === 0) {
-        userStatus = 1;
+        userStatus = 1
       }
       this.$nextTick(() => {
         this.$global
@@ -235,42 +266,42 @@ export default {
               userStatus: userStatus
             }
           )
-          .then(res => {
-            this.dialogVisible = false;
-            this.scopedRow.userStatus = userStatus;
-          });
-      });
+          .then((res) => {
+            this.dialogVisible = false
+            this.scopedRow.userStatus = userStatus
+          })
+      })
     },
-    Frozen(row) {
-      this.dialogVisible = true;
-      this.scopedRow = row;
+    Frozen (row) {
+      this.dialogVisible = true
+      this.scopedRow = row
     },
-    handleClick(row) {
+    handleClick (row) {
       this.$router.push({
-        name: "usercheck",
+        name: 'usercheck',
         query: {
           idx: row.userId,
           userIdentityType: row.userIdentityType,
           pagenum: this.currentpage
         }
-      });
+      })
       // this.$router.push("/home/userlist/verified_user/usercheck");
     },
-    fromchildren1(data) {
-      this.currentpage = data.currentpage;
-      this.changepage(data.currentpage, data.pagesize);
+    fromchildren1 (data) {
+      this.currentpage = data.currentpage
+      this.changepage(data.currentpage, data.pagesize)
     }
   },
   watch: {
-    $route(to, from) {
-      if (to.name == "usercheck") {
-        this.ischeck = !this.ischeck;
+    $route (to, from) {
+      if (to.name == 'usercheck') {
+        this.ischeck = !this.ischeck
       } else {
-        this.ischeck = false;
+        this.ischeck = false
       }
     }
   }
-};
+}
 </script>
 
 <style lang='scss'>

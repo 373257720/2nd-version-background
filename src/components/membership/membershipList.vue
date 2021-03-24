@@ -3,28 +3,56 @@
     <el-main>
       <header class="tosignup_header">
         <nav>
+          <!-- <el-button
+            @click="$routerto('customPoints')"
+            type="primary"
+            class="addbtn block"
+            >{{ $t("Membership.Pointscustomization") }}</el-button
+          > -->
+        </nav>
+        <section>
+          <el-button
+            @click="$routerto('HistoryRetrieval')"
+            type="primary"
+            class="addbtn block"
+            >检索历史数据</el-button
+          >
           <el-button
             @click="$routerto('customPoints')"
             type="primary"
             class="addbtn block"
             >{{ $t("Membership.Pointscustomization") }}</el-button
           >
-          <!-- <el-button @click="$routerto('industry_alter')" type="primary" class="addbtn block">{{$t('Membership.PointsCleared')}}</el-button> -->
-        </nav>
-        <section>
-          <el-input
+          <el-button
+            @click="
+              () => {
+                MemberGradeConfigureList_popup = true;
+                getBslMemberGradeConfigureList();
+              }
+            "
+            type="primary"
+            class="addbtn block"
+            >会员评级日</el-button
+          >
+          <!-- <el-button
+            @click="$routerto('customPoints')"
+            type="primary"
+            class="addbtn block"
+            >会员等级有效期</el-button
+          > -->
+          <!-- <el-input
             :placeholder="$t('project.ProjectName')"
             v-model="searchkey"
             class="block"
             clearable
-          ></el-input>
-          <el-button
+          ></el-input> -->
+          <!-- <el-button
             type="primary"
             icon="el-icon-search"
             class="block"
             @click="search(value, value1, 1, pagesize)"
             >{{ $t("project.Search") }}</el-button
-          >
+          > -->
         </section>
       </header>
       <el-table
@@ -41,18 +69,13 @@
         ></el-table-column>
         <el-table-column
           prop="createTime"
-          show-overflow-tooltip
+          width="200"
           :label="$t('Member.DateofRegister')"
+          show-overflow-tooltip
           align="center"
         >
           <template slot-scope="scope">
-            <el-date-picker
-              v-model="scope.row.membershipValidity"
-              type="date"
-              placeholder="选择日期"
-              readonly=""
-            >
-            </el-date-picker>
+            <span>{{ $global.stamptodate(scope.row.createTime) }}</span>
           </template>
         </el-table-column>
         <!-- <el-table-column
@@ -70,12 +93,17 @@
         >
           <!-- <input type="text" @input="CheckInputIntFloat" v-model="input" /> -->
           <template slot-scope="scope">
-            <el-input
-              v-model="scope.row.memberIntegral"
-              oninput="CheckInputIntFloat"
-              placeholder
-              @blur="ChangesIntegral(scope.row)"
-            ></el-input>
+            <span
+              @click="
+                () => {
+                  dialogFormVisible_popup = true;
+                  scopeRow = scope.row;
+                }
+              "
+              style="text-decoration: underline; cursor: pointer"
+            >
+              {{ scope.row.memberIntegral }}</span
+            >
           </template>
         </el-table-column>
         <!-- <el-table-column
@@ -104,7 +132,7 @@
         ></el-table-column>
         <el-table-column
           prop="membershipValidity"
-          show-overflow-tooltip
+          width="300"
           :label="$t('Member.ExpiredDateofMembership')"
           align="center"
         >
@@ -113,7 +141,7 @@
               v-model="scope.row.membershipValidity"
               type="date"
               placeholder="选择日期"
-              @blur="ChangeValidity(scope.row)"
+              @change="ChangeValidity(scope.row)"
               value-format="timestamp"
             >
             </el-date-picker>
@@ -139,13 +167,55 @@
       <el-pagination
         :page-size="pagesize"
         :pager-count="5"
-        layout="prev, pager, next"
+        layout="prev, pager, next,total"
         @current-change="handleCurrentChange"
         :current-page.sync="currentpage"
         @size-change="handleSizeChange"
-        :total="tableData.length"
+        :total="pagetotal"
       ></el-pagination>
     </el-main>
+    <el-dialog
+      :visible.sync="dialogFormVisible_popup"
+      width="30%"
+      :modal="true"
+      :close-on-click-modal="false"
+      center
+    >
+      <span slot="title" class="dialog-footer">添加积分</span>
+      <el-input-number v-model="memberIntegral" :precision="0" :step="1">
+      </el-input-number>
+      <span slot="footer" class="dialog-footer">
+        <!-- <button @click="dialogFormVisible_popup = false">
+          {{ $t("project.Cancel") }}
+        </button> -->
+        <button class="btnConfirm" @click="ChangesIntegral(scopeRow)">
+          {{ $t("project.Confirm") }}
+        </button>
+      </span>
+    </el-dialog>
+    <el-dialog
+      :visible.sync="MemberGradeConfigureList_popup"
+      width="30%"
+      :modal="true"
+      :close-on-click-modal="false"
+      center
+    >
+      <span slot="title" class="dialog-footer">请选择会员等级评估的方式 </span>
+      <el-radio-group v-model="radio">
+        <el-radio
+          class="radio-one"
+          v-for="item in radioList"
+          :key="item.id"
+          :label="item.id"
+          >{{ item["gradeName" + $global.lan()] }}</el-radio
+        >
+      </el-radio-group>
+      <span slot="footer" class="dialog-footer">
+        <button class="btnConfirm" @click="updateMemberGradeConfigure">
+          {{ $t("project.Confirm") }}
+        </button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -153,62 +223,110 @@
 // import '@/components/eventBus'
 // import login from "../login";
 export default {
-  name: "membershipList",
-  data() {
+  name: 'membershipList',
+  data () {
     return {
+      radio: 3,
+      MemberGradeConfigureList_popup: false,
+      memberIntegral: 0,
+      dialogFormVisible_popup: false,
       centerDialogVisible: false,
-      value1: [], //日期选择
-      value: "", //项目状态
-      searchkey: "",
-      input: "",
+      value1: [], // 日期选择,
+      radioList: [],
+      value: '', // 项目状态
+      searchkey: '',
+      input: '',
       currentpage: 1,
       pagesize: 8,
+      scopeRow: {},
       pagetotal: null,
       tableData: [],
       deleteType: 0,
-      industryId: "",
-    };
+      industryId: '',
+      Searchtimer: null
+    }
   },
-  created() {},
-  activated() {
+  created () {},
+  activated () {
     // console.log(123);
 
-    this.search();
+    this.search()
   },
   methods: {
-    CheckInputIntFloat(value) {
-      var regexp = /^[1-9]\d*$/;
-      let gg = value;
-      let a;
+    // 更改会员积分
+    updateMemberGradeConfigure () {
+      this.$global
+        .get_encapsulation(
+          `${this.$axios.defaults.baseURL}/bsl_admin_web/member/updateMemberGradeConfigure`,
+          { id: this.radio }
+        )
+        .then((res) => {
+          if (res.data.resultCode === 10000) {
+            this.$message({
+              message: res.data.resultDesc,
+              type: 'success'
+            })
+            this.search()
+          } else {
+            this.$message({
+              message: res.data.resultDesc,
+              type: 'warn'
+            })
+          }
+          this.MemberGradeConfigureList_popup = false
+        })
+    },
+    getBslMemberGradeConfigureList () {
+      this.$global
+        .get_encapsulation(
+          `${this.$axios.defaults.baseURL}/bsl_admin_web/member/getBslMemberGradeConfigureList`
+        )
+        .then((res) => {
+          console.log(res)
+          if (res.data.resultCode === 10000) {
+            this.radioList = res.data.data.lists
+            this.radioList.forEach(item => {
+              if (item.gradeStatus === true) {
+                this.radio = item.id
+              }
+            })
+          }
+        })
+    },
+    CheckInputIntFloat (value) {
+      // console.log(value);
+      var regexp = /^\d/g
+      let gg = value
+      // let a
       // console.log(gg.replace(regexp, ""));
-      if ("" != gg.replace(regexp, "")) {
-        console.log(gg.replace(regexp));
+      if (gg.replace(regexp, '') !== '') {
+        console.log(gg.replace(regexp))
 
         // e.target.value=gg.replace(regexp)
-        value = gg.match(regexp) === null ? "" : gg.match(regexp);
+        value = gg.match(regexp) === null ? '' : gg.match(regexp)
       }
-      console.log(value);
+      // console.log(value);
     },
-    handleCurrentChange(cpage) {
-      this.currentpage = cpage;
+    handleCurrentChange (cpage) {
+      this.currentpage = cpage
     },
-    handleSizeChange(psize) {
-      this.pagesize = psize;
+    handleSizeChange (psize) {
+      this.pagesize = psize
     },
-    deleterow(row) {
-      console.log(row);
-      let self = this;
-      this.industryId = row.industryId;
-      this.centerDialogVisible = true;
+    deleterow (row) {
+      console.log(row)
+      let self = this
+      this.industryId = row.industryId
+      this.centerDialogVisible = true
       this.$confirm(
-        self.$t("project.Confirmdelect"),
-        self.$t("project.Reminder"),
+        self.$t('project.Confirmdelect'),
+        self.$t('project.Reminder'),
         {
-          confirmButtonText: self.$t("project.Yes"),
-          cancelButtonText: self.$t("project.No"),
-          type: "warning",
+          confirmButtonText: self.$t('project.Yes'),
+          cancelButtonText: self.$t('project.No'),
+          type: 'warning',
           center: true,
-          showCancelButton: true,
+          showCancelButton: true
         }
       )
         .then(() => {
@@ -218,121 +336,132 @@ export default {
               { industryId: row.industryId }
             )
             .then((res) => {
-              if (res.data.resultCode == 10000) {
+              if (res.data.resultCode === 10000) {
                 this.$message({
                   message: res.data.resultDesc,
-                  type: "success",
-                });
-                this.search();
+                  type: 'success'
+                })
+                this.search()
               } else {
                 this.$message({
                   message: res.data.resultDesc,
-                  type: "warn",
-                });
+                  type: 'warn'
+                })
               }
-            });
+            })
         })
-        .catch(() => {});
+        .catch(() => {})
     },
     // 更改会员有效期
-    ChangeValidity(row) {
-      console.log(row);
+    ChangeValidity (row) {
+      console.log(row)
       this.$global
         .get_encapsulation(
           `${this.$axios.defaults.baseURL}/bsl_admin_web/member/updateBslMemberMembershipValidity`,
           {
             memberId: row.memberId,
-            membershipValidity: row.membershipValidity / 1000,
+            membershipValidity: row.membershipValidity / 1000
           }
         )
         .then((res) => {
-          if (res.data.resultCode == 10000) {
+          if (res.data.resultCode === 10000) {
             this.$message({
               message: res.data.resultDesc,
-              type: "success",
-            });
-            this.search();
+              type: 'success'
+            })
+            this.search()
           } else {
             this.$message({
               message: res.data.resultDesc,
-              type: "warn",
-            });
+              type: 'warn'
+            })
           }
-        });
+        })
     },
+    // 防抖
+    // handleSearch(value) {
+    //   if (this.Searchtimer) {
+    //     clearTimeout(this.Searchtimer);
+    //   }
+    //   this.Searchtimer = setTimeout(() => {
+    //     this.ChangesIntegral(value);
+    //   }, 400);
+    // },
     // 更改会员积分
-    ChangesIntegral(row) {
-      console.log(row);
+    ChangesIntegral (row) {
+      console.log(row)
       this.$global
         .get_encapsulation(
           `${this.$axios.defaults.baseURL}/bsl_admin_web/member/updateBslMemberPoints`,
-          { memberId: row.memberId, integral: row.memberIntegral }
+          { memberId: row.memberId, integral: this.memberIntegral }
         )
         .then((res) => {
-          if (res.data.resultCode == 10000) {
+          if (res.data.resultCode === 10000) {
             this.$message({
               message: res.data.resultDesc,
-              type: "success",
-            });
-            this.search();
+              type: 'success'
+            })
+            this.search()
           } else {
             this.$message({
               message: res.data.resultDesc,
-              type: "warn",
-            });
+              type: 'warn'
+            })
           }
-        });
+          this.dialogFormVisible_popup = false
+        })
     },
-    handleClick(row) {
-      console.log(row);
+    handleClick (row) {
+      console.log(row)
       this.$router.push({
-        name: "viewRecommendedProjectStatus",
+        name: 'viewRecommendedProjectStatus',
         query: {
-          userId: row.memberId,
-        },
-      });
+          userId: row.memberId
+        }
+      })
     },
-    fromchildren1(data) {
-      this.currentpage = data.currentpage;
-      this.pagesize = data.pagesize;
+    fromchildren1 (data) {
+      this.currentpage = data.currentpage
+      this.pagesize = data.pagesize
       this.search(
         this.value,
         this.value1[0] / 1000,
         this.value1[1] / 1000,
         this.currentpage,
         this.pagesize
-      );
+      )
     },
-    search() {
+    search () {
       this.$global
         .get_encapsulation(
           `${this.$axios.defaults.baseURL}/bsl_admin_web/member/getBslMemberList`
         )
         .then((res) => {
-          if (res.data.resultCode == 10000) {
-            this.tableData = [...res.data.data.lists];
-            console.log(this.tableData);
+          if (res.data.resultCode === 10000) {
+            this.tableData = [...res.data.data.lists]
+            this.pagetotal = res.data.data.pageTotal
             this.tableData.forEach((item, idx) => {
-              item.idx = idx + 1;
-              item.membershipValidity = (item.membershipValidity + "000") * 1;
-              item.createTime = (item.createTime + "000") * 1;
+              item.idx = idx + 1
+              item.membershipValidity = (item.membershipValidity + '000') * 1
+              item.createTime = (item.createTime + '000') * 1
 
               // if(item.industryStatus==-1){
               //   item.industry_Status='已删除'
               // }else if(item.industryStatus==0){
               //   item.industry_Status='正常'
               // }
-            });
+            })
           }
-        });
-    },
-  },
-};
+        })
+    }
+  }
+}
 </script>
 
 <style lang='scss'>
 .membershipList {
   //   padding: 20px 0 0 0;
+
   .el-main {
     /*min-height: 580px;*/
     width: 80%;
@@ -358,49 +487,39 @@ export default {
     display: flex;
     justify-content: center;
   }
-  .remote_control {
-    .el-dialog__header {
-      background: #edf1f4;
-    }
-    .el-dialog--center .el-dialog__body {
-      padding: 30px 20px 10px 20px;
-    }
-    .el-dialog__footer {
-      button {
-        /*color: #FFF;*/
-        width: 40%;
-        height: 40px;
-        font-size: 14px;
-        cursor: pointer;
-        border-radius: 5px;
-        background-color: #edf1f4;
-        border: 1px solid #dcdfe6;
-      }
-      button:nth-of-type(1) {
-      }
-    }
-    .el-radio-group {
-      width: 100%;
-      .el-radio {
-        width: 100%;
-      }
-      .el-radio__label {
-        display: inline-block;
-        word-wrap: break-word;
-        white-space: normal;
-        width: 100%;
-      }
-    }
 
-    p.thick {
-      color: black;
-      font-size: 16px;
-      margin-bottom: 30px;
-    }
-    .el-radio-group {
-      > div {
-        margin-bottom: 10px;
+  .el-radio-group {
+    width: 100%;
+    .radio-one {
+      width: 100%;
+      margin-bottom: 20px;
+      display: flex;
+      .el-radio__label {
+        flex: 1;
+        white-space: pre-wrap;
       }
+    }
+  }
+
+  .dialog-footer {
+    /*padding-top: 20px;*/
+    display: flex;
+    justify-content: center;
+    // .radio{
+    //   margin-bottom: 20px;
+    // }
+
+    button {
+      width: 60%;
+      height: 40px;
+      font-size: 14px;
+      cursor: pointer;
+      border-radius: 5px;
+      background-color: #edf1f4;
+      border: 1px solid #dcdfe6;
+    }
+    .btnConfirm {
+      // width: 0%;
     }
   }
 }

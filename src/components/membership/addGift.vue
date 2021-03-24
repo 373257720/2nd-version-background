@@ -27,13 +27,17 @@
             v-model="industry_summit.industryNameEn"
           ></el-input>
         </el-form-item>
-        <el-form-item label="礼品数量:" prop="industryNameEn">
+        <el-form-item label="礼品数量:" prop="industryStatus">
           <el-input
             placeholder="礼品数量"
             show-word-limit
             maxlength="50"
             clearable
             v-model="industry_summit.industryStatus"
+               @input="
+              (value) =>
+                (industry_summit.industryStatus = $global.inputModel(value, 0,false))
+            "
           ></el-input>
         </el-form-item>
       </el-form>
@@ -51,7 +55,7 @@
 
 <script>
 export default {
-  data() {
+  data () {
     var valid_industryNameCh = (rule, value, callback) => {
       // var str = value.replace(/(^\s*)|(\s*$)/g,"");
       // let a=/^[\u4E00-\u9FA5][\u4E00-\u9FA5\s]*[\u4E00-\u9FA5]$/.test(str);
@@ -62,12 +66,12 @@ export default {
       //   callback(new Error('请输入中文'));
       // }
       if (value) {
-        this.industry_summit.industryNameCh = value;
-        callback();
+        this.industry_summit.industryNameCh = value
+        callback()
       } else {
-        callback(new Error("请输入中文"));
+        callback(new Error('请输入中文'))
       }
-    };
+    }
     var valid_industryNameEn = (rule, value, callback) => {
       // var str = value.replace(/(^\s*)|(\s*$)/g, "");
       // let a = /^[A-Za-z][A-Za-z\s]*[A-Za-z]$/.test(str);
@@ -79,47 +83,47 @@ export default {
       // }
 
       if (value) {
-        this.industry_summit.industryNameEn = value;
-        callback();
+        this.industry_summit.industryNameEn = value
+        callback()
       } else {
-        callback(new Error("Please Input English"));
+        callback(new Error('Please Input English'))
       }
-    };
+    }
     return {
       dialogFormVisible_industry: false,
       tableData: [],
-      title: "",
+      title: '',
       industry_summit: {
         industryId: -1,
-        industryNameEn: "",
-        industryNameCh: "",
+        industryNameEn: '',
+        industryNameCh: '',
         industryStatus: 0,
-        industrySort: null,
+        industrySort: null
       },
       rules: {
         industrySort: [
           {
             required: true,
-            message: this.$t("industry.Pleaseenterthanzero"),
-            trigger: "blur",
-          },
+            message: this.$t('industry.Pleaseenterthanzero'),
+            trigger: 'blur'
+          }
         ],
         industryNameCh: [
-          { required: true, validator: valid_industryNameCh, trigger: "blur" },
+          { required: true, validator: valid_industryNameCh, trigger: 'blur' }
         ],
         industryNameEn: [
-          { required: true, validator: valid_industryNameEn, trigger: "blur" },
-        ],
-      },
-    };
+          { required: true, validator: valid_industryNameEn, trigger: 'blur' }
+        ]
+      }
+    }
   },
-  created() {
+  created () {
     if (this.$route.query.industryId) {
-      this.title = this.$t("industry.Pleaseenterindustrytobeedited");
-      this.industry_summit.industryId = this.$route.query.industryId;
-      this.search();
+      this.title = this.$t('industry.Pleaseenterindustrytobeedited')
+      this.industry_summit.industryId = this.$route.query.industryId
+      this.search()
     } else {
-      this.title = this.$t("industry.Pleaseentertheindustrytobeadded");
+      this.title = this.$t('industry.Pleaseentertheindustrytobeadded')
     }
   },
   // watch:{
@@ -141,60 +145,62 @@ export default {
   //   },
   // },
   methods: {
-    submitForm(formName) {
+    submitForm (formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          console.log(valid);
-          this.add_industry();
+          console.log(valid)
+          this.add_industry()
         } else {
-          return false;
+          return false
         }
-      });
+      })
     },
-    search() {
+    search () {
       this.$global
         .get_encapsulation(
           `${this.$axios.defaults.baseURL}/bsl_admin_web/industry/getAllIndustry`,
-          { searchKey: "" }
+          { searchKey: '' }
         )
         .then((res) => {
           if (res.data.resultCode == 10000) {
-            this.tableData = [...res.data.data];
+            this.tableData = [...res.data.data]
             this.tableData.forEach((item) => {
               if (item.industryId == this.$route.query.industryId) {
-                this.industry_summit.industryStatus = item.industryStatus;
-                this.industry_summit.industryNameEn = item.industryNameEn;
-                this.industry_summit.industryNameCh = item.industryNameCh;
-                this.industry_summit.industrySort = item.industrySort;
+                this.industry_summit.industryStatus = item.industryStatus
+                this.industry_summit.industryNameEn = item.industryNameEn
+                this.industry_summit.industryNameCh = item.industryNameCh
+                this.industry_summit.industrySort = item.industrySort
               }
-            });
+            })
           }
-        });
+        })
     },
-    add_industry() {
+    add_industry () {
       // console.log(this.industry_summit)
       // let self = this;
       this.$global
-        .post_encapsulation(
+        .postJson_encapsulation(
           `${this.$axios.defaults.baseURL}/bsl_admin_web/member/saveModifyBslExchangeGift`,
           {
             giftName: this.industry_summit.industryNameCh,
             giftNameEn: this.industry_summit.industryNameEn,
-            giftNumber: this.industry_summit.industryStatus,
+            giftNumber: this.industry_summit.industryStatus * 1,
+            giftStatus: 1,
+            id: null
           }
         )
         .then((result) => {
           if (result.data.resultCode == 10000) {
-             this.$message({
-                  message: result.data.resultDesc,
-                  type: "success"
-                });
-            this.$routerto("giftSetting");
+            this.$message({
+              message: result.data.resultDesc,
+              type: 'success'
+            })
+            this.$routerto('giftSetting')
           }
-        });
-    },
-  },
-};
+        })
+    }
+  }
+}
 </script>
 
 <style lang='scss'>

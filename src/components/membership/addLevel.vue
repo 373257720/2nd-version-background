@@ -1,69 +1,117 @@
 <template>
-  <div class="industry_alter">
-    <!-- <header class="industry_alter_header">{{title}}</header> -->
+  <div class="editLevel">
+    <!-- <header class="editLevel_header">{{title}}</header> -->
     <el-main>
       <el-form
         ref="ruleForm"
-        :model="industry_summit"
+        :model="ruleForm"
         :rules="rules"
         label-width="120px"
         label-position="top"
       >
-        <el-form-item label="会员等级:" prop="industryNameCh">
+        <el-form-item label="会员等级名称:" prop="memberLevelName">
           <el-input
             placeholder="请输入大于0的整数"
             show-word-limit
             maxlength="50"
             clearable
-            v-model="industry_summit.industryNameCh"
+            v-model="ruleForm.memberLevelName"
           ></el-input>
         </el-form-item>
-        <el-form-item label="会员积分" prop="industryNameEn">
+        <el-form-item label="会员等级名称:" prop="memberLevelNameEn">
           <el-input
             placeholder="请输入大于0的整数"
             show-word-limit
             maxlength="50"
             clearable
-            v-model="industry_summit.industryNameEn"
+            v-model="ruleForm.memberLevelNameEn"
           ></el-input>
         </el-form-item>
-        <el-form-item label="颜色" prop="industrySort">
-          <input type="color" />
+        <el-form-item label="会员等级:" prop="memberLevel">
+          <el-input
+            placeholder="请输入大于0的整数"
+            show-word-limit
+            maxlength="50"
+            clearable
+            v-model="ruleForm.memberLevel"
+          ></el-input>
         </el-form-item>
-        <el-form-item label="总共可推荐项目次数" prop="industrySort">
+        <el-form-item label="会员积分" prop="memberLevelIntegral">
+          <el-input
+            placeholder="请输入大于0的整数"
+            show-word-limit
+            maxlength="50"
+            clearable
+            v-model="ruleForm.memberLevelIntegral"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="颜色" prop="memberColour">
+          <el-color-picker v-model="ruleForm.memberColour"></el-color-picker>
+        </el-form-item>
+        <el-form-item label="总共可推荐项目次数" prop="memberRecommendCount">
           <el-input
             :placeholder="$t('industry.Pleaseenterthanzero')"
             show-word-limit
             maxlength="9"
             clearable
             oninput="value=value.replace(/[^\d]/g,'')"
-            v-model="industry_summit.industrySort"
+            v-model="ruleForm.memberRecommendCount"
           ></el-input>
         </el-form-item>
-        <el-form-item label="优先推荐中间人时间（月）" prop="industrySort">
+        <el-form-item
+          label="优先推荐中间人时间（月）"
+          prop="recommendMiddlemanTime"
+        >
           <el-input
             :placeholder="$t('industry.Pleaseenterthanzero')"
             show-word-limit
             maxlength="9"
             clearable
             oninput="value=value.replace(/[^\d]/g,'')"
-            v-model="industry_summit.industrySort"
+            v-model="ruleForm.recommendMiddlemanTime"
           ></el-input>
         </el-form-item>
-        <el-form-item label="优先推荐投资人时间（月）" prop="industrySort">
+        <el-form-item
+          label="优先推荐投资人时间（月）"
+          prop="recommendInvestorTime"
+        >
           <el-input
             :placeholder="$t('industry.Pleaseenterthanzero')"
             show-word-limit
             maxlength="9"
             clearable
             oninput="value=value.replace(/[^\d]/g,'')"
-            v-model="industry_summit.industrySort"
+            v-model="ruleForm.recommendInvestorTime"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="会员有效期" prop="memberTime">
+          <el-input
+            :placeholder="$t('industry.Pleaseenterthanzero')"
+            show-word-limit
+            maxlength="9"
+            clearable
+            oninput="value=value.replace(/[^\d]/g,'')"
+            v-model="ruleForm.memberTime"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="保级积分值" prop="relegationIntegralValue">
+          <el-input
+            :placeholder="$t('industry.Pleaseenterthanzero')"
+            show-word-limit
+            maxlength="9"
+            clearable
+            oninput="value=value.replace(/[^\d]/g,'')"
+            v-model="ruleForm.relegationIntegralValue"
           ></el-input>
         </el-form-item>
       </el-form>
       <p class="dialog-footer">
-        <button @click="$routerto('MembershipSystemArrangment')">{{$t('project.Cancel')}}</button>
-        <button @click="submitForm('ruleForm')">{{$t('project.Confirm')}}</button>
+        <button @click="$routerto('MembershipSystemArrangment')">
+          {{ $t("project.Cancel") }}
+        </button>
+        <button @click="submitForm('ruleForm')">
+          {{ $t("project.Confirm") }}
+        </button>
       </p>
     </el-main>
   </div>
@@ -71,84 +119,92 @@
 
 <script>
 export default {
-  data() {
-    var valid_industryNameCh = (rule, value, callback) => {
+  data () {
+    var validIndustryNameCh = (rule, value, callback) => {
       // var str = value.replace(/(^\s*)|(\s*$)/g,"");
       // let a=/^[\u4E00-\u9FA5][\u4E00-\u9FA5\s]*[\u4E00-\u9FA5]$/.test(str);
       // if(a){
-      //   this.industry_summit.industryNameCh=str;
+      //   this.ruleForm.industryNameCh=str;
       //   callback()
       // }else {
       //   callback(new Error('请输入中文'));
       // }
       if (value) {
-        this.industry_summit.industryNameCh = value;
-        callback();
+        this.ruleForm.industryNameCh = value
+        callback()
       } else {
-        callback(new Error("请输入中文"));
+        callback(new Error('请输入中文'))
       }
-    };
-    var valid_industryNameEn = (rule, value, callback) => {
+    }
+    var validIndustryNameEn = (rule, value, callback) => {
       // var str = value.replace(/(^\s*)|(\s*$)/g, "");
       // let a = /^[A-Za-z][A-Za-z\s]*[A-Za-z]$/.test(str);
       // if (a) {
-      //   this.industry_summit.industryNameEn = str;
+      //   this.ruleForm.industryNameEn = str;
       //   callback();
       // } else {
       //   callback(new Error("Please Input English"));
       // }
 
       if (value) {
-        this.industry_summit.industryNameEn = value;
-        callback();
+        this.ruleForm.industryNameEn = value
+        callback()
       } else {
-        callback(new Error("请输入大于0的整数"));
+        callback(new Error('请输入大于0的整数'))
       }
-    };
+    }
     return {
       dialogFormVisible_industry: false,
       tableData: [],
-      title: "",
-      industry_summit: {
-        industryId: -1,
-        industryNameEn: "",
-        industryNameCh: "",
-        industryStatus: 0,
-        industrySort: null
+      title: '',
+      ruleForm: {
+        memberLevelName: '',
+        memberLevelNameEn: '',
+        memberLevel: null,
+        id: null,
+        memberLevelIntegral: null,
+        memberColour: '',
+        memberRecommendCount: 0,
+        recommendMiddlemanTime: null,
+        recommendInvestorTime: null,
+        memberTime: null,
+        relegationIntegralValue: null
       },
       rules: {
         industrySort: [
           {
             required: true,
-            message: this.$t("industry.Pleaseenterthanzero"),
-            trigger: "blur"
+            message: this.$t('industry.Pleaseenterthanzero'),
+            trigger: 'blur'
           }
         ],
         industryNameCh: [
-          { required: true, validator: valid_industryNameCh, trigger: "blur" }
+          { required: true, validator: validIndustryNameCh, trigger: 'blur' }
         ],
         industryNameEn: [
-          { required: true, validator: valid_industryNameEn, trigger: "blur" }
+          { required: true, validator: validIndustryNameEn, trigger: 'blur' }
         ]
       }
-    };
-  },
-  created() {
-    if (this.$route.query.industryId) {
-      this.title = this.$t("industry.Pleaseenterindustrytobeedited");
-      this.industry_summit.industryId = this.$route.query.industryId;
-      this.search();
-    } else {
-      this.title = this.$t("industry.Pleaseentertheindustrytobeadded");
     }
   },
+  created () {
+    this.ruleForm.id = this.$route.query.Id * 1
+    // if (this.$route.query.Id) {
+    //   this.title = this.$t("industry.Pleaseenterindustrytobeedited");
+    //   this.ruleForm.industryId = this.$route.query.industryId;
+
+    // } else {
+    //   this.title = this.$t("industry.Pleaseentertheindustrytobeadded");
+    // }
+    this.search()
+  },
   // watch:{
-  //   industry_summit: {
+  //   ruleForm: {
   //     handler(newName, oldName) {
   //       // console.log(newName, oldName)
   //      // let str = newName.replace(/\s*/g,"");
 
-  //       // this.industry_summit.industryNameCh=newName.industryNameEn.replace(/\s*/g,"");
+  //       // this.ruleForm.industryNameCh=newName.industryNameEn.replace(/\s*/g,"");
   //       // this.value=this.value.replace(/[^\u4e00-\u9fa5]/g,'')
   //       // if(/^[A-Za-z][A-Za-z\s]*[A-Za-z]$/.test(newName.industryNameEn)){
   //       //   console.log(newName)
@@ -161,64 +217,64 @@ export default {
   //   },
   // },
   methods: {
-    submitForm(formName) {
-      this.$refs[formName].validate(valid => {
+    submitForm (formName) {
+      this.$refs[formName].validate((valid) => {
         if (valid) {
-
-          this.add_industry();
+          this.add_industry()
         } else {
-          return false;
+          return false
         }
-      });
+      })
     },
-    search() {
+    search () {
+      console.log(this.$route)
       this.$global
         .get_encapsulation(
-          `${this.$axios.defaults.baseURL}/bsl_admin_web/industry/getAllIndustry`,
-          { searchKey: "" }
+          `${this.$axios.defaults.baseURL}/bsl_admin_web/member/detailsBslMemberSystem`,
+          { id: this.$route.query.Id }
         )
-        .then(res => {
-          if (res.data.resultCode == 10000) {
-            this.tableData = [...res.data.data];
-            this.tableData.forEach(item => {
-              if (item.industryId == this.$route.query.industryId) {
-                this.industry_summit.industryStatus = item.industryStatus;
-                this.industry_summit.industryNameEn = item.industryNameEn;
-                this.industry_summit.industryNameCh = item.industryNameCh;
-                this.industry_summit.industrySort = item.industrySort;
+        .then((res) => {
+          if (res.data.resultCode === 10000) {
+            let tableData = res.data.data
+            for (var key in tableData.bslMemberSystem) {
+              for (var name in this.ruleForm) {
+                if (key === name) {
+                  this.ruleForm[name] = tableData.bslMemberSystem[key]
+                }
               }
-            });
+            }
+            console.log(this.ruleForm)
           }
-        });
+        })
     },
-    add_industry() {
-      // console.log(this.industry_summit)
-      let self = this;
+    add_industry () {
+      console.log(this.ruleForm)
+      let self = this
       this.$global
         .post_encapsulation(
-          `${this.$axios.defaults.baseURL}/bsl_admin_web/industry/saveIndustry`,
-          self.industry_summit
+          `${this.$axios.defaults.baseURL}/bsl_admin_web/member/saveModifyBslMemberSystem`,
+          self.ruleForm
         )
-        .then(result => {
-          this.$confirm(result.data.resultDesc, self.$t("project.Reminder"), {
-            confirmButtonText: self.$t("project.Yes"),
+        .then((result) => {
+          this.$confirm(result.data.resultDesc, self.$t('project.Reminder'), {
+            confirmButtonText: self.$t('project.Yes'),
             center: true,
             showCancelButton: false
           }).then(() => {
-            if (result.data.resultCode == 10000) {
-              this.$routerto("MembershipSystemArrangment");
+            if (result.data.resultCode === 10000) {
+              this.$routerto('MembershipSystemArrangment')
             }
-          });
-        });
+          })
+        })
     }
   }
-};
+}
 </script>
 
 <style lang='scss'>
-.industry_alter {
+.editLevel {
   padding: 80px 0;
-  .industry_alter_header {
+  .editLevel_header {
     height: 40px;
     width: 80%;
     font-size: 20px;

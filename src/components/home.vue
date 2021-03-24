@@ -104,17 +104,17 @@
 <script>
 // import { log } from "util";
 export default {
-  data() {
+  data () {
     return {
       loadingCount: 0,
       isShowLoading: false,
-      msg: "Welcome to Your Vue.js App",
+      msg: 'Welcome to Your Vue.js App',
       levelList: [],
-      activeName: ""
-    };
+      activeName: ''
+    }
   },
-  created() {
-    let that = this;
+  created () {
+    let that = this
     this.$axios.interceptors.request.use(
       config => {
         // console.log(`${this.$axios.defaults.baseURL}/bsl_admin_web/user/adminLogin.do`)
@@ -122,81 +122,81 @@ export default {
         // if (config.url.indexOf("/bsl_admin_web/base/countryList") > -1) {
         //   return config;
         // }
-        that.addLoading();
-        return config;
+        that.addLoading()
+        return config
       },
-      function(error) {
+      function (error) {
         // 对请求错误做些什么
-        that.isShowLoading = false;
-        that.loadingCount = 0;
-        return Promise.reject(error);
+        that.isShowLoading = false
+        that.loadingCount = 0
+        return Promise.reject(error)
       }
-    );
+    )
     this.$axios.interceptors.response.use(
       res => {
         // console.log(2222);
-        that.isCloseLoading();
+        that.isCloseLoading()
         if (res.data && res.data.resultCode) {
-          let code = res.data.resultCode;
-          return res;
+          let code = res.data.resultCode
+          return res
         }
       },
       error => {
         // this.isShowLoading = false;
-        that.isCloseLoading();
-        return Promise.reject(error);
+        that.isCloseLoading()
+        return Promise.reject(error)
       }
-    );
+    )
 
     // let href = window.location.href;
     // this.activeName = href.split("/#")[1];
   },
   methods: {
-    selectone(index, indexPath) {
+    selectone (index, indexPath) {
       // console.log(index, indexPath);
     },
-    addLoading() {
-      this.isShowLoading = true;
-      this.loadingCount++;
+    addLoading () {
+      this.isShowLoading = true
+      this.loadingCount++
       // console.log( this.loadingCount)
     },
 
-    isCloseLoading() {
-      this.loadingCount--;
+    isCloseLoading () {
+      this.loadingCount--
       if (this.loadingCount <= 0) {
-        this.loadingCount = 0;
-        this.isShowLoading = false;
+        this.loadingCount = 0
+        this.isShowLoading = false
       }
     },
-    getBreadcrumb() {
-      let matched = this.$route.matched.filter(item => item.meta.title);
+    getBreadcrumb () {
+      let matched = this.$route.matched.filter(item => item.meta.title)
       console.log(matched)
       // const first = matched[0];
-      this.levelList = matched;
+      this.levelList = matched
     },
-    aactiveName() {}
+    aactiveName () {}
   },
   watch: {
-    $route(index) {
-      let path = index.path.substr(1).split("/");
-      if (path[1] == "userlist" || path[1] == "membership") {
-        this.activeName = path[2];
+    $route (index) {
+      let path = index.path.substr(1).split('/')
+      if (path[1] == 'userlist' || path[1] == 'membership') {
+        this.activeName = path[2]
       } else {
-        this.activeName = path[1];
+        this.activeName = path[1]
       }
-      this.getBreadcrumb();
+      this.getBreadcrumb()
     }
   },
-  mounted() {
-    let path = this.$route.path.substr(1).split("/");
-    if (path[1] == "userlist" || path[1] == "membership") {
-      this.activeName = path[2];
+  mounted () {
+    let path = this.$route.path.substr(1).split('/')
+    if (path[1] == 'userlist' || path[1] == 'membership') {
+      this.activeName = path[2]
     } else {
-      this.activeName = path[1];
+      this.activeName = path[1]
     }
-    this.getBreadcrumb();
+    this.getBreadcrumb()
   }
-};
+}
 </script>
 <style lang="scss">
 #home {

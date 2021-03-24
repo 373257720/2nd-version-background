@@ -156,7 +156,25 @@ const RecommandList = () =>
     "@/components/Recommand/RecommandList"
   );
 // membership
+const upLoadIcon = () =>
+  import(
+    /* webpackChunkName: "project_owner" */
+    "@/components/membership/upLoadIcon"
+  );
 
+
+const addIcon = () =>
+  import(
+    /* webpackChunkName: "project_owner" */
+    "@/components/membership/addIcon"
+  );
+
+
+const HistoryRetrieval = () =>
+  import(
+    /* webpackChunkName: "project_owner" */
+    "@/components/membership/HistoryRetrieval"
+  );
 const Exchange = () =>
   import(
     /* webpackChunkName: "project_owner" */
@@ -189,15 +207,21 @@ const addGift = () =>
     /* webpackChunkName: "project_owner" */
     "@/components/membership/addGift"
   );
+  
+  const membershipCommentDay = () =>
+  import(
+    /* webpackChunkName: "project_owner" */
+    "@/components/membership/membershipCommentDay"
+  );
 const membership = () =>
   import(
     /* webpackChunkName: "project_owner" */
     "@/components/membership/membership"
   );
-  const membershipDetails = () =>
+const editLevel = () =>
   import(
     /* webpackChunkName: "project_owner" */
-    "@/components/membership/membershipDetails"
+    "@/components/membership/editLevel"
   );
 const giftSetting = () =>
   import(
@@ -229,12 +253,12 @@ const membershipList = () =>
     /* webpackChunkName: "project_owner" */
     "@/components/membership/membershipList"
   );
-  const ProjectStatusCustomization = () =>
+const ProjectStatusCustomization = () =>
   import(
     /* webpackChunkName: "project_owner" */
     "@/components/membership/ProjectStatusCustomization"
   );
-  const viewRecommendedProjectStatus = () =>
+const viewRecommendedProjectStatus = () =>
   import(
     /* webpackChunkName: "project_owner" */
     "@/components/membership/viewRecommendedProjectStatus"
@@ -256,6 +280,7 @@ const coin_category_alter = () =>
     /* webpackChunkName: "project_owner" */
     "@/components/coin_category/coin_category_alter"
   );
+  
 // import coin_category from '../components/coin_category/coin_category'
 // import coin_category_alter from '../components/coin_category/coin_category_alter'
 // 2级路由userlist/
@@ -473,7 +498,7 @@ const routes = [
             name: "industry_alter",
             component: industry_alter,
             meta: {
-              title: "project.Addproject"
+              // title: "project.Addproject"
             }
           }
         ]
@@ -533,8 +558,39 @@ const routes = [
             name: "membershipList",
             component: membershipList,
             meta: {
-              title:"Membership.MemberManagement"
+              title: "Membership.MemberManagement"
             },
+          },
+          {
+            path: "addIcon",
+            name: "addIcon",
+            component: addIcon,
+            meta: {
+              title: "Membership.MemberManagement"
+            },
+          },
+          {
+            path: "membershipCommentDay",
+            name: "membershipCommentDay",
+            component: membershipCommentDay,
+            meta: {
+              title: "Membership.MemberManagement"
+            },
+          },
+          
+          {
+            path: "upLoadIcon",
+            name: "upLoadIcon",
+            component: upLoadIcon,
+            meta: {
+              title: "Membership.MemberManagement"
+            },
+          },
+
+          {
+            path: "HistoryRetrieval",
+            name: "HistoryRetrieval",
+            component: HistoryRetrieval,
           },
           {
             path: "giftSetting",
@@ -562,13 +618,13 @@ const routes = [
             name: "MembershipSystemArrangment",
             component: MembershipSystemArrangment,
             meta: {
-              title:"Membership.MembershipSystemManagement"
+              title: "Membership.MembershipSystemManagement"
             },
           },
           {
-            path: "membershipDetails",
-            name: "membershipDetails",
-            component: membershipDetails
+            path: "editLevel",
+            name: "editLevel",
+            component: editLevel
           },
           {
             path: "exchangeHistory",
@@ -600,7 +656,7 @@ const routes = [
             name: "rankingList",
             component: rankingList,
             meta: {
-              title:"Membership.PointsRanking"
+              title: "Membership.PointsRanking"
             },
           },
           {
@@ -608,7 +664,7 @@ const routes = [
             name: "Exchange",
             component: Exchange,
             meta: {
-              title:"Membership.redemption"
+              title: "Membership.redemption"
             },
           },
           {

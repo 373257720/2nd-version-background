@@ -66,7 +66,7 @@
         <el-table-column
           prop="exchangeIntegral"
           show-overflow-tooltip
-          label="$t('Gift.RedeemPoints')"
+          :label="$t('Gift.RedeemPoints')"
           align="center"
         ></el-table-column>
         <el-table-column
@@ -87,7 +87,13 @@
           align="center"
         >
           <template slot-scope="scope">
-            <el-button  @click="handleClick(scope.row)"  :disabled="scope.row.optStatus == 0 ? false : true" type="text" size="small">兑换</el-button>
+            <el-button
+              @click="handleClick(scope.row)"
+              :disabled="scope.row.optStatus == 0 ? false : true"
+              type="text"
+              size="small"
+              >兑换</el-button
+            >
           </template>
         </el-table-column>
       </el-table>
@@ -108,62 +114,62 @@
 // import '@/components/eventBus'
 // import login from "../login";
 export default {
-  name: "membershipList",
-  data() {
+  name: 'membershipList',
+  data () {
     return {
       centerDialogVisible: false,
-      value1: [], //日期选择
-      value: "", //项目状态
-      searchkey: "",
-      input: "",
+      value1: [], // 日期选择
+      value: '', // 项目状态
+      searchkey: '',
+      input: '',
       currentpage: 1,
       pagesize: 8,
       pagetotal: null,
       tableData: [],
       deleteType: 0,
-      industryId: "",
-    };
+      industryId: ''
+    }
   },
-  created() {},
-  activated() {
+  created () {},
+  activated () {
     // console.log(123);
 
-    this.search();
+    this.search()
   },
   methods: {
-    CheckInputIntFloat(value) {
-      var regexp = /^[1-9]\d*$/;
-      let gg = value;
-      let a;
+    CheckInputIntFloat (value) {
+      var regexp = /^[1-9]\d*$/
+      let gg = value
+      let a
       // console.log(gg.replace(regexp, ""));
-      if ("" != gg.replace(regexp, "")) {
-        console.log(gg.replace(regexp));
+      if (gg.replace(regexp, '') != '') {
+        console.log(gg.replace(regexp))
 
         // e.target.value=gg.replace(regexp)
-        value = gg.match(regexp) === null ? "" : gg.match(regexp);
+        value = gg.match(regexp) === null ? '' : gg.match(regexp)
       }
-      console.log(value);
+      console.log(value)
     },
-    handleCurrentChange(cpage) {
-      this.currentpage = cpage;
+    handleCurrentChange (cpage) {
+      this.currentpage = cpage
     },
-    handleSizeChange(psize) {
-      this.pagesize = psize;
+    handleSizeChange (psize) {
+      this.pagesize = psize
     },
-    deleterow(row) {
-      console.log(row);
-      let self = this;
-      this.industryId = row.industryId;
-      this.centerDialogVisible = true;
+    deleterow (row) {
+      console.log(row)
+      let self = this
+      this.industryId = row.industryId
+      this.centerDialogVisible = true
       this.$confirm(
-        self.$t("project.Confirmdelect"),
-        self.$t("project.Reminder"),
+        self.$t('project.Confirmdelect'),
+        self.$t('project.Reminder'),
         {
-          confirmButtonText: self.$t("project.Yes"),
-          cancelButtonText: self.$t("project.No"),
-          type: "warning",
+          confirmButtonText: self.$t('project.Yes'),
+          cancelButtonText: self.$t('project.No'),
+          type: 'warning',
           center: true,
-          showCancelButton: true,
+          showCancelButton: true
         }
       )
         .then(() => {
@@ -176,70 +182,76 @@ export default {
               if (res.data.resultCode == 10000) {
                 this.$message({
                   message: res.data.resultDesc,
-                  type: "success",
-                });
-                this.search();
+                  type: 'success'
+                })
+                this.search()
               } else {
                 this.$message({
                   message: res.data.resultDesc,
-                  type: "warn",
-                });
+                  type: 'warn'
+                })
               }
-            });
+            })
         })
-        .catch(() => {});
+        .catch(() => {})
     },
 
-    handleClick(row) {
+    handleClick (row) {
       this.$global
         .get_encapsulation(
           `${this.$axios.defaults.baseURL}/bsl_admin_web/member/redeemPoints`,
-          {id:row.bslExchangeIntegralId}
-        ).then(res=>{
-           if (res.data.resultCode == 10000) {
-              this.$message({
-                  message: res.data.resultDesc,
-                  type: "success",
-                });
-                this.search();
-           }else{
-              this.$message({
-                  message: res.data.resultDesc,
-                  type: "warn",
-                });
-           }
+          { id: row.id }
+        )
+        .then((res) => {
+          if (res.data.resultCode === 10000) {
+            this.$message({
+              message: res.data.resultDesc,
+              type: 'success'
+            })
+            this.search()
+          } else {
+            this.$message({
+              message: res.data.resultDesc,
+              type: 'warn'
+            })
+          }
         })
     },
-    fromchildren1(data) {
-      this.currentpage = data.currentpage;
-      this.pagesize = data.pagesize;
+    fromchildren1 (data) {
+      this.currentpage = data.currentpage
+      this.pagesize = data.pagesize
       this.search(
         this.value,
         this.value1[0] / 1000,
         this.value1[1] / 1000,
         this.currentpage,
         this.pagesize
-      );
+      )
     },
-    search() {
+    search () {
+      this.tableData = []
       this.$global
         .get_encapsulation(
-          `${this.$axios.defaults.baseURL}/bsl_admin_web/member/getBslPointsExchangeList`
+          `${this.$axios.defaults.baseURL}/bsl_admin_web/member/getBslPointsExchangeList`,
+          {
+            keyword: this.searchkey,
+            pageIndex: this.currentpage,
+            pageSize: this.pageSize,
+            optStatus: 0, //0 未兑换1已兑换
+            userId: ''
+          }
         )
         .then((res) => {
-          if (res.data.resultCode == 10000) {
+          if (res.data.resultCode === 10000) {
             // this.tableData = [...res.data.data.lists];
             // console.log(this.tableData);
-            res.data.data.lists.forEach((item, idx)=>{
+            res.data.data.lists.forEach((item, idx) => {
               // console.log(item)
-              if(item.optStatus==0){
-                
-                item.createTime=this.$global.stamptodate(item.createTime)
-                this.tableData.push(item);
-                console.log(this.tableData)
-              }
-
+                item.createTime = this.$global.stamptodate(item.createTime)
+                this.tableData.push(item)
+        
             })
+            console.log(this.tableData)
             // this.tableData.forEach((item, idx) => {
             //   item.idx = idx + 1;
             //   // if(item.industryStatus==-1){
@@ -249,10 +261,10 @@ export default {
             //   // }
             // });
           }
-        });
-    },
-  },
-};
+        })
+    }
+  }
+}
 </script>
 
 <style lang='scss'>

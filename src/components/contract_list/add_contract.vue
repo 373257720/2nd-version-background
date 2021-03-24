@@ -86,195 +86,194 @@
 <script>
 // import qs from "qs";
 // import { log } from "util";
-import XLSX from "xlsx";
+import XLSX from 'xlsx'
 export default {
-  data() {
+  data () {
     return {
-      labelposition: "top",
+      labelposition: 'top',
       fileListWord: [],
       ruleForm: {
-        fileName: "",
+        fileName: '',
         contractType: 0,
-        fileWord: "",
-        fileWordName: "",
-        fileExcel: "",
-        fileExcelName: "",
+        fileWord: '',
+        fileWordName: '',
+        fileExcel: '',
+        fileExcelName: ''
       },
       rules: {
         fileName: [
           {
             required: true,
-            message: this.$t("UserManagement.PleaseEnter"),
-            trigger: ["blur", "change"],
-          },
+            message: this.$t('UserManagement.PleaseEnter'),
+            trigger: ['blur', 'change']
+          }
         ],
 
         fileWord: [
           {
             required: true,
-            message: this.$t("Contract.PleaseUpload"),
-            trigger: ["blur", "change"],
-          },
+            message: this.$t('Contract.PleaseUpload'),
+            trigger: ['blur', 'change']
+          }
         ],
         fileExcel: [
           {
             required: true,
-            message: this.$t("Contract.PleaseUpload"),
-            trigger: ["blur", "change"],
-          },
+            message: this.$t('Contract.PleaseUpload'),
+            trigger: ['blur', 'change']
+          }
         ],
         contractType: [],
         bslEmail: [
           {
             required: true,
-            message: this.$t("UserManagement.PleaseEnterEmail"),
-            trigger: "blur",
+            message: this.$t('UserManagement.PleaseEnterEmail'),
+            trigger: 'blur'
           },
           {
-            type: "email",
-            message: this.$t("UserManagement.EmailFormatIsIncorrect"),
-            trigger: ["blur", "change"],
-          },
-        ],
+            type: 'email',
+            message: this.$t('UserManagement.EmailFormatIsIncorrect'),
+            trigger: ['blur', 'change']
+          }
+        ]
       },
       options: [
         {
           value: 0,
-          label: this.$t("Contract.ProjectownerAndIntermediary"),
+          label: this.$t('Contract.ProjectownerAndIntermediary')
         },
         {
           value: 1,
-          label: this.$t("Contract.IntermediaryAndIntermediary"),
-        },
-      ],
+          label: this.$t('Contract.IntermediaryAndIntermediary')
+        }
+      ]
       // value: "项目方与中间人"
-    };
+    }
   },
-  created() {
+  created () {
     // console.log(XLSX);
     //  console.log(ActiveXObject);
   },
   methods: {
- 
-    file2JSON(file) {
+    file2JSON (file) {
       return new Promise((resolve, reject) => {
-        let reader = new FileReader();
+        let reader = new FileReader()
 
         reader.onload = function (event) {
           let resSheet = XLSX.read(event.target.result, {
-            type: "binary",
-          });
+            type: 'binary'
+          })
 
-          let resJSON = [];
+          let resJSON = []
           resSheet.SheetNames.forEach((sheetName) => {
             resJSON.push({
               sheetName: sheetName,
-              sheet: XLSX.utils.sheet_to_json(resSheet.Sheets[sheetName]),
-            });
-          });
+              sheet: XLSX.utils.sheet_to_json(resSheet.Sheets[sheetName])
+            })
+          })
 
-          resolve(resJSON);
-        };
+          resolve(resJSON)
+        }
 
-        reader.readAsBinaryString(file.raw);
-      });
+        reader.readAsBinaryString(file.raw)
+      })
     },
-    handleBeforeRemove(file, fileList) {
+    handleBeforeRemove (file, fileList) {
       // return this.$confirm(`确定移除 ${file.name}？`);
     },
-    beforeImgUpload(file) {
-      console.log(file);
-      let filename = file.name;
-      if (escape(filename).indexOf("%u") >= 0) {
-        this.$message.error(this.$t("project.p1"));
-        return false;
+    beforeImgUpload (file) {
+      console.log(file)
+      let filename = file.name
+      if (escape(filename).indexOf('%u') >= 0) {
+        this.$message.error(this.$t('project.p1'))
+        return false
       }
       // if(file.name)
     },
-    handleRequestWord(params) {
-      console.log(params);
-      let formData = new FormData();
-      formData.append("file", params.file);
-      formData.append("Ad_Token", this.$store.state.X_Token);
+    handleRequestWord (params) {
+      console.log(params)
+      let formData = new FormData()
+      formData.append('file', params.file)
+      formData.append('Ad_Token', this.$store.state.X_Token)
       this.$axios({
-        method: "post",
+        method: 'post',
         url: `${this.$axios.defaults.baseURL}/bsl_admin_web/upload/wordFile`,
         data: formData,
         headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      }).then((res) => {
-        console.log(this.fileListWord);
-        if (res.data.resultCode == 10000) {
-          this.ruleForm.fileWord = res.data.data.path;
-          this.ruleForm.fileWordName = res.data.data.fileWordName;
-          this.$refs.ruleForm.validateField("fileWord");
-        } else {
-          this.$message.error(res.data.resultDesc);
+          'Content-Type': 'multipart/form-data'
         }
-      });
+      }).then((res) => {
+        console.log(this.fileListWord)
+        if (res.data.resultCode == 10000) {
+          this.ruleForm.fileWord = res.data.data.path
+          this.ruleForm.fileWordName = res.data.data.fileWordName
+          this.$refs.ruleForm.validateField('fileWord')
+        } else {
+          this.$message.error(res.data.resultDesc)
+        }
+      })
     },
-    handleRequestExcel(params) {
-      let formData = new FormData();
-      formData.append("file", params.file);
-      formData.append("Ad_Token", this.$store.state.X_Token);
+    handleRequestExcel (params) {
+      let formData = new FormData()
+      formData.append('file', params.file)
+      formData.append('Ad_Token', this.$store.state.X_Token)
       this.$axios({
-        method: "post",
+        method: 'post',
         url: `${this.$axios.defaults.baseURL}/bsl_admin_web/upload/excelFile`,
         data: formData,
         headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      }).then((res) => {
-        console.log(res);
-        if (res.data.resultCode == 10000) {
-          this.ruleForm.fileExcel = res.data.data.path;
-          this.ruleForm.fileExcelName = res.data.data.fileExcelName;
-          this.$refs.ruleForm.validateField("fileExcel");
-        } else {
-          this.$message.error(res.data.resultDesc);
+          'Content-Type': 'multipart/form-data'
         }
-      });
+      }).then((res) => {
+        console.log(res)
+        if (res.data.resultCode == 10000) {
+          this.ruleForm.fileExcel = res.data.data.path
+          this.ruleForm.fileExcelName = res.data.data.fileExcelName
+          this.$refs.ruleForm.validateField('fileExcel')
+        } else {
+          this.$message.error(res.data.resultDesc)
+        }
+      })
     },
-    handlePreview(file) {
-      console.log(file);
+    handlePreview (file) {
+      console.log(file)
 
       if (!file.url) {
-        this.$message.error("下载失败");
-        return;
+        this.$message.error('下载失败')
+        return
       }
-      const type = file.url.split(".")[4];
+      const type = file.url.split('.')[4]
       // 判断文件类型
       if (
-        type === "doc" ||
-        type === "docx" ||
-        type === "xlsx" ||
-        type === "xls" ||
-        type === "ppt" ||
-        type === "pptx"
+        type === 'doc' ||
+        type === 'docx' ||
+        type === 'xlsx' ||
+        type === 'xls' ||
+        type === 'ppt' ||
+        type === 'pptx'
       ) {
         // 在当前浏览器直接下载
-        document.location.href = file.url;
+        document.location.href = file.url
       } else {
         // 图片在浏览器打开 新的页面展示
-        window.open(file.url, "hello");
+        window.open(file.url, 'hello')
       }
     },
-    Uploadsuccess(response, file, filelist, name) {
-      console.log(response);
+    Uploadsuccess (response, file, filelist, name) {
+      console.log(response)
     },
-    handleRemove(file, fileList, name) {
-      console.log(file, fileList, name);
-      if (name === "excel") {
-        this.ruleForm.fileExcel = "";
-        this.ruleForm.fileExcelName = "";
-      } else if (name === "word") {
-        this.ruleForm.fileWord = "";
-        this.ruleForm.fileWordName = "";
+    handleRemove (file, fileList, name) {
+      console.log(file, fileList, name)
+      if (name === 'excel') {
+        this.ruleForm.fileExcel = ''
+        this.ruleForm.fileExcelName = ''
+      } else if (name === 'word') {
+        this.ruleForm.fileWord = ''
+        this.ruleForm.fileWordName = ''
       }
-      console.log(this.ruleForm);
+      console.log(this.ruleForm)
     },
-    submitForm(formName) {
+    submitForm (formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           this.$global
@@ -284,35 +283,40 @@ export default {
             )
             .then((res) => {
               if (res.data.resultCode === 10000) {
-                this.$routerto("contractClause", { filed: res.data.data.id });
+                this.$routerto('contractClause', { filed: res.data.data.id })
+              } else {
+                this.$message({
+                  message: res.data.resultDesc,
+                  type: 'warn'
+                })
               }
-            });
+            })
         } else {
-          return false;
+          return false
         }
-      });
+      })
     },
-    handleChange(file, fileList, name) {
-      console.log(name);
+    handleChange (file, fileList, name) {
+      console.log(name)
       // console.log("file", file);
       // console.log("fileList", fileList);
-      if (name === "excel") {
+      if (name === 'excel') {
         if (!/\.(xls|xlsx)$/.test(file.name.toLowerCase())) {
-          this.$Message.error("上传格式不正确，请上传xls或者xlsx格式");
-          return false;
+          this.$Message.error('上传格式不正确，请上传xls或者xlsx格式')
+          return false
         }
-      } else if (name === "word") {
+      } else if (name === 'word') {
         if (!/\.(doc|docx)$/.test(file.name.toLowerCase())) {
-          this.$Message.error("上传格式不正确，请上传xls或者xlsx格式");
-          return false;
+          this.$Message.error('上传格式不正确，请上传xls或者xlsx格式')
+          return false
         }
       }
       // this.file = file.raw;
       // console.log(file);
     },
 
-    readExcel1(files, name) {
-      //表格导入
+    readExcel1 (files, name) {
+      // 表格导入
       // if (files.length <= 0) {
       //   //如果没有文件名
       //   return false;
@@ -359,9 +363,9 @@ export default {
       //   }
       // };
       // fileReader.readAsArrayBuffer(files[0]);
-    },
-  },
-};
+    }
+  }
+}
 </script>
 
 <style lang='scss'>

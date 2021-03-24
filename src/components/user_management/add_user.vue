@@ -37,77 +37,101 @@
 // import qs from "qs";
 // import { log } from "util";
 export default {
-  data() {
-    let self=this;
+  data () {
+    let self = this
+    var checkData1 = (rule, value, callback) => {
+      if (value) {
+        if (/[\u4E00-\u9FA5]/g.test(value)) {
+          callback(new Error(self.$i18n.locale === 'en_US' ? 'Password cannot enter Chinese characters' : '密码不能输入汉字!'))
+        } else {
+          callback()
+        }
+      }
+      callback()
+    }
+    var checkEmail = (rule, value, callback) => {
+      let ruleReg = /^([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/
+      if (value) {
+        if (!ruleReg.test(value)) {
+          callback(new Error(this.$t('UserManagement.EmailFormatIsIncorrect')))
+        } else {
+          callback()
+        }
+      }
+      callback()
+    }
     var validatePass = (rule, value, callback) => {
       if (value === '') {
-        callback(new Error(self.$t('UserManagement.PleaseEnterNewPassword')));
+        callback(new Error(self.$t('UserManagement.PleaseEnterNewPassword')))
       } else {
         // if (this.ruleForm.bslPwd !== '') {
         //   // this.$refs.ruleForm.validateField('bslPwd');
         // }
-        callback();
+        callback()
       }
-    };
+    }
     var validatePass2 = (rule, value, callback) => {
       if (value === '') {
-        callback(new Error(self.$t('UserManagement.PleaseEnterNewPasswordagain')));
+        callback(new Error(self.$t('UserManagement.PleaseEnterNewPasswordagain')))
       } else if (value !== this.ruleForm.bslPwd) {
-        callback(new Error(self.$t('UserManagement.PasswordsEnteredTwiceAreInconsistent')));
+        callback(new Error(self.$t('UserManagement.PasswordsEnteredTwiceAreInconsistent')))
       } else {
-        callback();
+        callback()
       }
-    };
+    }
     return {
-      labelposition: "top",
+      labelposition: 'top',
       ruleForm: {
-        bslEmail:"",
-        bslName: "",
-        bslPwd: "",
-        bslPwd2:'',
+        bslEmail: '',
+        bslName: '',
+        bslPwd: '',
+        bslPwd2: ''
       },
       rules: {
-        bslPwd:[   { required: true, validator: validatePass, trigger: "blur" }],
-        bslPwd2:[   { required: true,validator: validatePass2,  trigger: "blur" }
+        bslPwd: [
+          { validator: checkData1, trigger: 'blur' },
+          { required: true, validator: validatePass, trigger: 'blur' }],
+        bslPwd2: [ { validator: checkData1, trigger: 'blur' }, { required: true, validator: validatePass2, trigger: 'blur' }
         ],
         bslName: [
-          { required: true, message:this.$t('UserManagement.PleaseEnter'), trigger: "blur" }
+          { required: true, message: this.$t('UserManagement.PleaseEnter'), trigger: 'blur' }
         ],
         bslEmail: [
-          { required: true, message: this.$t('UserManagement.PleaseEnterEmail'), trigger: "blur" },
-          {
-            type: "email",
-            message:this.$t('UserManagement.EmailFormatIsIncorrect'),
-            trigger: ["blur", "change"]
-          }
+         
+          { required: true, message: this.$t('UserManagement.PleaseEnterEmail'), trigger: 'blur' },
+          { validator: checkEmail, trigger: 'blur' },
+          // {
+          //   type: 'email',
+          //   message: this.$t('UserManagement.EmailFormatIsIncorrect'),
+          //   trigger: ['blur', 'change']
+          // }
         ]
-      },
+      }
 
-    };
+    }
   },
-  created() {
-
+  created () {
 
   },
   methods: {
     // back() {
     //   this.$routerto('user_managementlists',{pagenum:this.$route.query.pagenum});
     // },
-    submitForm(formName) {
+    submitForm (formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          this.commit();
+          this.commit()
         } else {
-          return false;
+          return false
         }
-      });
+      })
     },
-    commit() {
+    commit () {
       // let cloneObj = this.deepClone(this.form);
-      let cloneObj={
-        bslEmail:this.ruleForm.bslEmail,
+      let cloneObj = {
+        bslEmail: this.ruleForm.bslEmail,
         bslName: this.ruleForm.bslName,
-        bslPwd:this.ruleForm.bslPwd,
+        bslPwd: this.ruleForm.bslPwd
       }
       // this.$axios({
       //   method: "post",
@@ -117,39 +141,39 @@ export default {
       //     "Content-Type": "application/x-www-form-urlencoded"
       //   }
       // })
-       this.$global.post_encapsulation(`${this.$axios.defaults.baseURL}/bsl_admin_web/user/saveAdminUser`,cloneObj)
-      .then(res => {
-        if (res.data.resultCode == 10000) {
-          this.$store.dispatch("submit_formdata_action", res.data.data);
+      this.$global.post_encapsulation(`${this.$axios.defaults.baseURL}/bsl_admin_web/user/saveAdminUser`, cloneObj)
+        .then(res => {
+          if (res.data.resultCode == 10000) {
+            this.$store.dispatch('submit_formdata_action', res.data.data)
           // this.$routerto("tosignuproot");
-        }
-        this.warning(res.data.resultCode, res.data.resultDesc);
-      });
+          }
+          this.warning(res.data.resultCode, res.data.resultDesc)
+        })
     },
-    warning(resultCode, reminder) {
-      let self=this;
+    warning (resultCode, reminder) {
+      let self = this
       if (resultCode == 10000) {
         this.$confirm(reminder, self.$t('project.Reminder'), {
           confirmButtonText: self.$t('project.Confirm'),
-          type: "warning",
+          type: 'warning',
           center: true,
           showCancelButton: false
         }).then(() => {
-          this.$routerto("tosignuproot");
-        });
+          this.$routerto('tosignuproot')
+        })
       } else {
         this.$confirm(reminder, self.$t('project.Reminder'), {
           confirmButtonText: self.$t('project.Confirm'),
           // cancelButtonText: "取消",
-          type: "warning",
+          type: 'warning',
           center: true,
           showCancelButton: false
-        });
+        })
       }
-    },
+    }
 
   }
-};
+}
 </script>
 
 <style lang='scss'>

@@ -65,7 +65,7 @@
           show-overflow-tooltip
           align="center"
         ></el-table-column>
-        <el-table-column
+        <!-- <el-table-column
           prop="projectStatus"
           :label="$t('project.ProcessStatus')"
           show-overflow-tooltip
@@ -74,7 +74,7 @@
           <template slot-scope="scope">
             <span>{{project_status[scope.row.projectStatus]}}</span>
           </template>
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column
           prop="projectLifeCycle"
           :label="$t('project.ProjectStatus')"
@@ -234,9 +234,6 @@ export default {
           this.currentpageSerial++;
           this.search(this.pageArr[this.currentpageSerial], this.pagesize);
         }
-        // if (this.currentpageSerial <= this.pageArr.length - 1) {
-        //   this.search(this.pageArr[this.currentpageSerial + 1], this.pagesize);
-        // }
       }
     },
     deleterow(row) {

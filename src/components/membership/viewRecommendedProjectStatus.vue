@@ -3,12 +3,12 @@
     <el-main>
       <header class="tosignup_header">
         <nav>
-          <el-button
+          <!-- <el-button
             @click="$routerto('customPoints')"
             type="primary"
             class="addbtn block"
             >{{ $t("Membership.Pointscustomization") }}</el-button
-          >
+          > -->
           <!-- <el-button @click="$routerto('industry_alter')" type="primary" class="addbtn block">{{$t('Membership.PointsCleared')}}</el-button> -->
         </nav>
         <section>
@@ -87,23 +87,27 @@
           align="center"
         >
           <template slot-scope="scope">
+            <span v-if="scope.row.bslProjectLinkStatusList.length == 1">{{
+              arr[scope.row.bslProjectLinkStatusList[0].statusRanking]
+            }}</span>
             <el-select
+              v-if="scope.row.bslProjectLinkStatusList.length > 1"
               @change="changeintegral(scope.row)"
-              v-model="value"
+              v-model="scope.row.option"
               placeholder="请选择"
             >
               <el-option
-                v-for="item in scope.row.bslProjectLinkStatusList"
+                v-for="(item, idx) in scope.row.bslProjectLinkStatusList"
                 :key="item.id"
-                :label="item.statusRanking"
-                :value="item.statusRanking"
+                :label="arr[item.statusRanking]"
+                :value="idx"
               >
               </el-option>
             </el-select>
           </template>
         </el-table-column>
         <el-table-column
-          prop="investmentAmountTotal"
+          prop="amountCompleted"
           show-overflow-tooltip
           :label="$t('Member.projectFunding')"
           align="center"
@@ -111,12 +115,15 @@
           <template slot-scope="scope">
             <el-input
               v-if="scope.row.completeStatus"
-              v-model="input"
+              v-model="scope.row.amountCompleted"
+              @input="
+                (value) => (scope.row.amountCompleted = inputModel(value, 2))
+              "
               @blur="addprojectfund(scope.row)"
               placeholder="请输入内容"
-              type="number"
-              min="0"
             ></el-input>
+
+            <span v-else>{{ scope.row.amountCompleted }}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -126,13 +133,10 @@
           align="center"
         >
           <template slot-scope="scope">
-           <el-input
-             
-              v-model="integral"
-             readonly=""
-              placeholder=""
-             
-            ></el-input>
+            <!-- <span>{{
+              scope.row.bslProjectLinkStatusList[scope.row.option]
+                .projectIntegral
+            }}</span> -->
           </template>
         </el-table-column>
       </el-table>
@@ -168,6 +172,12 @@ export default {
       tableData: [],
       deleteType: 0,
       industryId: "",
+      arr: {
+        1: "Meet company",
+        2: "Sign termsheet",
+        3: "Sign investment agreemen",
+        4: "Settle cash",
+      },
     };
   },
   created() {
@@ -219,26 +229,62 @@ export default {
           console.log(this.tableData);
           this.tableData.forEach((item, idx) => {
             item.createTime = this.$global.stamptodate(item.createTime);
+            item.projectsName = item["projectsName" + this.$global.lan()];
+            this.$set(item, "option", 0);
             // if(item.industryStatus==-1){
             //   item.industry_Status='已删除'
             // }else if(item.industryStatus==0){
             //   item.industry_Status='正常'
             // }
           });
-          this.$message({
-            message: res.data.resultDesc,
-            type: "success",
-          });
           // this.search();
-        } else {
-          this.$message({
-            message: res.data.resultDesc,
-            type: "warn",
-          });
         }
       });
   },
   methods: {
+    inputModel(value, point) {
+      let val = value.replace(/[^\d.]/g, "");
+      let len = val.length;
+      let newValue = val;
+      console.log(val, value);
+      // 解决首位直接输入 '0开头的数字'问题
+      if (len == 2 && val.charAt(0) == 0 && val.charAt(1) != ".") {
+        newValue = val.charAt(1);
+        return newValue;
+      }
+      // 解决数字键盘可以输入输入多个小数点问题
+      if (val.split(".").length > 2) {
+        newValue = "";
+        return newValue;
+      }
+      // 解决开始就输入点问题
+      if (val.indexOf(".") === 0) {
+        newValue = "";
+        return newValue;
+      }
+      // 解决保留两位小数问题
+      if (val) {
+        let pointIndex = val.indexOf(".");
+        if (point == 0 && len == 2 && val.charAt(pointIndex) == ".") {
+          console.log("只能输入整数");
+          newValue = val.substr(0, pointIndex);
+          return newValue;
+        }
+        if (pointIndex > 0 && len - pointIndex > point + 1) {
+          console.log("只能输入" + point + "位小数");
+          newValue = val.substr(0, pointIndex + point + 1);
+          return newValue;
+        }
+      }
+      // 解决输入最大值问题
+      // if (this.max > 0 && val > this.max) {
+      //   //   console.log("---4---");
+      //   value = val.substr(0, len - 1);
+      //   return value;
+      // }
+
+      return newValue;
+    },
     CheckInputIntFloat(value) {
       var regexp = /^[1-9]\d*$/;
       let gg = value;
@@ -318,20 +364,20 @@ export default {
       );
     },
     changeintegral(row) {
-      console.log(this.value);
-      console.log(row)
+      // console.log(this.value);
+      console.log(row);
       // console.log( this.tableData);
-      this.tableData.forEach((item, idx) => {
-        if(row.projectsId==item.projectsId){
-          item.bslProjectLinkStatusList.forEach((i,t)=>{
-            console.log(i)
-            if(this.value==i.bslProjectLinkId){
-              //  console.log(i.projectIntegral)
-               this.integral=i.projectIntegral
-            }
-          })
-        }
-      });
+      // this.tableData.forEach((item, idx) => {
+      //   if (row.projectsId == item.projectsId) {
+      //     item.bslProjectLinkStatusList.forEach((i, t) => {
+      //       console.log(i);
+      //       if (this.value == i.bslProjectLinkId) {
+      //         //  console.log(i.projectIntegral)
+      //         this.integral = i.projectIntegral;
+      //       }
+      //     });
+      //   }
+      // });
     },
     // 项目资金
     addprojectfund(row) {
@@ -339,7 +385,7 @@ export default {
         .post_encapsulation(
           `${this.$axios.defaults.baseURL}/bsl_admin_web/member/saveBslProjectLinkAmountCompleted`,
           {
-            amountCompleted: this.input,
+            amountCompleted: row.amountCompleted,
             id: row.id,
           }
         )
@@ -349,7 +395,7 @@ export default {
               message: res.data.resultDesc,
               type: "success",
             });
-            this.search();
+            // this.search();
           } else {
             console.log(res.data.resultDesc);
             this.$message({

@@ -125,21 +125,21 @@
 </template>
 
 <script>
-import XLSX from "xlsx";
+import XLSX from 'xlsx'
 export default {
-  data() {
-    let self = this;
+  data () {
+    let self = this
     return {
       dialogVisible: false,
       dialogFormVisible_redOption_add: false,
-      labelposition: "top",
+      labelposition: 'top',
       ruleForm: {
-        Redoption: "",
-        arr: [],
+        Redoption: '',
+        arr: []
       },
       Redoption_summit: {
         value: null,
-        label: "",
+        label: ''
       },
       fileId: null,
       // arr: [],
@@ -148,49 +148,50 @@ export default {
         bslName: [
           {
             required: true,
-            message: this.$t("UserManagement.PleaseEnter"),
-            trigger: "blur",
-          },
+            message: this.$t('UserManagement.PleaseEnter'),
+            trigger: 'blur'
+          }
         ],
         bslEmail: [
           {
             required: true,
-            message: this.$t("UserManagement.PleaseEnterEmail"),
-            trigger: "blur",
+            message: this.$t('UserManagement.PleaseEnterEmail'),
+            trigger: 'blur'
           },
           {
-            type: "email",
-            message: this.$t("UserManagement.EmailFormatIsIncorrect"),
-            trigger: ["blur", "change"],
-          },
-        ],
-      },
-    };
+            type: 'email',
+            message: this.$t('UserManagement.EmailFormatIsIncorrect'),
+            trigger: ['blur', 'change']
+          }
+        ]
+      }
+    }
   },
-  created() {
-    this.fileId = this.$route.query.filed || null;
-    this.getExcelContractTemplate();
+  created () {
+    this.fileId = this.$route.query.filed || null
+    this.getExcelContractTemplate()
   },
   methods: {
-    getExcelContractTemplate() {
+    getExcelContractTemplate () {
       this.$global
         .get_encapsulation(
           `${this.$axios.defaults.baseURL}/bsl_admin_web/contract/getExcelContractTemplate`,
           { fileId: this.fileId }
         )
         .then((res) => {
-          if (res.data.resultCode == 10000) {
-            this.ruleForm.arr = res.data.data.list;
+          if (res.data.resultCode === 10000) {
+            this.ruleForm.arr = res.data.data.list
             let isTureformat = this.ruleForm.arr.some((item, idx) => {
-              return item.type === 3 && this.ruleForm.arr[idx + 1].type === 4;
-            });
+              return item.type === 3 && this.ruleForm.arr[idx + 1].type === 4
+            })
             // console.log(isTureformat);
             if (!isTureformat) {
-              this.dialogVisible = true;
-              return;
+              this.dialogVisible = true
+              return
             }
             this.ruleForm.arr.forEach((item, idx) => {
               if (item.type === 3) {
+                // console.log(123);
                 // this.istype3 = true;
                 // item.listCell = [
                 //   {
@@ -198,129 +199,137 @@ export default {
                 //     value: 0,
                 //   },
                 // ];
-                item.listCell = item.listCell.map((item, idx) => {
-                  return {
-                    label: item,
-                    value: idx,
-                  };
-                });
-
-                this.$set(item, "redOption", null);
-                this.$set(item, "orange", []);
+                if (item.listCell.length) {
+                  item.listCell = item.listCell.map((item, idx) => {
+                    return {
+                      label: item,
+                      value: idx
+                    }
+                  })
+                } else {
+                  item.listCell = [
+                    {
+                      label: '',
+                      value: ''
+                    }
+                  ]
+                }
+                this.$set(item, 'redOption', null)
+                this.$set(item, 'orange', [])
                 // item.listRedCell = { orange: };
-                let num = 1;
+                let num = 1
                 if (this.ruleForm.arr[idx + 1].type !== 4) {
-                  this.ruleForm.arr.splice(idx, 1);
-                  return;
+                  this.ruleForm.arr.splice(idx, 1)
+                  return
                 }
                 while (this.ruleForm.arr[idx + num].type === 4) {
-                  item.orange.push(this.ruleForm.arr[idx + num]);
-                  num++;
+                  item.orange.push(this.ruleForm.arr[idx + num])
+                  num++
                 }
               } else if (item.type === 4) {
                 // item.listCell = [];
               }
-            });
-            console.log(this.ruleForm.arr);
+            })
+            console.log(this.ruleForm.arr)
           }
-        });
+        })
     },
-    handleClose(done) {
-      done();
+    handleClose (done) {
+      done()
     },
-    deleteitem(item, id) {
-      item.splice(id, 1);
+    deleteitem (item, id) {
+      item.splice(id, 1)
       // this.form.potentialInvestorarr.splice(index, 1);
     },
-    Redoption_summitFn() {
+    Redoption_summitFn () {
       // let sw = true;
-      console.log(this.itemdata);
+      console.log(this.itemdata)
       if (this.Redoption_summit.label) {
         // Object.assign(obj, this.Redoption_summit);
         // obj.value = this.brands.length > 0 ? this.brands.length : 0;
         let sw = this.itemdata.listCell.every((item) => {
-          return item.label !== this.Redoption_summit.label;
-        });
+          return item.label !== this.Redoption_summit.label
+        })
         if (sw) {
           this.itemdata.listCell.push({
             label: this.Redoption_summit.label,
-            value: this.itemdata.listCell.length,
-          });
+            value: this.itemdata.listCell.length
+          })
           // this.itemdata.listRedCell.orange.forEach(item => {
           // });
-          this.Redoption_summit.label = "";
-          this.dialogFormVisible_redOption_add = false;
+          this.Redoption_summit.label = ''
+          this.dialogFormVisible_redOption_add = false
         } else {
           this.$message({
-            message: this.$t("project.optionalreadyexist"),
-            type: "warning",
-          });
+            message: this.$t('project.optionalreadyexist'),
+            type: 'warning'
+          })
         }
       } else {
         this.$message({
-          message: this.$t("project.cannotbenull"),
-          type: "warning",
-        });
+          message: this.$t('project.cannotbenull'),
+          type: 'warning'
+        })
       }
     },
-    addRedoption(item) {
-      console.log(item);
-      this.itemdata = item;
-      this.dialogFormVisible_redOption_add = true;
+    addRedoption (item) {
+      console.log(item)
+      this.itemdata = item
+      this.dialogFormVisible_redOption_add = true
       // return this.Redoption_summitFn(item);
     },
-    delectItem(key, num) {
-      console.log(this.obj.orange.title[key].caluse[this.ruleForm.Redoption]);
-      this.obj.orange.title[key].caluse[this.ruleForm.Redoption].splice(num, 1);
+    delectItem (key, num) {
+      console.log(this.obj.orange.title[key].caluse[this.ruleForm.Redoption])
+      this.obj.orange.title[key].caluse[this.ruleForm.Redoption].splice(num, 1)
     },
-    submitForm(formName) {
+    submitForm (formName) {
       // this.$routerto("");
       // let oo = {};
 
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          let arr = this.$global.deepCopy(this.ruleForm.arr);
+          let arr = this.$global.deepCopy(this.ruleForm.arr)
           arr.forEach((item) => {
             if (item.type === 3) {
               item.listCell = item.listCell.map((i) => {
-                return i.label;
-              });
+                return i.label
+              })
             }
-          });
-          console.log(arr);
+          })
+          console.log(arr)
           let obj = {
             importList: JSON.stringify(arr),
-            fileId: parseInt(this.fileId),
-          };
+            fileId: parseInt(this.fileId)
+          }
           this.$axios({
-            method: "post",
+            method: 'post',
             url: `${this.$axios.defaults.baseURL}/bsl_admin_web/contract/saveExcelContractTemplate?Ad_Token=${this.$store.state.X_Token}`,
             data: this.$qs.stringify(obj),
             headers: {
-              "Content-Type": "application/x-www-form-urlencoded",
-            },
+              'Content-Type': 'application/x-www-form-urlencoded'
+            }
           }).then((res) => {
             this.$message({
               message: res.data.resultDesc,
-              type: "success",
-            });
+              type: 'success'
+            })
             this.$router.replace({
-              name: "contractItem",
-            });
-          });
+              name: 'contractItem'
+            })
+          })
         } else {
-          return false;
+          return false
         }
-      });
-    },
+      })
+    }
     // upload(file, fileList, name) {
     //   console.log("file", file);
     //   console.log("fileList", fileList);
     //   let files = { 0: file.raw };
     //   this.readExcel1(files, name);
     // },
-  },
-};
+  }
+}
 </script>
 
 <style lang='scss'>

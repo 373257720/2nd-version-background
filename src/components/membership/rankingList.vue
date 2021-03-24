@@ -12,9 +12,11 @@
       >
         <el-form-item label="积分排行刷新时间：:" prop="Integral_refreshtime">
           <el-date-picker
-            v-model="Integral_refreshtime"
-            type="date"
-            placeholder="选择日期"
+            v-model="industry_summit.Integral_refreshtime"
+            type="daterange"
+            range-separator="至"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"
           >
           </el-date-picker>
         </el-form-item>
@@ -33,152 +35,119 @@
 
 <script>
 export default {
-  data() {
-    var valid_industryNameCh = (rule, value, callback) => {
-      // var str = value.replace(/(^\s*)|(\s*$)/g,"");
-      // let a=/^[\u4E00-\u9FA5][\u4E00-\u9FA5\s]*[\u4E00-\u9FA5]$/.test(str);
-      // if(a){
-      //   this.industry_summit.industryNameCh=str;
-      //   callback()
-      // }else {
-      //   callback(new Error('请输入中文'));
-      // }
-      if (value) {
-        this.industry_summit.industryNameCh = value;
-        callback();
-      } else {
-        callback(new Error("请输入中文"));
-      }
-    };
-    var valid_industryNameEn = (rule, value, callback) => {
-      // var str = value.replace(/(^\s*)|(\s*$)/g, "");
-      // let a = /^[A-Za-z][A-Za-z\s]*[A-Za-z]$/.test(str);
-      // if (a) {
-      //   this.industry_summit.industryNameEn = str;
-      //   callback();
-      // } else {
-      //   callback(new Error("Please Input English"));
-      // }
-
-      if (value) {
-        this.industry_summit.industryNameEn = value;
-        callback();
-      } else {
-        callback(new Error("Please Input English"));
-      }
-    };
+  data () {
     return {
-      Integral_refreshtime:null,//积分刷新时间
+      Integral_refreshtime: null, // 积分刷新时间
       dialogFormVisible_industry: false,
       tableData: [],
-      title: "",
+      title: '',
       industry_summit: {
-        industryId: -1,
-        industryNameEn: "",
-        industryNameCh: "",
-        industryStatus: 0,
-        industrySort: null,
+        Integral_refreshtime: []
       },
       rules: {
-        industrySort: [
+        Integral_refreshtime: [
           {
             required: true,
-            message: this.$t("industry.Pleaseenterthanzero"),
-            trigger: "blur",
-          },
-        ],
-        industryNameCh: [
-          { required: true, validator: valid_industryNameCh, trigger: "blur" },
-        ],
-        industryNameEn: [
-          { required: true, validator: valid_industryNameEn, trigger: "blur" },
-        ],
-      },
-    };
-  },
-  created() {
-    if (this.$route.query.industryId) {
-      this.title = this.$t("industry.Pleaseenterindustrytobeedited");
-      this.industry_summit.industryId = this.$route.query.industryId;
-      this.search();
-    } else {
-      this.title = this.$t("industry.Pleaseentertheindustrytobeadded");
+            message: this.$t('industry.Pleaseenterthanzero'),
+            trigger: 'blur'
+          }
+        ]
+      }
     }
   },
-  // watch:{
-  //   industry_summit: {
-  //     handler(newName, oldName) {
-  //       // console.log(newName, oldName)
-  //      // let str = newName.replace(/\s*/g,"");
-
-  //       // this.industry_summit.industryNameCh=newName.industryNameEn.replace(/\s*/g,"");
-  //       // this.value=this.value.replace(/[^\u4e00-\u9fa5]/g,'')
-  //       // if(/^[A-Za-z][A-Za-z\s]*[A-Za-z]$/.test(newName.industryNameEn)){
-  //       //   console.log(newName)
-  //       //   newName=oldName
-  //       // }
-  //       ;
-  //     },
-  //     deep: true,
-  //     immediate: true
-  //   },
-  // },
-  created(){
-    this.search();
+  created () {
+    this.getBslRankingSystem()
   },
   methods: {
-    submitForm(formName) {
+    submitForm (formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          this.add_industry();
+          this.add_industry()
         } else {
-          return false;
+          return false
         }
-      });
+      })
     },
-    search() {
+    getBslRankingSystem () {
       this.$global
         .get_encapsulation(
-          `${this.$axios.defaults.baseURL}/bsl_admin_web/member/getBslRankingSystem`,
+          `${this.$axios.defaults.baseURL}/bsl_admin_web/member/getBslRankingSystem`
         )
         .then((res) => {
-          if (res.data.resultCode == 10000) {
-
-            this.Integral_refreshtime = (res.data.data.rankingSystem.optTime+'000')*1;
-            console.log(this.Integral_refreshtime)
-            // this.tableData.forEach((item) => {
-            //   if (item.industryId == this.$route.query.industryId) {
-            //     this.industry_summit.industryStatus = item.industryStatus;
-            //     this.industry_summit.industryNameEn = item.industryNameEn;
-            //     this.industry_summit.industryNameCh = item.industryNameCh;
-            //     this.industry_summit.industrySort = item.industrySort;
-            //   }
-            // });
-          }
-        });
-    },
-    add_industry() {
-      // console.log(this.industry_summit)
-      let self = this;
-      this.$global
-        .post_encapsulation(
-          `${this.$axios.defaults.baseURL}/bsl_admin_web/industry/saveIndustry`,
-          self.industry_summit
-        )
-        .then((result) => {
-          this.$confirm(result.data.resultDesc, self.$t("project.Reminder"), {
-            confirmButtonText: self.$t("project.Yes"),
-            center: true,
-            showCancelButton: false,
-          }).then(() => {
-            if (result.data.resultCode == 10000) {
-              this.$routerto("industry_lists");
+          if (res.data.resultCode === 10000) {
+            switch (res.data.data.rankingSystem.startTime.toString().length) {
+              case 10:
+                this.$set(
+                  this.industry_summit.Integral_refreshtime,
+                  0,
+                  res.data.data.rankingSystem.startTime * 1000
+                )
+                break
+              default:
+                this.$set(
+                  this.industry_summit.Integral_refreshtime,
+                  0,
+                  res.data.data.rankingSystem.startTime
+                )
             }
-          });
-        });
+            switch (res.data.data.rankingSystem.endTime.toString().length) {
+              case 10:
+                this.$set(
+                  this.industry_summit.Integral_refreshtime,
+                  1,
+                  res.data.data.rankingSystem.endTime * 1000
+                )
+                break
+              default:
+                this.$set(
+                  this.industry_summit.Integral_refreshtime,
+                  1,
+                  res.data.data.rankingSystem.endTime
+                )
+            }
+            console.log(this.industry_summit.Integral_refreshtime)
+            // this.Integral_refreshtime =
+            //   res.data.data.rankingSystem.optTime * 1000;
+            // console.log(this.Integral_refreshtime);
+            // if (res.data.data.rankingSystem.startTime.toString().length === 10) {
+            // }else if()
+
+            // console.log(res.data.data.rankingSystem.startTime);
+          }
+        })
     },
-  },
-};
+    add_industry () {
+      // console.log(this.industry_summit)
+      // let self = this
+      var date1 = new Date(this.industry_summit.Integral_refreshtime[0]) // 获取当前时间
+      var starttime = date1.getTime() / 1000
+      // console.log(starttime) // 兑换开始时间
+      var date2 = new Date(this.industry_summit.Integral_refreshtime[1]) // 获取当前时间
+      var endtime = date2.getTime() / 1000
+      this.$global
+        .postJson_encapsulation(
+          `${this.$axios.defaults.baseURL}/bsl_admin_web/member/saveModifyBslRankingSystem`,
+          {
+            startTime: starttime,
+            endTime: endtime
+          }
+        )
+        .then((res) => {
+          if (res.data.resultCode === 10000) {
+            this.$message({
+              message: res.data.resultDesc,
+              type: 'success'
+            })
+          } else {
+            this.$message({
+              message: res.data.resultDesc,
+              type: 'warn'
+            })
+          }
+        })
+    }
+  }
+}
 </script>
 
 <style lang='scss'>

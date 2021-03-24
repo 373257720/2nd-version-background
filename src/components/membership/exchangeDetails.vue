@@ -30,24 +30,49 @@
           <el-button
             type="primary"
             icon="el-icon-search"
-            @click="search(value,value1, 1, pagesize)"
-          >{{$t('project.Search')}}</el-button>
+            @click="search(value, value1, 1, pagesize)"
+            >{{ $t("project.Search") }}</el-button
+          >
         </section>
       </header>
       <el-table
-        :data="tableData.slice((currentpage - 1) * pagesize, currentpage * pagesize)"
+        :data="
+          tableData.slice((currentpage - 1) * pagesize, currentpage * pagesize)
+        "
         border
       >
-       
-        <el-table-column prop="createTime" show-overflow-tooltip label="申请时间" align="center"></el-table-column>
-        <el-table-column prop="exchangeIntegralType" show-overflow-tooltip label="积分使用类型" align="center">
-            <template slot-scope="scope">
-           {{scope.row.exchangeIntegralType==0?'礼品兑换':''}}
+        <el-table-column
+          prop="createTime"
+          show-overflow-tooltip
+          label="申请时间"
+          align="center"
+        >
+          <template slot-scope="scope">
+            <span>{{ $global.stamptodate(scope.row.createTime) }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="exchangeIntegral" show-overflow-tooltip label="积分明细" align="center"></el-table-column>
-        <el-table-column prop="giftName" show-overflow-tooltip label="兑换礼品" align="center"></el-table-column>
-        
+        <el-table-column
+          prop="exchangeIntegralType"
+          show-overflow-tooltip
+          label="积分使用类型"
+          align="center"
+        >
+          <template slot-scope="scope">
+            {{ scope.row.exchangeIntegralType == 0 ? "礼品兑换" : "" }}
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="exchangeIntegral"
+          show-overflow-tooltip
+          label="积分明细"
+          align="center"
+        ></el-table-column>
+        <el-table-column
+          prop="giftName"
+          show-overflow-tooltip
+          label="兑换礼品"
+          align="center"
+        ></el-table-column>
       </el-table>
       <el-pagination
         :page-size="pagesize"
@@ -66,77 +91,78 @@
 // import '@/components/eventBus'
 // import login from "../login";
 export default {
-  name: "exchangeDetails",
-  data() {
+  name: 'exchangeDetails',
+  data () {
     return {
       centerDialogVisible: false,
-      value1: [], //日期选择
-      value: "", //项目状态
-      searchkey: "",
-      input: "",
+      value1: [], // 日期选择
+      value: '', // 项目状态
+      searchkey: '',
+      input: '',
       currentpage: 1,
       pagesize: 8,
       pagetotal: null,
       tableData: [],
       deleteType: 0,
-      industryId: ""
-    };
+      industryId: ''
+    }
   },
-  created() {
- var userId = this.$route.query.userId;
- this.$global.get_encapsulation(`${this.$axios.defaults.baseURL}/bsl_admin_web/member/getBslPointsExchangeList
-`,{
-     id:userId
+  created () {
+    var userId = this.$route.query.userId
+    this.$global
+      .get_encapsulation(
+        `${this.$axios.defaults.baseURL}/bsl_admin_web/member/getBslPointsExchangeList
+`,
+        {
+          id: userId,
+          optStatus: 1 // 0 未兑换1已兑换
+        }
+      )
+      .then((res) => {
+        if (res.data.resultCode == 10000) {
+          this.tableData = [...res.data.data.lists]
+          console.log(this.tableData)
+        } else {
+        }
       })
-    .then(res=>{
-      if (res.data.resultCode == 10000){
-         this.tableData = [...res.data.data.lists];
-         console.log(this.tableData )
-      }else{
-
-      }
-    })
-
-
-
   },
-  activated() {
+  activated () {
     // console.log(123);
 
-    this.search();
+    this.search()
   },
   methods: {
-    CheckInputIntFloat(value) {
-      var regexp = /^[1-9]\d*$/;
-      let gg = value;
-      let a;
+    CheckInputIntFloat (value) {
+      var regexp = /^[1-9]\d*$/
+      let gg = value
+      let a
       // console.log(gg.replace(regexp, ""));
-      if ("" != gg.replace(regexp, "")) {
-        console.log(gg.replace(regexp));
+      if (gg.replace(regexp, '') != '') {
+        console.log(gg.replace(regexp))
 
         // e.target.value=gg.replace(regexp)
-        value = gg.match(regexp) === null ? "" : gg.match(regexp);
+        value = gg.match(regexp) === null ? '' : gg.match(regexp)
       }
-      console.log(value);
+      console.log(value)
     },
-    handleCurrentChange(cpage) {
-      this.currentpage = cpage;
+    handleCurrentChange (cpage) {
+      this.currentpage = cpage
     },
-    handleSizeChange(psize) {
-      this.pagesize = psize;
+    handleSizeChange (psize) {
+      this.pagesize = psize
     },
-    deleterow(row) {
-      console.log(row);
-      let self = this;
-      this.industryId = row.industryId;
-      this.centerDialogVisible = true;
+    deleterow (row) {
+      console.log(row)
+      let self = this
+      this.industryId = row.industryId
+      this.centerDialogVisible = true
       this.$confirm(
-        self.$t("project.Confirmdelect"),
-        self.$t("project.Reminder"),
+        self.$t('project.Confirmdelect'),
+        self.$t('project.Reminder'),
         {
-          confirmButtonText: self.$t("project.Yes"),
-          cancelButtonText: self.$t("project.No"),
-          type: "warning",
+          confirmButtonText: self.$t('project.Yes'),
+          cancelButtonText: self.$t('project.No'),
+          type: 'warning',
           center: true,
           showCancelButton: true
         }
@@ -147,66 +173,66 @@ export default {
               `${this.$axios.defaults.baseURL}/bsl_admin_web/industry/deleteIndustry`,
               { industryId: row.industryId }
             )
-            .then(res => {
+            .then((res) => {
               if (res.data.resultCode == 10000) {
                 this.$message({
                   message: res.data.resultDesc,
-                  type: "success"
-                });
-                this.search();
+                  type: 'success'
+                })
+                this.search()
               } else {
                 this.$message({
                   message: res.data.resultDesc,
-                  type: "warn"
-                });
+                  type: 'warn'
+                })
               }
-            });
+            })
         })
-        .catch(() => {});
+        .catch(() => {})
     },
 
-    handleClick(row) {
+    handleClick (row) {
       this.$router.push({
-        name: "industry_alter",
+        name: 'industry_alter',
         query: {
           industryId: row.industryId
         }
-      });
+      })
     },
-    fromchildren1(data) {
-      this.currentpage = data.currentpage;
-      this.pagesize = data.pagesize;
+    fromchildren1 (data) {
+      this.currentpage = data.currentpage
+      this.pagesize = data.pagesize
       this.search(
         this.value,
         this.value1[0] / 1000,
         this.value1[1] / 1000,
         this.currentpage,
         this.pagesize
-      );
+      )
     },
-    search() {
+    search () {
       this.$global
         .get_encapsulation(
           `${this.$axios.defaults.baseURL}/bsl_admin_web/industry/getAllIndustry`,
-          { searchKey: "" }
+          { searchKey: '' }
         )
-        .then(res => {
+        .then((res) => {
           if (res.data.resultCode == 10000) {
-            this.tableData = [...res.data.data];
-            console.log(this.tableData);
+            this.tableData = [...res.data.data]
+            console.log(this.tableData)
             this.tableData.forEach((item, idx) => {
-              item.idx = idx + 1;
+              item.idx = idx + 1
               // if(item.industryStatus==-1){
               //   item.industry_Status='已删除'
               // }else if(item.industryStatus==0){
               //   item.industry_Status='正常'
               // }
-            });
+            })
           }
-        });
+        })
     }
   }
-};
+}
 </script>
 
 <style lang='scss'>
